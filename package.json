@@ -1,0 +1,22 @@
+{
+  "name": "mutsda",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "all" : "bun index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "workspaces": [
+    "./client",
+    "./server"
+  ],
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
