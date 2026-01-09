@@ -8,7 +8,7 @@ concurrently([
     },
     {
         name: "server", 
-        command: "bun index.js",
+        command: "bun spin",
         cwd: "./server",
         prefixColor: "green" 
     }

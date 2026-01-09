@@ -1,4 +1,14 @@
-# server
+#MUTSDA WEB
+
+### TECH STACK 
+- Backend
+    BUN +  Hono 
+    
+- Frontend 
+    - React 
+    - FontAwesome Icons
+    - Vite
+    - Tailwind css 
 
 To install dependencies:
 
