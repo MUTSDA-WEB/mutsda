@@ -2,12 +2,12 @@ import client from "../helpers/prismaClient";
 import App from "..";
 
 export default async function checkSignupInfo (c, next){
-       const signUpBody = await c.req.json()
-        c.set("info", signUpBody)
-        checkUsername(c, next)
-        checkEmail(c, next)
-        await next()
-    }
+    const signUpBody = await c.req.json()
+    c.set("info", signUpBody)
+    checkUsername(c, next)
+    checkEmail(c, next)
+    await next()
+}
 
 async function checkEmail (c, next ) {
     const {email} = c.get("info")
