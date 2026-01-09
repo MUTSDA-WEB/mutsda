@@ -34,7 +34,12 @@ bunx prisma init --datasource-provider postgresql --output ./src/generated/prism
 - then to run postgres locally run: 
 
 ```bash
-bunx prisma dev 
+bunx prisma migrate dev 
+```
+to generate client run: 
+
+```bash
+bun prisma generate
 ```
 
 __CHECK THE "./server/package.json" scripts for all the short commands__
