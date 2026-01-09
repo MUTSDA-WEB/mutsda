@@ -1,14 +1,17 @@
 {
   "name": "server",
   "module": "index.js",
-  "type": "module",
-  "scripts": {
-    "spin": "bun index.js"
-  },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "scripts": {
+    "spin": "bun --hot index.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "hono": "^4.11.3"
   }
 }
