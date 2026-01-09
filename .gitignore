@@ -55,5 +55,5 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Finder (MacOS) folder config
 .DS_Store
 
-# prisma 
-/prisma/src/generated/prisma
+#prisma
+server/prisma/src/

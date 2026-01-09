@@ -12,6 +12,7 @@
     "build": "bun pdeploy && bun index.js",
     "pdev" : "bunx prisma dev",
     "pmigrate": "prisma migrate dev",
+    "pgen" : "bunx prisma generate",
     "pweb": "bunx prisma studio",
     "pdeploy": "bunx prisma migrate deploy"
   },
