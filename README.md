@@ -1,14 +1,44 @@
 #MUTSDA WEB
 
 ### TECH STACK 
-- Backend
+#### Backend
     BUN +  Hono 
     
-- Frontend 
+#### Frontend 
     - React 
     - FontAwesome Icons
     - Vite
     - Tailwind css 
+
+#### Database 
+    - Prisma ORM
+    - Postgres DB
+
+## DATABASE SETUP 
+- install prisma 
+
+```bash
+bun add prisma --save-dev 
+```
+- setup prisma client 
+
+```bash 
+bun add @prisma/client @prisma/adapter-pg pg
+```
+- initialize prisma 
+
+```bash
+bunx prisma init --datasource-provider postgresql --output ./src/generated/prisma
+```
+- Add your database connection string 
+- then to run postgres locally run: 
+
+```bash
+bunx prisma dev 
+```
+
+__CHECK THE "./server/package.json" scripts for all the short commands__
+
 
 To install dependencies:
 
