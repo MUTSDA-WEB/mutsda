@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "all" : "bun index.ts"
+    "all": "bun index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -17,6 +17,7 @@
     "./server"
   ],
   "dependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "react-router-dom": "^7.12.0"
   }
 }
