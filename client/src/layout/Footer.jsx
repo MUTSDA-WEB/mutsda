@@ -1,5 +1,6 @@
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook, faWhatsapp, faSquareXTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faFacebook, faSquareXTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
 
 function Footer () {
 
@@ -13,27 +14,27 @@ function Footer () {
    
          {/* Footer Links */}
          <div className="flex flex-col gap-3 text-center font-medium">
-           <a href="#" className="hover:underline">Home</a>
-           <a href="#" className="hover:underline">About Us</a>
-           <a href="#" className="hover:underline">Ministries</a>
+
+           <Link to="/" className="hover:underline ">Home</Link>
+           <Link to="/aboutUs" className="hover:underline">About Us</Link>
            <a href="#" className="hover:underline">Library</a>
            <a href="#" className="hover:underline">Leadership</a>
          </div>
    
          {/* Social Icons */}
-         <div className="flex flex-col gap-4 items-center md:items-end">
-           <div className="flex items-center gap-3 group cursor-pointer">
-             <span className="text-sm font-semibold">X space</span>
+         <div className="flex flex-col gap-4 items-center md:items-center">
+           <a href='https://x.com/mutsdafamily1' className="flex items-center gap-3 group cursor-pointer">
              <FontAwesomeIcon icon={faSquareXTwitter} className="text-2xl" />
-           </div>
-           <div className="flex items-center gap-3 group cursor-pointer">
-             <span className="text-sm font-semibold">WhatsApp</span>
-             <FontAwesomeIcon icon={faWhatsapp} className="text-2xl text-green-400" />
-           </div>
-           <div className="flex items-center gap-3 group cursor-pointer">
+             <span className="text-sm font-semibold">X space</span>
+           </a>
+           <a href='http://www.youtube.com/@Mutsdafamily1' className="flex items-center gap-3 group cursor-pointer">
+             <FontAwesomeIcon icon={faYoutube} className="text-2xl text-red-600" />
+             <span className="text-sm font-semibold">YouTube</span>
+           </a>
+           <a href='https://www.facebook.com/groups/509151038696455' className="flex items-center gap-3 group cursor-pointer">
+             <FontAwesomeIcon icon={faFacebook} className="text-2xl text-blue-600" />
              <span className="text-sm font-semibold">Facebook</span>
-             <FontAwesomeIcon icon={faFacebook} className="text-2xl text-blue-200" />
-           </div>
+           </a >
          </div>
        </div>
        
