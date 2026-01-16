@@ -5,9 +5,9 @@ const Home = () => {
   return (
     <div className="flex flex-col animate-fadeIn">
       {/* 1. HERO SECTION */}
-      <section className="relative h-112.5 flex items-center justify-center text-white overflow-hidden">
+      <section className="relative h-[70vh] flex items-center justify-center text-white overflow-hidden">
         {/* Background Image Overlay */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute  inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80" 
             alt="Congregation" 
