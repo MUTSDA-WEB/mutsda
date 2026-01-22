@@ -9,7 +9,7 @@ import {
 function Footer() {
   return (
     <footer className="bg-[#3298C8] text-white pt-12 pb-6">
-      <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
+      <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-3 gap-12 items-center">
         {/* Footer Logo Area */}
         <div className="bg-white p-4 w-40 h-24 mx-auto md:mx-0 flex items-center justify-center rounded shadow-inner">
           <span className="text-black font-black italic">LOGO</span>
@@ -23,16 +23,16 @@ function Footer() {
           <Link to="/aboutUs" className="hover:underline">
             About Us
           </Link>
-          <a href="#" className="hover:underline">
+          <a href="/library" className="hover:underline">
             Library
           </a>
-          <a href="#" className="hover:underline">
+          <a href="/leaders" className="hover:underline">
             Leadership
           </a>
         </div>
 
         {/* Social Icons */}
-        <div className="flex flex-col gap-4 items-center md:items-center">
+        <div className="flex flex-col gap-4 sm:items-center">
           <a
             href="https://x.com/mutsdafamily1"
             className="flex items-center gap-3 group cursor-pointer"
