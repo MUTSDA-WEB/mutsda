@@ -7,7 +7,7 @@ import {
   faBars,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
