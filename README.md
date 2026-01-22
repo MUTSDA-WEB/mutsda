@@ -51,6 +51,18 @@ to generate client run:
 bun prisma generate
 ```
 
+## Code Formatting and Linting
+
+- **Prettier code formatter** - used prettier for code formatting
+- **Husky** - for setting up pre commit
+- **lint-staged** - for linting changes only
+
+While in the root folder run:
+
+```bash
+ bunx husky init
+```
+
 **CHECK THE "./server/package.json" scripts for all the short commands**
 
 To install dependencies:
