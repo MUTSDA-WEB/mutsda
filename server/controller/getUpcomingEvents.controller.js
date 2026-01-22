@@ -20,7 +20,5 @@ export default async function getUpcomingEvents(c) {
    } catch (error) {
       console.log(error);
       return c.json({ error: "Failed to get upcoming events from db" }, 500);
-   } finally {
-      client.$disconnect();
    }
 }
