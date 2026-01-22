@@ -5,9 +5,9 @@ import { jwt } from "hono/jwt";
 // Verify JWT
 // Attach payload to c.get("jwtPayload")
 
-export default async function verifyToken (c, next){
-    jwt({
-        secret: process.env.JWT_SECRET,
-        cookie: "auth",
-    })
-} 
+export default async function verifyToken(c, next) {
+  jwt({
+    secret: process.env.JWT_SECRET,
+    cookie: "auth",
+  });
+}

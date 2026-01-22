@@ -1,49 +1,57 @@
-#MUTSDA WEB
+# MUTSDA WEB
 
-### TECH STACK 
+### TECH STACK
+
 #### Backend
-    BUN +  Hono 
-    
-#### Frontend 
-    - React 
+
+    BUN +  Hono
+
+#### Frontend
+
+    - React
     - FontAwesome Icons
     - Vite
-    - Tailwind css 
+    - Tailwind css
 
-#### Database 
+#### Database
+
     - Prisma ORM
     - Postgres DB
 
-## DATABASE SETUP 
-- install prisma 
+## DATABASE SETUP
+
+- install prisma
 
 ```bash
-bun add prisma --save-dev 
+bun add prisma --save-dev
 ```
-- setup prisma client 
 
-```bash 
+- setup prisma client
+
+```bash
 bun add @prisma/client @prisma/adapter-pg pg
 ```
-- initialize prisma 
+
+- initialize prisma
 
 ```bash
 bunx prisma init --datasource-provider postgresql --output ./src/generated/prisma
 ```
-- Add your database connection string 
-- then to run postgres locally run: 
+
+- Add your database connection string
+- then to run postgres locally run:
 
 ```bash
-bunx prisma migrate dev 
+bunx prisma migrate dev
 ```
-to generate client run: 
+
+to generate client run:
 
 ```bash
 bun prisma generate
 ```
 
-__CHECK THE "./server/package.json" scripts for all the short commands__
-
+**CHECK THE "./server/package.json" scripts for all the short commands**
 
 To install dependencies:
 
@@ -52,18 +60,22 @@ bun install
 ```
 
 To run:
-while at the root directory run 
+while at the root directory run
+
 ```bash
 bun all
 ```
 
-Or if you want to run client and server separately: 
-run at the client directory: 
+Or if you want to run client and server separately:
+run at the client directory:
+
 ```bash
 bun run dev
 ```
+
 then on a separate terminal on the server directory run:
-```bash 
+
+```bash
 bun spin
 ```
 
