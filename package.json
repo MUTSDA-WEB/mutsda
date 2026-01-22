@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "all": "bun index.ts"
+    "all": "bun index.ts",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@types/bun": "latest"

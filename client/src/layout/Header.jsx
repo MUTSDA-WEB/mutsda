@@ -119,14 +119,14 @@ const Header = () => {
       >
         <div className="flex flex-col items-left gap-6 font-medium uppercase tracking-widest">
           <Link
-            href="/"
+            to="/"
             onClick={() => setIsMobileMenuOpen(false)}
             className="ml-12"
           >
             Home
           </Link>
           <Link
-            href="/aboutUs"
+            to="/aboutUs"
             onClick={() => setIsMobileMenuOpen(false)}
             className="ml-12"
           >
@@ -140,7 +140,7 @@ const Header = () => {
             {ministriesLinks.map((link) => (
               <Link
                 key={link.name}
-                href={link.href}
+                to={link.to}
                 className="block ml-16 text-sm py-1 hover:text-sky-200 hover:cursor-pointer"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
