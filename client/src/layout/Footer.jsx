@@ -39,7 +39,7 @@ function Footer () {
        </div>
        
        <div className="border-t border-white/20 mt-10 pt-6 text-center text-sm opacity-90">
-         <p>© MUTSDA 2026 . All rights reserved</p>
+         <p>© MUTSDA {new Date().getFullYear()} . All rights reserved</p>
        </div>
      </footer>
    );

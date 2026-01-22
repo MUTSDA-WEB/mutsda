@@ -1,5 +1,4 @@
 import client from "../helpers/prismaClient";
-import App from "..";
 
 export default async function checkSignupInfo (c, next){
     const signUpBody = await c.req.json()
