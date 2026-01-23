@@ -3,7 +3,7 @@ import client from "../helpers/prismaClient";
 
 export default async function (c) {
    const eventInfo = c.req.json();
-   const { title, descritption, imageURL, eventStartDate, eventEndDate } =
+   const { title, description, imageURL, eventStartDate, eventEndDate } =
       eventInfo;
 
    // saving data to db

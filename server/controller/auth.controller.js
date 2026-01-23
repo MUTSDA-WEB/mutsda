@@ -1,5 +1,5 @@
 import { sign } from "hono/jwt";
-import { getUserByID, getUserDetails } from "../helpers/getUserInfo";
+import { getUserByID } from "../helpers/getUserInfo";
 import checkPassword from "../helpers/checkPassword";
 import hashP from "../helpers/hashPassword";
 import client from "../helpers/prismaClient";

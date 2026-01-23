@@ -55,4 +55,10 @@ App.post(
    login,
 );
 
+// update user info route
+App.post("/auth/updateProfile/:id");
+
+// update password route
+App.post("/auth/updatePass/:id");
+
 export default App;
