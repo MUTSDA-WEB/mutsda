@@ -6,6 +6,7 @@ import checkSignupInfo from "./middleware/checkSignupInfo.middleware";
 import verifyUsernameMiddleware from "./middleware/verifyUsername.middleware";
 import verifyPasswordMiddleware from "./middleware/verifyPassword.middleware";
 import registerUser from "./controller/registerUser.controller";
+import getUnoccupiedRoles from "./helpers/getAvailableRoles";
 import {
    getAllEvents,
    getPastEvents,
@@ -43,6 +44,16 @@ App.get("/event/past", getAllEvents);
 
 // fetch all events
 App.get("/event/all", getPastEvents);
+
+// get available roles
+App.get("/auth/roles", async (c) => {
+   try {
+      const roles = await getUnoccupiedRoles();
+      return c.json({ roles }, 200);
+   } catch (error) {
+      return c.json({ error: "Failed to fetch roles" }, 500);
+   }
+});
 
 // register new User
 App.post("/auth/register", checkSignupInfo, registerUser);

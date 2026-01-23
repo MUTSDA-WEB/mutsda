@@ -11,6 +11,7 @@ import Welfare from "./pages/Welfare";
 import Donate from "./pages/Donate";
 import Contact from "./pages/ConatctUs";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const AppRouter = () => {
    return (
@@ -22,6 +23,7 @@ const AppRouter = () => {
          <Route path='/donate' element={<Donate />} />
          <Route path='/contactUs' element={<Contact />} />
          <Route path='/login' element={<Login />} />
+         <Route path='/signup' element={<Register />} />
          {/* This is where all the ministries routes go */}
          <Route path='/ministries'>
             <Route path='music' element={<MusicMinistry />} />

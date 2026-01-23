@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-   faEnvelope,
+   faUser,
    faLock,
    faEye,
    faEyeSlash,
@@ -11,7 +11,7 @@ import {
 
 const Login = () => {
    const [formData, setFormData] = useState({
-      email: "",
+      username: "",
       password: "",
    });
    const [showPassword, setShowPassword] = useState(false);
@@ -21,10 +21,10 @@ const Login = () => {
    const validateForm = () => {
       const newErrors = {};
 
-      if (!formData.email) {
-         newErrors.email = "Email is required";
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-         newErrors.email = "Please enter a valid email";
+      if (!formData.username) {
+         newErrors.username = "Username is required";
+      } else if (formData.username.length < 3) {
+         newErrors.username = "Username must be at least 3 characters";
       }
 
       if (!formData.password) {
@@ -69,8 +69,7 @@ const Login = () => {
       setIsLoading(true);
 
       try {
-         // TODO: Replace with actual API call
-         const response = await fetch("http://localhost:3000/api/login", {
+         const response = await fetch("http://localhost:3000/auth/login", {
             method: "POST",
             headers: {
                "Content-Type": "application/json",
@@ -129,36 +128,36 @@ const Login = () => {
                   )}
 
                   <form onSubmit={handleSubmit} className='space-y-6'>
-                     {/* Email Field */}
+                     {/* Username Field */}
                      <div>
                         <label
-                           htmlFor='email'
+                           htmlFor='username'
                            className='block text-sm font-semibold text-gray-700 mb-2'
                         >
-                           Email Address
+                           Username
                         </label>
                         <div className='relative'>
                            <span className='absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400'>
-                              <FontAwesomeIcon icon={faEnvelope} />
+                              <FontAwesomeIcon icon={faUser} />
                            </span>
                            <input
-                              type='email'
-                              id='email'
-                              name='email'
-                              value={formData.email}
+                              type='text'
+                              id='username'
+                              name='username'
+                              value={formData.username}
                               onChange={handleChange}
                               className={`w-full pl-12 pr-4 py-3.5 rounded-xl border-2 transition-all duration-200 outline-none
                       ${
-                         errors.email
+                         errors.username
                             ? "border-red-300 focus:border-red-500 bg-red-50"
                             : "border-gray-200 focus:border-[#3298C8] hover:border-gray-300"
                       }`}
-                              placeholder='Enter your email'
+                              placeholder='Enter your username'
                            />
                         </div>
-                        {errors.email && (
+                        {errors.username && (
                            <p className='mt-2 text-sm text-red-500'>
-                              {errors.email}
+                              {errors.username}
                            </p>
                         )}
                      </div>
