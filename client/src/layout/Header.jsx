@@ -8,6 +8,7 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, NavLink } from "react-router-dom";
+import churchLogo from "../assets/church_logo.png";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -40,9 +41,13 @@ const Header = () => {
     <header className="bg-[#3298C8] text-white sticky top-0 z-50 shadow-md">
       <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
         {/* LOGO */}
-        <div className="bg-sky-600 px-4 py-1 rounded font-bold border border-white/20 cursor-pointer">
-          Logo
-        </div>
+        <Link to="/">
+          <img
+            src={churchLogo}
+            alt="Church Logo"
+            className="h-10 w-auto object-contain hover:opacity-80 transition-opacity"
+          />
+        </Link>
 
         {/* DESKTOP NAVIGATION */}
         <nav className="hidden lg:flex gap-8 text-sm font-medium uppercase tracking-wider items-center">
@@ -117,6 +122,17 @@ const Header = () => {
         ${isMobileMenuOpen ? "translate-x-0 opacity-100 py-6" : "translate-x-full opacity-0 pointer-events-none"}
       `}
       >
+        {/* MOBILE LOGO */}
+        <div className="flex justify-center mb-6">
+          <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
+            <img
+              src={churchLogo}
+              alt="Church Logo"
+              className="h-8 w-auto object-contain hover:opacity-80 transition-opacity"
+            />
+          </Link>
+        </div>
+
         <div className="flex flex-col items-left gap-6 font-medium uppercase tracking-widest">
           <Link
             to="/"
