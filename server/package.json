@@ -8,13 +8,8 @@
       "typescript": "^5"
    },
    "scripts": {
-      "spin": "bun --hot index.js",
-      "build": "bun pdeploy && bun index.js",
-      "pdev": "bunx prisma dev",
-      "pmigrate": "prisma migrate dev",
-      "pgen": "bunx prisma generate",
-      "pweb": "bunx prisma studio",
-      "pdeploy": "bunx prisma migrate deploy"
+      "spin": "bun --hot server.js",
+      "build": "bun pdeploy && bun index.js"
    },
    "type": "module",
    "dependencies": {

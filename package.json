@@ -6,7 +6,12 @@
    "scripts": {
       "all": "bun index.ts",
       "format": "prettier --write .",
-      "prepare": "husky"
+      "prepare": "husky",
+      "pdev": "bunx prisma dev",
+      "pmigrate": "bunx --bun prisma migrate dev",
+      "pgen": "bunx prisma generate",
+      "pweb": "bunx prisma studio",
+      "pdeploy": "bunx prisma migrate deploy"
    },
    "lint-staged": {
       "*.{js,jsx,ts,tsx,json,css,md}": [

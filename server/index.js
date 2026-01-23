@@ -11,7 +11,7 @@ import {
    getPastEvents,
    getUpcomingEvents,
 } from "./controller/getEvents.controller";
-import login from "./controller/auth.controller";
+import { login } from "./controller/auth.controller";
 
 const App = new Hono();
 App.use("*", async (c, next) => {

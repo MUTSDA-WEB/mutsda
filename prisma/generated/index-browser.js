@@ -120,6 +120,7 @@ exports.Prisma.UserScalarFieldEnum = {
    userID: "userID",
    role: "role",
    email: "email",
+   phoneNumber: "phoneNumber",
    userName: "userName",
    password: "password",
 };
@@ -144,6 +145,28 @@ exports.Prisma.SortOrder = {
 exports.Prisma.QueryMode = {
    default: "default",
    insensitive: "insensitive",
+};
+exports.Role = exports.$Enums.Role = {
+   user: "user",
+   admin1: "admin1",
+   admin2: "admin2",
+   elder1: "elder1",
+   elder2: "elder2",
+   elder3: "elder3",
+   churchLeader: "churchLeader",
+   headDeacon: "headDeacon",
+   headDeaconness: "headDeaconness",
+   sabbathSchool: "sabbathSchool",
+   treasurer: "treasurer",
+   clerk: "clerk",
+   alo: "alo",
+   amo: "amo",
+   prophecy: "prophecy",
+   stewardship: "stewardship",
+   music: "music",
+   welfare: "welfare",
+   development: "development",
+   communication: "communication",
 };
 
 exports.Prisma.ModelName = {

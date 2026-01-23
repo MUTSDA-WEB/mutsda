@@ -1,5 +1,5 @@
-import App from "./server";
-import client from "./server/helpers/prismaClient";
+import App from ".";
+import client from "./helpers/prismaClient";
 
 async function RunDBandServer() {
    // spin up the DB
