@@ -1,5 +1,5 @@
 import { password } from "bun";
 
 export default function hashP(pass) {
-   return password.hash(pass, "argon2d");
+   return password.hash(pass, "bcrypt");
 }
