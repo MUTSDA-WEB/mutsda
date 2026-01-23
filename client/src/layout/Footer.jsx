@@ -5,6 +5,7 @@ import {
   faSquareXTwitter,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
+import churchLogo from "../assets/church_logo.png";
 
 function Footer() {
   return (
@@ -12,7 +13,11 @@ function Footer() {
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-3 gap-12 items-center">
         {/* Footer Logo Area */}
         <div className="bg-white p-4 w-40 h-24 mx-auto md:mx-0 flex items-center justify-center rounded shadow-inner">
-          <span className="text-black font-black italic">LOGO</span>
+          <img
+            src={churchLogo}
+            alt="Church Logo"
+            className="h-full w-auto object-contain"
+          />
         </div>
 
         {/* Footer Links */}
