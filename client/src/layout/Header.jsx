@@ -110,18 +110,16 @@ const Header = () => {
 
             {/* RIGHT ICONS & HAMBURGER */}
             <div className='flex items-center gap-5 text-xl'>
-               <Link to='/contactUs'>
+               <Link to='/contactUs' title='Contact Us'>
                   <FontAwesomeIcon
                      icon={faAddressBook}
                      className='hidden sm:block cursor-pointer hover:text-sky-200'
-                     title='Contact Us'
                   />
                </Link>
-               <Link to='/login'>
+               <Link to='/login' title='Login'>
                   <FontAwesomeIcon
                      icon={faSignInAlt}
                      className='hidden sm:block cursor-pointer hover:text-sky-200'
-                     title='Login'
                   />
                </Link>
                <button
@@ -207,7 +205,6 @@ const Header = () => {
                      <FontAwesomeIcon
                         icon={faAddressBook}
                         className='hover:text-sky-200'
-                        title='Contact Us'
                      />
                   </Link>
                   <Link
@@ -218,7 +215,6 @@ const Header = () => {
                      <FontAwesomeIcon
                         icon={faSignInAlt}
                         className='hover:text-sky-200'
-                        title='Login'
                      />
                   </Link>
                </div>
