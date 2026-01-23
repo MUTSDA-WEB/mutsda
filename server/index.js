@@ -55,7 +55,4 @@ App.post(
    login,
 );
 
-// create new event route
-// App.post("/events", getAllEvents);
-
 export default App;
