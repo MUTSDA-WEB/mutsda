@@ -42,10 +42,7 @@ const Contact = () => {
                }`}
             >
                <iframe
-                  // src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.758409549848!2d37.14152531475425!3d-0.7167099994035008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182860ba4c3c9281%3A0xbc5d34b7e3e7d8e1!2sMurang&#39;a%20University%20of%20Technology!5e0!3m2!1sen!2ske!4v1706000000000!5m2!1sen!2ske"
-                  // src = "https://maps.app.goo.gl/dKrmkBrwsZT5gQnt9"
                   src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.506738741153!2d37.14463731096367!3d-0.7160606352666001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x18289873299b19ed%3A0x97675389aba81506!2sMurang%E2%80%99a%20University%20of%20Technology%20(MUT)!5e0!3m2!1sen!2ske!4v1769227266841!5m2!1sen!2ske'
-                  //  width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></>
                   width='100%'
                   height='100%'
                   style={{ border: 0 }}
