@@ -1,4 +1,3 @@
-import App from "..";
 import client from "../helpers/prismaClient";
 
 export default async function (c) {

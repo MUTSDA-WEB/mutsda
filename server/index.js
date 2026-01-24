@@ -7,6 +7,7 @@ import verifyUsernameMiddleware from "./middleware/verifyUsername.middleware";
 import verifyPasswordMiddleware from "./middleware/verifyPassword.middleware";
 import registerUser from "./controller/registerUser.controller";
 import getUnoccupiedRoles from "./helpers/getAvailableRoles";
+import createEvent from "./controller/addEvent.controller";
 import {
    getAllEvents,
    getPastEvents,
@@ -25,7 +26,7 @@ App.use("*", logger());
 App.use(
    "*",
    cors({
-      origin: ["http://localhost:5173"],
+      origin: ["http://localhost:5173", "https://mutsda.vercel.app"],
       allowMethods: ["POST", "PATCH", "GET", "DELETE"],
       credentials: true,
       allowHeaders: ["Content-Type", "Authorization", "X-Custom-Header"],
@@ -52,6 +53,9 @@ App.get("/event/past", getPastEvents);
 
 // fetch all events
 App.get("/event/all", getAllEvents);
+
+// Create event route
+App.post("/event/create", verifyToken, createEvent);
 
 // ? AUTH ROUTES
 // get available roles

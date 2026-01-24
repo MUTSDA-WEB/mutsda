@@ -39,7 +39,7 @@ const Header = () => {
    };
 
    return (
-      <header className='bg-[#3298C8] text-white sticky top-0 z-50 shadow-md'>
+      <header className='bg-sky-900/10 backdrop-blur-2xl text-sky-900 sticky top-0 z-50 shadow-lg shadow-black/5 border-b border-white/20'>
          <div className='flex items-center justify-between px-6 py-4 max-w-7xl mx-auto'>
             {/* LOGO */}
             <Link to='/'>
@@ -52,12 +52,15 @@ const Header = () => {
 
             {/* DESKTOP NAVIGATION */}
             <nav className='hidden lg:flex gap-8 text-sm font-medium uppercase tracking-wider items-center'>
-               <Link to='/' className='hover:text-sky-200 transition-colors'>
+               <Link
+                  to='/'
+                  className='relative hover:text-[#3298C8] transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'
+               >
                   Home
                </Link>
                <Link
                   to='/aboutUs'
-                  className='hover:text-sky-200 transition-colors'
+                  className='relative hover:text-[#3298C8] transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'
                >
                   About Us
                </Link>
@@ -68,7 +71,7 @@ const Header = () => {
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
                >
-                  <button className='flex items-center gap-2 hover:text-sky-200 transition-colors uppercase outline-none'>
+                  <button className='relative flex items-center gap-2 hover:text-[#3298C8] transition-all duration-500 uppercase outline-none after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'>
                      Ministries
                      <FontAwesomeIcon
                         icon={faChevronDown}
@@ -77,7 +80,7 @@ const Header = () => {
                   </button>
 
                   {isDropdownOpen && (
-                     <div className='absolute top-full left-0 mt-0 w-48 bg-white rounded-md shadow-xl py-2 z-50 border border-gray-100'>
+                     <div className='absolute top-full left-0 mt-0 w-48 bg-white/80 backdrop-blur-lg rounded-xl shadow-xl py-2 z-50 border border-sky-100'>
                         {/* Invisible bridge to prevent mouse-out when moving down */}
                         <div className='absolute -top-2 left-0 w-full h-2 bg-transparent'></div>
 
@@ -85,7 +88,7 @@ const Header = () => {
                            <Link
                               key={link.name}
                               to={link.to}
-                              className='block px-4 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-[#3298C8] transition-colors'
+                              className='block px-4 py-2 text-sm text-gray-700 hover:bg-sky-100/70 hover:text-[#3298C8] transition-colors'
                            >
                               {link.name}
                            </Link>
@@ -96,15 +99,21 @@ const Header = () => {
 
                <Link
                   to='/library'
-                  className='hover:text-sky-200 transition-colors'
+                  className='relative hover:text-[#3298C8] transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'
                >
                   Library
                </Link>
                <Link
                   to='/leaders'
-                  className='hover:text-sky-200 transition-colors'
+                  className='relative hover:text-[#3298C8] transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'
                >
                   Leadership
+               </Link>
+               <Link
+                  to='/gallery'
+                  className='relative hover:text-[#3298C8] transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'
+               >
+                  Gallery
                </Link>
             </nav>
 
@@ -113,17 +122,17 @@ const Header = () => {
                <Link to='/contactUs' title='Contact Us'>
                   <FontAwesomeIcon
                      icon={faAddressBook}
-                     className='hidden sm:block cursor-pointer hover:text-sky-200'
+                     className='hidden sm:block cursor-pointer hover:text-[#3298C8] transition-colors'
                   />
                </Link>
                <Link to='/login' title='Login'>
                   <FontAwesomeIcon
                      icon={faSignInAlt}
-                     className='hidden sm:block cursor-pointer hover:text-sky-200'
+                     className='hidden sm:block cursor-pointer hover:text-[#3298C8] transition-colors'
                   />
                </Link>
                <button
-                  className='lg:hidden p-2 hover:bg-sky-600 rounded-md transition-colors'
+                  className='lg:hidden p-2 hover:bg-sky-100 rounded-lg transition-colors'
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                >
                   <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} />
@@ -134,7 +143,7 @@ const Header = () => {
          {/* MOBILE MENU OVERLAY */}
          <div
             className={`
-        lg:hidden absolute top-full right-0 w-64 bg-[#2a80b3] border-t border-sky-400/30 transition-all duration-300 ease-in-out shadow-2xl
+        lg:hidden absolute top-full right-0 w-64 bg-white/20 backdrop-blur-2xl border-l border-b border-white/30 transition-all duration-300 ease-in-out shadow-2xl shadow-black/10 rounded-bl-2xl
         ${isMobileMenuOpen ? "translate-x-0 opacity-100 py-6" : "translate-x-full opacity-0 pointer-events-none"}
       `}
          >
@@ -149,31 +158,31 @@ const Header = () => {
                </Link>
             </div>
 
-            <div className='flex flex-col items-left gap-6 font-medium uppercase tracking-widest'>
+            <div className='flex flex-col items-left gap-6 font-medium uppercase tracking-widest text-sky-900'>
                <Link
                   to='/'
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className='ml-12'
+                  className='ml-12 hover:text-[#3298C8] transition-colors'
                >
                   Home
                </Link>
                <Link
                   to='/aboutUs'
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className='ml-12'
+                  className='ml-12 hover:text-[#3298C8] transition-colors'
                >
                   About Us
                </Link>
 
-               <div className='bg-sky-800/40 w-full py-4 space-y-4'>
-                  <p className='text-md text-sky-50 underline font-bold tracking-tighter ml-12'>
+               <div className='bg-sky-100/60 w-full py-4 space-y-4'>
+                  <p className='text-md text-[#3298C8] underline font-bold tracking-tighter ml-12'>
                      Ministries
                   </p>
                   {ministriesLinks.map((link) => (
                      <Link
                         key={link.name}
                         to={link.to}
-                        className='block ml-16 text-sm py-1 hover:text-sky-200 hover:cursor-pointer'
+                        className='block ml-16 text-sm py-1 hover:text-[#3298C8] hover:cursor-pointer transition-colors'
                         onClick={() => setIsMobileMenuOpen(false)}
                      >
                         {link.name}
@@ -184,19 +193,26 @@ const Header = () => {
                <Link
                   to='/library'
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className='ml-12'
+                  className='ml-12 hover:text-[#3298C8] transition-colors'
                >
                   Library
                </Link>
                <Link
                   to='/leaders'
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className='ml-12'
+                  className='ml-12 hover:text-[#3298C8] transition-colors'
                >
                   Leadership
                </Link>
+               <Link
+                  to='/gallery'
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className='ml-12 hover:text-[#3298C8] transition-colors'
+               >
+                  Gallery
+               </Link>
 
-               <div className='flex gap-8 pt-4 border-t border-sky-400/30 w-1/2 justify-center'>
+               <div className='flex gap-8 pt-4 border-t border-sky-200/50 w-1/2 justify-center'>
                   <Link
                      to='/contactUs'
                      onClick={() => setIsMobileMenuOpen(false)}
@@ -204,7 +220,7 @@ const Header = () => {
                   >
                      <FontAwesomeIcon
                         icon={faAddressBook}
-                        className='hover:text-sky-200'
+                        className='hover:text-[#3298C8] transition-colors'
                      />
                   </Link>
                   <Link
@@ -214,7 +230,7 @@ const Header = () => {
                   >
                      <FontAwesomeIcon
                         icon={faSignInAlt}
-                        className='hover:text-sky-200'
+                        className='hover:text-[#3298C8] transition-colors'
                      />
                   </Link>
                </div>

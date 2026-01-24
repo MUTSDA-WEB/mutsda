@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import About from "./pages/AboutUs";
 import Library from "./pages/Library";
 import Leadership from "./pages/Leadership";
+import Gallery from "./pages/Gallery";
 import MusicMinistry from "./pages/MusicMinistry";
 import CPPage from "./pages/CP";
 import SabbathSchool from "./pages/SabbathSchool";
@@ -20,6 +21,7 @@ const AppRouter = () => {
          <Route path='/aboutUs' element={<About />} />
          <Route path='/library' element={<Library />} />
          <Route path='/leaders' element={<Leadership />} />
+         <Route path='/gallery' element={<Gallery />} />
          <Route path='/donate' element={<Donate />} />
          <Route path='/contactUs' element={<Contact />} />
          <Route path='/login' element={<Login />} />
