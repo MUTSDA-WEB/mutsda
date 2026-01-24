@@ -70,7 +70,7 @@ const DashboardSidebar = ({
          {/* Sidebar */}
          <aside
             className={`
-               fixed top-0 left-0 h-full bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white z-50
+               fixed top-0 left-0 h-full bg-linear-to-b from-gray-900 via-gray-800 to-gray-900 text-white z-50
                transition-all duration-300 ease-in-out flex flex-col
                ${isCollapsed ? "w-20" : "w-64"}
                ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
@@ -91,7 +91,7 @@ const DashboardSidebar = ({
                   </div>
                ) : (
                   <div className='flex justify-center'>
-                     <div className='w-10 h-10 bg-gradient-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-sm font-bold'>
+                     <div className='w-10 h-10 bg-linear-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-sm font-bold'>
                         {username.charAt(0).toUpperCase()}
                      </div>
                   </div>
@@ -158,7 +158,7 @@ const DashboardSidebar = ({
                         ${isCollapsed ? "justify-center" : ""}
                      `}
                   >
-                     <div className='w-10 h-10 bg-gradient-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center'>
+                     <div className='w-10 h-10 bg-linear-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center'>
                         <FontAwesomeIcon icon={faUser} className='text-white' />
                      </div>
                      {!isCollapsed && (

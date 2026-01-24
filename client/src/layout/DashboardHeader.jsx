@@ -245,7 +245,7 @@ const DashboardHeader = ({ username = "User", onMenuClick }) => {
                   onMouseEnter={handleProfileEnter}
                   onMouseLeave={handleProfileLeave}
                >
-                  <button className='w-10 h-10 bg-gradient-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white shadow-md hover:shadow-lg hover:shadow-sky-300/30 transition-all duration-300'>
+                  <button className='w-10 h-10 bg-linear-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white shadow-md hover:shadow-lg hover:shadow-sky-300/30 transition-all duration-300'>
                      <FontAwesomeIcon icon={faUser} />
                   </button>
 
@@ -302,7 +302,7 @@ const DashboardHeader = ({ username = "User", onMenuClick }) => {
                   onMouseLeave={handleProfileLeave}
                >
                   <button
-                     className='w-9 h-9 bg-gradient-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white text-sm'
+                     className='w-9 h-9 bg-linear-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white text-sm'
                      onClick={() => setIsProfileOpen(!isProfileOpen)}
                   >
                      <FontAwesomeIcon icon={faUser} />

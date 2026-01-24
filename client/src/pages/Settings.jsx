@@ -510,7 +510,7 @@ const Settings = () => {
                      <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className='px-8 py-3 bg-gradient-to-r from-[#3298C8] to-sky-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-sky-300/30 transition-all disabled:opacity-70 flex items-center gap-2'
+                        className='px-8 py-3 bg-linear-to-r from-[#3298C8] to-sky-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-sky-300/30 transition-all disabled:opacity-70 flex items-center gap-2'
                      >
                         {isSaving ? (
                            <>

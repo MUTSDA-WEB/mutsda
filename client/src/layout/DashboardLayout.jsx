@@ -8,7 +8,7 @@ const DashboardLayout = ({ username = "User" }) => {
    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
    return (
-      <div className='min-h-screen bg-gradient-to-br from-gray-50 to-sky-50/30'>
+      <div className='min-h-screen bg-linear-to-br from-gray-50 to-sky-50/30'>
          <DashboardHeader
             username={username}
             onMenuClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
