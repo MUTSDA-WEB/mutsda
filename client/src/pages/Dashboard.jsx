@@ -59,7 +59,7 @@ const Dashboard = () => {
    return (
       <div className='animate-fadeIn'>
          {/* Welcome Banner */}
-         <section className='relative bg-gradient-to-r from-[#3298C8] to-sky-600 text-white py-16 px-6 overflow-hidden'>
+         <section className='relative bg-linear-to-r from-[#3298C8] to-sky-600 text-white py-16 px-6 overflow-hidden'>
             {/* Decorative Elements */}
             <div className='absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2'></div>
             <div className='absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2'></div>
@@ -90,11 +90,11 @@ const Dashboard = () => {
                         className='group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden'
                      >
                         <div
-                           className={`absolute inset-0 bg-gradient-to-br ${link.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                           className={`absolute inset-0 bg-linear-to-br ${link.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
                         ></div>
                         <div className='relative z-10'>
                            <div
-                              className={`w-12 h-12 bg-gradient-to-br ${link.color} rounded-xl flex items-center justify-center text-white mb-4 group-hover:bg-white/20 transition-colors`}
+                              className={`w-12 h-12 bg-linear-to-br ${link.color} rounded-xl flex items-center justify-center text-white mb-4 group-hover:bg-white/20 transition-colors`}
                            >
                               <FontAwesomeIcon
                                  icon={link.icon}
@@ -140,7 +140,7 @@ const Dashboard = () => {
                               key={event.id}
                               className='flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-sky-50 transition-colors group cursor-pointer'
                            >
-                              <div className='w-14 h-14 bg-gradient-to-br from-[#3298C8] to-sky-500 rounded-xl flex flex-col items-center justify-center text-white'>
+                              <div className='w-14 h-14 bg-linear-to-br from-[#3298C8] to-sky-500 rounded-xl flex flex-col items-center justify-center text-white'>
                                  <span className='text-xs font-medium'>
                                     {event.date.split(" ")[0]}
                                  </span>
@@ -217,7 +217,7 @@ const Dashboard = () => {
 
             {/* Scripture of the Day */}
             <section className='mt-8'>
-               <div className='bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 text-white relative overflow-hidden'>
+               <div className='bg-linear-to-r from-gray-800 to-gray-900 rounded-2xl p-8 text-white relative overflow-hidden'>
                   <div className='absolute top-0 right-0 w-40 h-40 bg-[#3298C8]/20 rounded-full -translate-y-1/2 translate-x-1/2'></div>
                   <div className='relative z-10'>
                      <p className='text-sky-300 text-sm font-semibold uppercase tracking-wider mb-2'>

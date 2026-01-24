@@ -213,7 +213,7 @@ const Profile = () => {
             {/* Header */}
             <div className='mb-8'>
                <div className='flex items-center gap-4 mb-2'>
-                  <div className='w-16 h-16 bg-gradient-to-br from-[#3298C8] to-sky-600 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-200'>
+                  <div className='w-16 h-16 bg-linear-to-br from-[#3298C8] to-sky-600 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-200'>
                      <FontAwesomeIcon
                         icon={faUser}
                         className='text-white text-2xl'
@@ -233,7 +233,7 @@ const Profile = () => {
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
                {/* User Information Card */}
                <div className='bg-white rounded-2xl shadow-lg overflow-hidden'>
-                  <div className='p-6 bg-gradient-to-r from-[#3298C8] to-sky-600'>
+                  <div className='p-6 bg-linear-to-r from-[#3298C8] to-sky-600'>
                      <div className='flex items-center justify-between'>
                         <h2 className='text-lg font-bold text-white flex items-center gap-2'>
                            <FontAwesomeIcon icon={faIdCard} />
@@ -408,7 +408,7 @@ const Profile = () => {
                               <button
                                  onClick={handleSaveProfile}
                                  disabled={isSavingProfile}
-                                 className='flex-1 px-4 py-3 bg-gradient-to-r from-[#3298C8] to-sky-600 text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-70 flex items-center justify-center gap-2'
+                                 className='flex-1 px-4 py-3 bg-linear-to-r from-[#3298C8] to-sky-600 text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-70 flex items-center justify-center gap-2'
                               >
                                  {isSavingProfile ? (
                                     <>
@@ -435,7 +435,7 @@ const Profile = () => {
 
                {/* Password Change Card */}
                <div className='bg-white rounded-2xl shadow-lg overflow-hidden h-fit'>
-                  <div className='p-6 bg-gradient-to-r from-gray-800 to-gray-700'>
+                  <div className='p-6 bg-linear-to-r from-gray-800 to-gray-700'>
                      <h2 className='text-lg font-bold text-white flex items-center gap-2'>
                         <FontAwesomeIcon icon={faLock} />
                         Security

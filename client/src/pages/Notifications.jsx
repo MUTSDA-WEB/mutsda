@@ -15,7 +15,6 @@ import {
    faImage,
    faSmile,
    faTimes,
-   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Notifications = () => {
@@ -355,7 +354,10 @@ const Notifications = () => {
             }`}
          >
             <div className='relative'>
-               <div className='w-12 h-12 bg-gradient-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white font-semibold'>
+               <div
+                  className='w-12 h-12 bg-linear
+               -to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white font-semibold'
+               >
                   {item.avatar}
                </div>
                {activeTab === "messages" && item.online && (
@@ -412,7 +414,7 @@ const Notifications = () => {
                      />
                   </button>
                )}
-               <div className='w-10 h-10 bg-gradient-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white font-semibold'>
+               <div className='w-10 h-10 bg-linear-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white font-semibold'>
                   {activeTab === "community" ? (
                      <FontAwesomeIcon icon={faGlobe} />
                   ) : (
@@ -696,7 +698,7 @@ const Notifications = () => {
                                     }}
                                     className='w-5 h-5 text-[#3298C8] rounded focus:ring-[#3298C8]'
                                  />
-                                 <div className='w-10 h-10 bg-gradient-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white text-sm font-semibold'>
+                                 <div className='w-10 h-10 bg-linear-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white text-sm font-semibold'>
                                     {user.avatar}
                                  </div>
                                  <span className='font-medium text-gray-800'>

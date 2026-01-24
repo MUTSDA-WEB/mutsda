@@ -93,7 +93,7 @@ const Settings = () => {
             {/* Header */}
             <div className='mb-8'>
                <div className='flex items-center gap-4 mb-2'>
-                  <div className='w-12 h-12 bg-gradient-to-br from-[#3298C8] to-sky-600 rounded-xl flex items-center justify-center'>
+                  <div className='w-12 h-12 bg-linear-to-br from-[#3298C8] to-sky-600 rounded-xl flex items-center justify-center'>
                      <FontAwesomeIcon
                         icon={faGear}
                         className='text-white text-xl'
@@ -406,7 +406,7 @@ const Settings = () => {
                                                 ? "bg-white border border-gray-200"
                                                 : theme === "dark"
                                                   ? "bg-gray-800"
-                                                  : "bg-gradient-to-r from-white to-gray-800"
+                                                  : "bg-linear-to-r from-white to-gray-800"
                                           }`}
                                        />
                                        <p className='text-sm font-medium capitalize text-gray-700'>
