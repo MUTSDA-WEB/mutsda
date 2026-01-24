@@ -12,17 +12,25 @@ import {
    getPastEvents,
    getUpcomingEvents,
 } from "./controller/getEvents.controller";
-import { login } from "./controller/auth.controller";
+import {
+   login,
+   updatePassword,
+   updateProfileInfo,
+} from "./controller/auth.controller";
+import verifyToken from "./middleware/verifyToken.middleware";
 
 const App = new Hono();
-App.use("*", async (c, next) => {
-   c.header("Access-Control-Allow-Credentials", "true");
-   c.header("Access-Control-Allow-Origin", "http://localhost:5173");
-   await next();
-});
 
 App.use("*", logger());
-App.use("*", cors());
+App.use(
+   "*",
+   cors({
+      origin: ["http://localhost:5173"],
+      allowMethods: ["POST", "PATCH", "GET", "DELETE"],
+      credentials: true,
+      allowHeaders: ["Content-Type", "Authorization", "X-Custom-Header"],
+   }),
+);
 
 const handleDefaultRoute = (c) =>
    c.html(`
@@ -30,30 +38,24 @@ const handleDefaultRoute = (c) =>
         <body>
         MUTSDA SERVER
         </body>
-        <input type=file name=file/>
     </html>    
 `);
 
 App.get("/", handleDefaultRoute);
 
+// ? EVENT ROUTES
 // fetch upcoming events
 App.get("/event/upcoming", getUpcomingEvents);
 
 // fetch past events
-App.get("/event/past", getAllEvents);
+App.get("/event/past", getPastEvents);
 
 // fetch all events
-App.get("/event/all", getPastEvents);
+App.get("/event/all", getAllEvents);
 
+// ? AUTH ROUTES
 // get available roles
-App.get("/auth/roles", async (c) => {
-   try {
-      const roles = await getUnoccupiedRoles();
-      return c.json({ roles }, 200);
-   } catch (error) {
-      return c.json({ error: "Failed to fetch roles" }, 500);
-   }
-});
+App.get("/auth/roles", getUnoccupiedRoles);
 
 // register new User
 App.post("/auth/register", checkSignupInfo, registerUser);
@@ -67,9 +69,11 @@ App.post(
 );
 
 // update user info route
-App.post("/auth/updateProfile/:id");
+App.patch("/auth/updateProfile/:id", verifyToken, updateProfileInfo);
 
 // update password route
-App.post("/auth/updatePass/:id");
+App.patch("/auth/updatePass/:id", verifyToken, updatePassword);
+
+// ?
 
 export default App;

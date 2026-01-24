@@ -8,12 +8,15 @@ export async function getUpcomingEvents(c) {
          orderBy: {
             eventStartDate: "asc",
          },
-         omit: { updatedAt },
+         omit: { updatedAt: true },
       });
       return (
          upcomingEvents &&
          c.json(
-            { message: "Fetch Events Successful", events: upcomingEvents },
+            {
+               message: "Upcoming Events Fetch Successful",
+               events: upcomingEvents,
+            },
             200,
          )
       );
@@ -27,12 +30,12 @@ export async function getPastEvents(c) {
    try {
       const pastEvents = await client.event.findMany({
          where: { eventStartDate: { lte: now } },
-         omit: updatedAt,
+         omit: { updatedAt: true },
       });
       return (
          pastEvents &&
          c.json(
-            { message: "Past events fetch successful", events: pastEvents },
+            { message: "Past events fetched successfully", events: pastEvents },
             200,
          )
       );
@@ -48,8 +51,15 @@ export async function getPastEvents(c) {
 export async function getAllEvents(c) {
    try {
       const allEvents = await client.event.findMany({
-         omit: { updatedAt },
+         omit: { updatedAt: true },
       });
+      return (
+         allEvents &&
+         c.json(
+            { message: "All events fetched successfully", events: allEvents },
+            200,
+         )
+      );
    } catch (error) {
       console.log(error);
       return c.json(
