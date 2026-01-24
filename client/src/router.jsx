@@ -14,8 +14,11 @@ import Contact from "./pages/ConatctUs";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-// Dashboard imports
+// Layout imports
+import PublicLayout from "./layout/PublicLayout";
 import DashboardLayout from "./layout/DashboardLayout";
+
+// Dashboard page imports
 import Dashboard from "./pages/Dashboard";
 import Notifications from "./pages/Notifications";
 import CreateEvent from "./pages/CreateEvent";
@@ -25,22 +28,25 @@ import Profile from "./pages/Profile";
 const AppRouter = () => {
    return (
       <Routes>
-         <Route path='/' element={<Home />} />
-         <Route path='/aboutUs' element={<About />} />
-         <Route path='/library' element={<Library />} />
-         <Route path='/leaders' element={<Leadership />} />
-         <Route path='/gallery' element={<Gallery />} />
-         <Route path='/donate' element={<Donate />} />
-         <Route path='/contactUs' element={<Contact />} />
-         <Route path='/login' element={<Login />} />
-         <Route path='/signup' element={<Register />} />
-         {/* This is where all the ministries routes go */}
-         <Route path='/ministries'>
-            <Route path='music' element={<MusicMinistry />} />
-            <Route path='cp' element={<CPPage />} />
-            <Route path='biblestudy' element={<BibleStudy />} />
-            <Route path='welfare' element={<Welfare />} />
-            <Route path='sabbathschool' element={<SabbathSchool />} />
+         {/* Public Routes with Header & Footer */}
+         <Route element={<PublicLayout />}>
+            <Route path='/' element={<Home />} />
+            <Route path='/aboutUs' element={<About />} />
+            <Route path='/library' element={<Library />} />
+            <Route path='/leaders' element={<Leadership />} />
+            <Route path='/gallery' element={<Gallery />} />
+            <Route path='/donate' element={<Donate />} />
+            <Route path='/contactUs' element={<Contact />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/signup' element={<Register />} />
+            {/* Ministries routes */}
+            <Route path='/ministries'>
+               <Route path='music' element={<MusicMinistry />} />
+               <Route path='cp' element={<CPPage />} />
+               <Route path='biblestudy' element={<BibleStudy />} />
+               <Route path='welfare' element={<Welfare />} />
+               <Route path='sabbathschool' element={<SabbathSchool />} />
+            </Route>
          </Route>
 
          {/* Dashboard Routes for registered users */}

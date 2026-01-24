@@ -2,19 +2,20 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import DashboardHeader from "./DashboardHeader";
 import DashboardSidebar from "./DashboardSidebar";
+import DashboardFooter from "./DashboardFooter";
 
 const DashboardLayout = ({ username = "User" }) => {
    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
    return (
-      <div className='min-h-screen bg-linear-to-br from-gray-50 to-sky-50/30'>
+      <div className='min-h-screen bg-linear-to-br from-gray-50 to-sky-50/30 flex flex-col'>
          <DashboardHeader
             username={username}
             onMenuClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
          />
 
-         <div className='flex'>
+         <div className='flex flex-1'>
             {/* Sidebar */}
             <DashboardSidebar
                username={username}
@@ -24,14 +25,20 @@ const DashboardLayout = ({ username = "User" }) => {
                setIsMobileOpen={setIsMobileSidebarOpen}
             />
 
-            {/* Main Content */}
-            <main
-               className={`flex-1 transition-all duration-300 ${
+            {/* Main Content + Footer Container */}
+            <div
+               className={`flex-1 flex flex-col transition-all duration-300 ${
                   isSidebarCollapsed ? "lg:ml-20" : "lg:ml-64"
                }`}
             >
-               <Outlet />
-            </main>
+               {/* Main Content */}
+               <main className='flex-1'>
+                  <Outlet />
+               </main>
+
+               {/* Dashboard Footer */}
+               <DashboardFooter />
+            </div>
          </div>
 
          {/* Mobile Sidebar Overlay */}
