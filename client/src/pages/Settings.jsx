@@ -3,11 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
    faGear,
    faBell,
-   faLock,
    faPalette,
-   faGlobe,
-   faToggleOn,
-   faToggleOff,
    faChevronRight,
    faSave,
    faShieldAlt,
@@ -498,11 +494,6 @@ const Settings = () => {
                                  Danger Zone
                               </h3>
                               <div className='space-y-3'>
-                                 <button className='w-full p-4 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors text-left'>
-                                    <span className='font-medium'>
-                                       Change Password
-                                    </span>
-                                 </button>
                                  <button className='w-full p-4 border border-red-200 rounded-xl text-red-600 hover:bg-red-50 transition-colors text-left'>
                                     <span className='font-medium'>
                                        Deactivate Account

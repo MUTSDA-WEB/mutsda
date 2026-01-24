@@ -20,6 +20,7 @@ import Dashboard from "./pages/Dashboard";
 import Notifications from "./pages/Notifications";
 import CreateEvent from "./pages/CreateEvent";
 import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
 
 const AppRouter = () => {
    return (
@@ -48,6 +49,7 @@ const AppRouter = () => {
             <Route path='notifications' element={<Notifications />} />
             <Route path='create-event' element={<CreateEvent />} />
             <Route path='settings' element={<Settings />} />
+            <Route path='profile' element={<Profile />} />
             <Route path='library' element={<Library />} />
             <Route path='about' element={<About />} />
             <Route path='leaders' element={<Leadership />} />

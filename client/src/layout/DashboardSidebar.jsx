@@ -10,9 +10,8 @@ import {
    faCog,
    faChevronLeft,
    faChevronRight,
-   faBars,
 } from "@fortawesome/free-solid-svg-icons";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const DashboardSidebar = ({
    username = "User",
@@ -23,7 +22,6 @@ const DashboardSidebar = ({
 }) => {
    const [isProfileOpen, setIsProfileOpen] = useState(false);
    const profileTimeoutRef = useRef(null);
-   const location = useLocation();
 
    const menuItems = [
       { name: "Dashboard", icon: faHome, to: "/dashboard", end: true },
