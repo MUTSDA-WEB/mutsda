@@ -14,6 +14,10 @@ import Contact from "./pages/ConatctUs";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
+// Dashboard imports
+import DashboardLayout from "./layout/DashboardLayout";
+import Dashboard from "./pages/Dashboard";
+
 const AppRouter = () => {
    return (
       <Routes>
@@ -33,6 +37,24 @@ const AppRouter = () => {
             <Route path='biblestudy' element={<BibleStudy />} />
             <Route path='welfare' element={<Welfare />} />
             <Route path='sabbathschool' element={<SabbathSchool />} />
+         </Route>
+
+         {/* Dashboard Routes for registered users */}
+         <Route path='/dashboard' element={<DashboardLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path='library' element={<Library />} />
+            <Route path='about' element={<About />} />
+            <Route path='leaders' element={<Leadership />} />
+            <Route path='gallery' element={<Gallery />} />
+            <Route path='contact' element={<Contact />} />
+            {/* Dashboard Ministries */}
+            <Route path='ministries'>
+               <Route path='music' element={<MusicMinistry />} />
+               <Route path='cp' element={<CPPage />} />
+               <Route path='biblestudy' element={<BibleStudy />} />
+               <Route path='welfare' element={<Welfare />} />
+               <Route path='sabbathschool' element={<SabbathSchool />} />
+            </Route>
          </Route>
       </Routes>
    );
