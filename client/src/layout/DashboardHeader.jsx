@@ -15,7 +15,7 @@ import {
 import { Link, NavLink, useLocation } from "react-router-dom";
 import churchLogo from "../assets/church_logo.png";
 
-const DashboardHeader = ({ username = "User" }) => {
+const DashboardHeader = ({ username = "User", onMenuClick }) => {
    const [isMinistriesOpen, setIsMinistriesOpen] = useState(false);
    const [isMutsdaOpen, setIsMutsdaOpen] = useState(false);
    const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -90,14 +90,24 @@ const DashboardHeader = ({ username = "User" }) => {
    return (
       <header className='bg-sky-900/10 backdrop-blur-2xl text-sky-900 sticky top-0 z-50 shadow-lg shadow-black/5 border-b border-white/20'>
          <div className='flex items-center justify-between px-6 py-4 max-w-7xl mx-auto'>
-            {/* LOGO */}
-            <Link to='/dashboard'>
-               <img
-                  src={churchLogo}
-                  alt='Church Logo'
-                  className='h-10 w-auto object-contain hover:opacity-80 transition-opacity'
-               />
-            </Link>
+            {/* Sidebar Toggle (Mobile) + LOGO */}
+            <div className='flex items-center gap-4'>
+               {/* Sidebar Toggle for Mobile */}
+               <button
+                  className='lg:hidden p-2 hover:bg-sky-100 rounded-lg transition-colors'
+                  onClick={onMenuClick}
+               >
+                  <FontAwesomeIcon icon={faBars} className='text-lg' />
+               </button>
+
+               <Link to='/dashboard'>
+                  <img
+                     src={churchLogo}
+                     alt='Church Logo'
+                     className='h-10 w-auto object-contain hover:opacity-80 transition-opacity'
+                  />
+               </Link>
+            </div>
 
             {/* DESKTOP NAVIGATION */}
             <nav className='hidden lg:flex gap-8 text-sm font-medium uppercase tracking-wider items-center'>

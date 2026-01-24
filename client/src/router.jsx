@@ -17,6 +17,9 @@ import Register from "./pages/Register";
 // Dashboard imports
 import DashboardLayout from "./layout/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
+import Notifications from "./pages/Notifications";
+import CreateEvent from "./pages/CreateEvent";
+import Settings from "./pages/Settings";
 
 const AppRouter = () => {
    return (
@@ -42,6 +45,9 @@ const AppRouter = () => {
          {/* Dashboard Routes for registered users */}
          <Route path='/dashboard' element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path='notifications' element={<Notifications />} />
+            <Route path='create-event' element={<CreateEvent />} />
+            <Route path='settings' element={<Settings />} />
             <Route path='library' element={<Library />} />
             <Route path='about' element={<About />} />
             <Route path='leaders' element={<Leadership />} />
