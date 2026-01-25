@@ -1,28 +1,22 @@
 {
-  "name": "server",
-  "module": "index.js",
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "scripts": {
-    "spin": "bun --hot index.js",
-    "build": "bun pdeploy && bun index.js",
-    "pdev": "bunx prisma dev",
-    "pmigrate": "prisma migrate dev",
-    "pgen": "bunx prisma generate",
-    "pweb": "bunx prisma studio",
-    "pdeploy": "bunx prisma migrate deploy"
-  },
-  "type": "module",
-  "dependencies": {
-    "@prisma/adapter-pg": "^7.2.0",
-    "@prisma/client": "^7.2.0",
-    "dotsnap": "^1.0.1",
-    "hono": "^4.11.3",
-    "pg": "^8.16.3",
-    "prisma": "^7.2.0"
-  }
+   "name": "server",
+   "module": "index.js",
+   "devDependencies": {
+      "@types/bun": "latest"
+   },
+   "peerDependencies": {
+      "typescript": "^5"
+   },
+   "scripts": {
+      "spin": "bun --hot server.js",
+      "build": "bun pdeploy && bun index.js"
+   },
+   "type": "module",
+   "dependencies": {
+      "@prisma/adapter-pg": "^7.2.0",
+      "@prisma/client": "^7.3.0",
+      "hono": "^4.11.3",
+      "pg": "^8.16.3",
+      "prisma": "^7.3.0"
+   }
 }

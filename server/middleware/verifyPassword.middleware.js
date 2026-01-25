@@ -1,15 +1,15 @@
-import { password as secure } from "bun";
+import checkPassword from "../helpers/checkPassword";
 
 export default async (c, next) => {
-  const { password: hashedPass } = c.get("userInfo");
-  const { password } = c.req.json();
-  if (!secure.verifySync(password, hashedPass, "argon2d")) {
-    return c.json(
-      {
-        error: "Invalid Login credential",
-      },
-      400,
-    );
-  }
-  await next();
+   const { password: hashedPass } = c.get("userInfo");
+   const { password } = c.req.json();
+   if (checkPassword(password, hashedPass)) {
+      return c.json(
+         {
+            error: "Invalid Login credential",
+         },
+         400,
+      );
+   }
+   await next();
 };
