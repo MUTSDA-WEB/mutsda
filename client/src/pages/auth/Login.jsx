@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
    faUser,
@@ -9,8 +9,10 @@ import {
    faChurch,
 } from "@fortawesome/free-solid-svg-icons";
 import useLogin from "../../services/login";
+import { isAxiosError } from "axios";
 
 const Login = () => {
+   const navigate = useNavigate();
    const [formData, setFormData] = useState({
       username: "",
       password: "",
@@ -73,16 +75,20 @@ const Login = () => {
 
       login(formData, {
          onSuccess: (data) => {
+            localStorage.clear();
             localStorage.setItem("token", data?.message);
             console.log("Login successful:", data);
-            // Navigate to dashboard or home
-            return <Navigate to={"/dashboard"} replace />;
+            // Navigate to dashboard
+            navigate("/dashboard", { replace: true });
+            return;
          },
          onError: (error) => {
-            console.log(error);
-            setErrors({
-               general: error?.response?.data?.message || "Login failed",
-            });
+            console.log(error.message);
+            if (isAxiosError(error)) {
+               setErrors({
+                  general: error?.response?.data?.error || "Login failed",
+               });
+            }
          },
       });
    };

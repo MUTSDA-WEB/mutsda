@@ -19,7 +19,7 @@ export function login(c) {
 }
 
 export async function updatePassword(c) {
-   const { oldPassword, newPassword } = c.req.json();
+   const { oldPassword, newPassword } = await c.req.json();
    const id = c.req.param("id");
 
    try {
@@ -46,7 +46,7 @@ export async function updatePassword(c) {
 }
 
 export async function updateProfileInfo(c) {
-   const { username, email, phoneNumber } = c.req.json();
+   const { username, email, phoneNumber } = await c.req.json();
    const id = c.req.param("id");
    try {
       const updatedUser = await client.user.update({

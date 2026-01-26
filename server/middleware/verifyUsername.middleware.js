@@ -1,7 +1,7 @@
 import { getUserDetails } from "../helpers/getUserInfo";
 
 export default async (c, next) => {
-   const { username } = c.req.json();
+   const { username } = await c.req.json();
    const userDetails = await getUserDetails(username);
    if (!userDetails) {
       return c.json(
