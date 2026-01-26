@@ -1,14 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Ax from "../helpers/axios";
 
-function useRegister(data) {
-   return useQuery({
-      queryKey: ["REGISTER_USER"],
-      queryFn: async () => {
-         newUser = await Ax.post("/auth/register", data);
-         return newUser;
+function useRegister() {
+   return useMutation({
+      mutationKey: ["REGISTER_USER"],
+      mutationFn: async (data) => {
+         const response = await Ax.post("/auth/register", data);
+         return response.data;
       },
    });
 }
 
-export default useRegister;
+function useRoles() {
+   return useQuery({
+      queryKey: ["GET_ROLES"],
+      queryFn: async () => {
+         const response = await Ax.get("/auth/roles");
+         return response.data;
+      },
+   });
+}
+
+export { useRegister, useRoles };

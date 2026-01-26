@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import zxcvbn from "zxcvbn";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,6 +13,7 @@ import {
    faUserTag,
    faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
+import { useRegister, useRoles } from "../../services/register";
 
 const Register = () => {
    const navigate = useNavigate();
@@ -27,29 +29,23 @@ const Register = () => {
    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
    const [errors, setErrors] = useState({});
    const [isLoading, setIsLoading] = useState(false);
-   const [availableRoles, setAvailableRoles] = useState([]);
-   const [rolesLoading, setRolesLoading] = useState(true);
 
-   // Fetch available roles on component mount
-   useEffect(() => {
-      const fetchAvailableRoles = async () => {
-         try {
-            const response = await fetch("http://localhost:4554/auth/roles");
-            const data = await response.json();
-            if (response.ok) {
-               setAvailableRoles(data.roles || []);
-            } else {
-               console.error("Failed to fetch roles:", data.error);
-            }
-         } catch (error) {
-            console.error("Error fetching roles:", error);
-         } finally {
-            setRolesLoading(false);
-         }
-      };
+   // Fetch available roles using React Query hook at top level
+   const { data, isLoading: rolesLoading } = useRoles();
+   const availableRoles = data?.roles || [];
 
-      fetchAvailableRoles();
-   }, []);
+   // call the register User hook
+   const {
+      data: newUser,
+      isLoading: loadingReg,
+      isSuccess,
+   } = useRegister({
+      username: formData.username,
+      email: formData.email,
+      phoneNumber: parseInt(formData.phoneNumber.replace(/\D/g, ""), 10),
+      role: formData.role,
+      password: formData.password,
+   });
 
    // Format role name for display (e.g., "churchLeader" -> "Church Leader")
    const formatRoleName = (role) => {
@@ -91,6 +87,9 @@ const Register = () => {
       } else if (formData.password.length > 16) {
          newErrors.password = "Password must not exceed 16 characters";
       }
+
+      if (zxcvbn(formData.password).score < 3)
+         newErrors.password = "Password is weak try a stronger one";
 
       if (!formData.confirmPassword) {
          newErrors.confirmPassword = "Please confirm your password";
@@ -136,41 +135,9 @@ const Register = () => {
       setIsLoading(true);
 
       try {
-         // First, check if the role is still available
-         const rolesResponse = await fetch("http://localhost:4554/auth/roles");
-         const rolesData = await rolesResponse.json();
-         console.log(rolesData);
-         if (!rolesData.roles?.includes(formData.role)) {
-            setErrors({
-               role: "This role is no longer available. Please select another.",
-            });
-            setAvailableRoles(rolesData.roles || []);
-            setFormData((prev) => ({ ...prev, role: "" }));
-            setIsLoading(false);
-            return;
-         }
-
-         // Proceed with registration
-         const response = await fetch("http://localhost:3000/auth/register", {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-               username: formData.username,
-               email: formData.email,
-               phoneNumber: parseInt(
-                  formData.phoneNumber.replace(/\D/g, ""),
-                  10,
-               ),
-               role: formData.role,
-               password: formData.password,
-            }),
-         });
-
          const data = await response.json();
 
-         if (response.ok) {
+         if (isSuccess) {
             // Registration successful - redirect to login
             navigate("/login", {
                state: { message: "Registration successful! Please sign in." },
@@ -357,7 +324,7 @@ const Register = () => {
                         }`}
                               >
                                  <option value=''>-- Select a role --</option>
-                                 {availableRoles.map((role) => (
+                                 {availableRoles?.map((role) => (
                                     <option key={role} value={role}>
                                        {formatRoleName(role)}
                                     </option>
@@ -386,7 +353,7 @@ const Register = () => {
                               {errors.role}
                            </p>
                         )}
-                        {availableRoles.length === 0 && !rolesLoading && (
+                        {availableRoles?.length === 0 && !rolesLoading && (
                            <p className='mt-2 text-sm text-amber-600'>
                               No roles currently available. Please try again
                               later.
@@ -530,11 +497,11 @@ const Register = () => {
                         disabled={
                            isLoading ||
                            rolesLoading ||
-                           availableRoles.length === 0
+                           availableRoles?.length === 0
                         }
                         className={`w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg transition-all duration-300
                   ${
-                     isLoading || rolesLoading || availableRoles.length === 0
+                     isLoading || rolesLoading || availableRoles?.length === 0
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-[#3298C8] hover:bg-sky-600 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
                   }`}
