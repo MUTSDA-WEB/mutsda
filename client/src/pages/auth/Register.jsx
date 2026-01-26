@@ -39,13 +39,8 @@ const Register = () => {
       data: newUser,
       isLoading: loadingReg,
       isSuccess,
-   } = useRegister({
-      username: formData.username,
-      email: formData.email,
-      phoneNumber: parseInt(formData.phoneNumber.replace(/\D/g, ""), 10),
-      role: formData.role,
-      password: formData.password,
-   });
+      mutate: register,
+   } = useRegister();
 
    // Format role name for display (e.g., "churchLeader" -> "Church Leader")
    const formatRoleName = (role) => {
@@ -131,25 +126,29 @@ const Register = () => {
 
       if (!validateForm()) return;
 
-      // Verify role is still available before submitting
-      setIsLoading(true);
-
-      try {
-         const data = await response.json();
-
-         if (isSuccess) {
-            // Registration successful - redirect to login
-            navigate("/login", {
-               state: { message: "Registration successful! Please sign in." },
-            });
-         } else {
-            setErrors({ general: data.error || "Registration failed" });
-         }
-      } catch (error) {
-         setErrors({ general: "Network error. Please try again." });
-      } finally {
-         setIsLoading(false);
-      }
+      register(
+         {
+            username: formData.username,
+            email: formData.email,
+            phoneNumber: parseInt(formData.phoneNumber.replace(/\D/g, ""), 10),
+            role: formData.role,
+            password: formData.password,
+         },
+         {
+            onSuccess: (data) => {
+               console.log(data);
+               navigate("/login", {
+                  state: {
+                     message: "Registration successful! Please sign in.",
+                  },
+               });
+            },
+            onError: (error) => {
+               console.log(error);
+               setErrors({ general: data.error || "Registration failed" });
+            },
+         },
+      );
    };
 
    return (

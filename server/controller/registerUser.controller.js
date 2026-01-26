@@ -1,14 +1,14 @@
 import hashP from "../helpers/hashPassword";
 import client from "../helpers/prismaClient";
-import getUnoccupiedRoles from "../helpers/getAvailableRoles";
+import { getAvailableRolesArray } from "../helpers/getAvailableRoles";
 
 export default async function registerUser(c) {
    const { username, email, password, phoneNumber, role } = c.get("info");
-   const hashedPassword = hashP(password);
-
+   const hashedPassword = await hashP(password);
+   console.log(hashedPassword);
    try {
       // Verify the role is still available before creating user
-      const availableRoles = await getUnoccupiedRoles();
+      const availableRoles = await getAvailableRolesArray();
       if (!availableRoles.includes(role)) {
          return c.json({ error: "Selected role is no longer available" }, 400);
       }
@@ -29,6 +29,7 @@ export default async function registerUser(c) {
          201,
       );
    } catch (error) {
+      console.log(error);
       return c.json({ error: "Failed to register user" }, 500);
    }
 }
