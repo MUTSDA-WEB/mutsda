@@ -6,6 +6,7 @@ export async function getAvailableRolesArray() {
    // 1. Get all roles currently assigned in the database
    const occupiedLeaders = await client.user.findMany({
       select: { role: true },
+      orderBy: { role: "asc" },
    });
    const occupiedRoles = occupiedLeaders.map((leader) => leader.role);
    // 2. Get all possible roles from the Prisma enum
@@ -14,7 +15,7 @@ export async function getAvailableRolesArray() {
    const remainingRoles = allRoles.filter(
       (role) => !occupiedRoles.includes(role),
    );
-   return remainingRoles;
+   return remainingRoles.sort();
 }
 
 // Route handler that returns JSON response

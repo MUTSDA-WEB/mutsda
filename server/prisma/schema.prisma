@@ -14,7 +14,10 @@ model User {
   password    String  @unique
   phoneNumber Int     @map("phone_number")
   role        Role    @unique
+
+  // relations 
   events      Event[] @relation("UserEvents")
+  messages Conversation[] @relation("UserMessages")
 
   @@map("user_table")
 }
@@ -25,6 +28,9 @@ model Event {
   description    String
   category String
   imageURL       String   @map("image_url")
+  eventStartTime DateTime? @map("event_start_time")
+  eventEndTime DateTime? @map("event_end_time")
+  eventLocation String? @map("event_location")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   eventStartDate DateTime @map("event_start_date")
@@ -33,6 +39,36 @@ model Event {
   user           User     @relation("UserEvents", fields: [userId], references: [userID])
 
   @@map("event_table")
+}
+
+
+// Table model for the messages named Converstions
+model Conversation {
+  messageId String @id @default(uuid()) @map("message_id")
+  messageType ConvoType @map("message_type")
+  msgStatus MesageStatus @map("message_status")
+  content String 
+  userId String
+  createdAt DateTime @default(now()) @map("created_at")
+  receiverId String?  
+  
+  // one to many relationship between user and messages 
+  convoUser User @relation("UserMessages", fields: [userId], references: [userID])
+
+  @@map("conversation_table")
+}
+
+enum ConvoType {
+  community @map("COMMUNITY")
+  group @map("GROUP")
+  direct @map("DIRECT")
+  visitor @map("VISITOR")
+}
+
+enum MesageStatus {
+  sent @map("SENT")
+  delivered @map("DELIVERED")
+  read @map("READ")
 }
 
 enum Role {
