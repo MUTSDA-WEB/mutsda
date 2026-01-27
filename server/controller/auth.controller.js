@@ -3,12 +3,16 @@ import { getUserByID } from "../helpers/getUserInfo";
 import checkPassword from "../helpers/checkPassword";
 import hashP from "../helpers/hashPassword";
 import client from "../helpers/prismaClient";
+import { deleteCookie } from "hono/cookie";
 
-export function login(c) {
-   const token = sign(c.get("userInfo"), process.env.JWT_SECRET);
+export async function login(c) {
+   const token = await sign(c.get("userInfo"), process.env.JWT_SECRET, "HS384");
+
+   // * Remove 'Secure' flag for localhost development (no HTTPS)
+   // TODO: Add it back for production
    c.header(
       "Set-Cookie",
-      `auth=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`,
+      `auth=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800`,
    );
    return c.json(
       {
@@ -16,6 +20,20 @@ export function login(c) {
       },
       201,
    );
+}
+
+export async function checkLogin(c) {
+   return c.json({ message: "user is logged in" }, 200);
+}
+
+export function logout(c) {
+   deleteCookie(c, "auth", {
+      path: "/",
+      sameSite: "Lax",
+      httpOnly: true,
+   });
+
+   return c.json({ message: "Successfully logged out" });
 }
 
 export async function updatePassword(c) {

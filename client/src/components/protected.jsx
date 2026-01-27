@@ -1,9 +1,12 @@
 import { Navigate } from "react-router-dom";
+import { useCheckLoggedIn } from "../services/login";
 
 function Protected({ children }) {
-   if (!localStorage.getItem("token")) {
+   const { data, isError, isSuccess } = useCheckLoggedIn();
+   if (!localStorage.getItem("token") || isError) {
       return <Navigate to='/' replace />;
    }
+   console.log(data, isSuccess);
    return children;
 }
 

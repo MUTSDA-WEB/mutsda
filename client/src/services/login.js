@@ -1,5 +1,5 @@
 import Ax from "../helpers/axios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 function useLogin() {
    return useMutation({
@@ -7,6 +7,16 @@ function useLogin() {
       mutationFn: async (data) => {
          const response = await Ax.post("/auth/login", data);
          return response.data;
+      },
+   });
+}
+
+export function useCheckLoggedIn() {
+   return useQuery({
+      queryKey: ["CHECK_LOGIN"],
+      queryFn: async () => {
+         const loggedIn = await Ax.get("/auth/check/login");
+         return loggedIn.data;
       },
    });
 }

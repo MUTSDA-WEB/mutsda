@@ -14,7 +14,9 @@ import {
    getUpcomingEvents,
 } from "./controller/getEvents.controller";
 import {
+   checkLogin,
    login,
+   logout,
    updatePassword,
    updateProfileInfo,
 } from "./controller/auth.controller";
@@ -71,6 +73,12 @@ App.post(
    verifyPasswordMiddleware,
    login,
 );
+
+// user logout route
+App.post("/auth/logout", verifyToken, logout);
+
+// user logged in check
+App.get("/auth/check/login", verifyToken, checkLogin);
 
 // update user info route
 App.patch("/auth/updateProfile/:id", verifyToken, updateProfileInfo);

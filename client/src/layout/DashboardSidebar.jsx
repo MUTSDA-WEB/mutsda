@@ -12,7 +12,9 @@ import {
    faChevronLeft,
    faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useLogout } from "../services/logout";
+import LogoutConfirmModal from "../components/LogoutConfirmModal";
 
 const DashboardSidebar = ({
    username = "User",
@@ -22,7 +24,10 @@ const DashboardSidebar = ({
    setIsMobileOpen,
 }) => {
    const [isProfileOpen, setIsProfileOpen] = useState(false);
+   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
    const profileTimeoutRef = useRef(null);
+   const navigate = useNavigate();
+   const { mutate: logout, isPending: isLoggingOut } = useLogout();
 
    const menuItems = [
       { name: "Dashboard", icon: faHome, to: "/dashboard", end: true },
@@ -53,8 +58,20 @@ const DashboardSidebar = ({
    };
 
    const handleLogout = () => {
-      console.log("Logging out...");
-      // Add logout logic here
+      setIsLogoutModalOpen(true);
+      setIsProfileOpen(false);
+   };
+
+   const confirmLogout = () => {
+      logout(undefined, {
+         onSuccess: () => {
+            localStorage.clear();
+            navigate("/login", { replace: true });
+         },
+         onError: (error) => {
+            console.error("Logout failed:", error);
+         },
+      });
    };
 
    return (
@@ -226,6 +243,14 @@ const DashboardSidebar = ({
          >
             <FontAwesomeIcon icon={faBars} />
          </button>
+
+         {/* Logout Confirmation Modal */}
+         <LogoutConfirmModal
+            isOpen={isLogoutModalOpen}
+            onClose={() => setIsLogoutModalOpen(false)}
+            onConfirm={confirmLogout}
+            isLoading={isLoggingOut}
+         />
       </>
    );
 };
