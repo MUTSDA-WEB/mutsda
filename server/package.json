@@ -9,7 +9,12 @@
    },
    "scripts": {
       "spin": "bun --hot server.js",
-      "build": "bun pdeploy && bun index.js"
+      "build": "bun pdeploy && bun index.js",
+      "pdev": "bunx prisma dev",
+      "pmigrate": "bunx --bun prisma migrate dev",
+      "pgen": "bunx prisma generate",
+      "pweb": "bunx --bun prisma studio",
+      "pdeploy": "bunx prisma migrate deploy"
    },
    "type": "module",
    "dependencies": {
