@@ -18,6 +18,7 @@ model User {
   // relations 
   events      Event[] @relation("UserEvents")
   messages Conversation[] @relation("UserMessages")
+  groups GroupMember[] @relation("UserGroups")
 
   @@map("user_table")
 }
@@ -51,11 +52,32 @@ model Conversation {
   userId String
   createdAt DateTime @default(now()) @map("created_at")
   receiverId String?  
+  groupId String? 
   
   // one to many relationship between user and messages 
   convoUser User @relation("UserMessages", fields: [userId], references: [userID])
 
   @@map("conversation_table")
+}
+
+model Group {
+  groupId String @id @default(uuid()) @map("group_id")
+  groupName String @map("group_name") @unique
+  groupMembers GroupMember[] 
+
+  @@map("group_table")
+}
+
+model GroupMember {
+  id      String @id @default(uuid())
+  userId  String
+  groupId String
+  role    String? // admin, member, moderator
+
+  user  User  @relation("UserGroups", fields: [userId], references: [userID])
+  group Group @relation(fields: [groupId], references: [groupId])
+
+  @@unique([userId, groupId])
 }
 
 enum ConvoType {
