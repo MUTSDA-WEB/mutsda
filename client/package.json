@@ -21,6 +21,7 @@
       "client": ".",
       "react": "^19.0.0",
       "react-dom": "^19.0.0",
+      "zustand": "^5.0.10",
       "zxcvbn": "^4.4.2"
    },
    "devDependencies": {
