@@ -46,7 +46,7 @@ model Event {
 model Conversation {
   messageId String @id @default(uuid()) @map("message_id")
   messageType ConvoType @map("message_type")
-  msgStatus MesageStatus @map("message_status")
+  msgStatus MessageStatus @map("message_status")
   content String 
   userId String
   createdAt DateTime @default(now()) @map("created_at")
@@ -65,7 +65,7 @@ enum ConvoType {
   visitor @map("VISITOR")
 }
 
-enum MesageStatus {
+enum MessageStatus {
   sent @map("SENT")
   delivered @map("DELIVERED")
   read @map("READ")
