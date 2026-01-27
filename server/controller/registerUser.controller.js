@@ -5,7 +5,6 @@ import { getAvailableRolesArray } from "../helpers/getAvailableRoles";
 export default async function registerUser(c) {
    const { username, email, password, phoneNumber, role } = c.get("info");
    const hashedPassword = await hashP(password);
-   console.log(hashedPassword);
    try {
       // Verify the role is still available before creating user
       const availableRoles = await getAvailableRolesArray();
@@ -13,13 +12,14 @@ export default async function registerUser(c) {
          return c.json({ error: "Selected role is no longer available" }, 400);
       }
 
+      const p = parseInt(phoneNumber, 10);
       // accessing the db so as to save
       const newUser = await client.user.create({
          data: {
             email,
             userName: username,
             password: hashedPassword,
-            phoneNumber: parseInt(phoneNumber, 10),
+            phoneNumber: p,
             role,
          },
       });
