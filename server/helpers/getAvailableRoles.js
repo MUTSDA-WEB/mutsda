@@ -1,5 +1,5 @@
 import client from "./prismaClient";
-import { $Enums } from "../../prisma/generated/index.js";
+import { $Enums } from "../prisma/generated/index.js";
 
 // Helper function that returns the array of unoccupied roles
 export async function getAvailableRolesArray() {
