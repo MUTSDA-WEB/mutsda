@@ -12,7 +12,7 @@ import {
    CreateGroupModal,
    EmptyState,
    VisitorMessages,
-} from "../admin/chat/index";
+} from "../../components/chat/index";
 
 const Notifications = () => {
    const [activeTab, setActiveTab] = useState("messages");
