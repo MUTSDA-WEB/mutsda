@@ -7,6 +7,7 @@ export default async (c, next) => {
       userID,
       role,
       userName,
+      phoneNumber,
    } = c.get("userInfo");
    const { password } = await c.req.json();
    if (!(await checkPassword(password, hashedPass))) {
@@ -17,6 +18,6 @@ export default async (c, next) => {
          400,
       );
    }
-   c.set("userInfo", { email, userID, userName, role });
+   c.set("userInfo", { email, userID, userName, role, phoneNumber });
    await next();
 };
