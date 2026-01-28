@@ -12,6 +12,8 @@ import {
    faChevronLeft,
    faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+
+import PropTypes from "prop-types";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLogout } from "../services/logout";
 import LogoutConfirmModal from "../components/LogoutConfirmModal";
@@ -160,7 +162,7 @@ const DashboardSidebar = ({
 
             {/* Profile Section at Bottom */}
             <div
-               className={`p-4 border-t border-white/10 ${isCollapsed ? "px-3" : ""}`}
+               className={`p-4 border-t w-fit border-white/10 ${isCollapsed ? "px-3 " : ""}`}
             >
                <div
                   className='relative'
@@ -193,10 +195,20 @@ const DashboardSidebar = ({
                   {/* Profile Dropdown - Rises up */}
                   <div
                      className={`
-                        absolute bottom-full left-0 mb-2 w-full bg-gray-800 rounded-xl shadow-xl overflow-hidden
+                        absolute bottom-full left-0 mb-2 bg-gray-800 rounded-xl shadow-xl overflow-hidden
                         transition-all duration-300 origin-bottom
-                        ${isProfileOpen ? "opacity-100 scale-y-100 visible" : "opacity-0 scale-y-0 invisible"}
-                        ${isCollapsed ? "left-full ml-2 bottom-0 mb-0 w-48" : ""}
+                        /* Logic for Width and Positioning */
+                        ${
+                           isCollapsed
+                              ? "left-full ml-4 bottom-0 mb-0 w-max min-w-45"
+                              : "w-full"
+                        }
+                        /* Visibility Logic */
+                        ${
+                           isProfileOpen
+                              ? "opacity-100 scale-y-100 visible"
+                              : "opacity-0 scale-y-0 invisible"
+                        }
                      `}
                   >
                      <NavLink
@@ -205,20 +217,25 @@ const DashboardSidebar = ({
                            setIsProfileOpen(false);
                            setIsMobileOpen(false);
                         }}
-                        className='flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors'
+                        className='flex w-full items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors'
                      >
                         <FontAwesomeIcon
                            icon={faCog}
-                           className='text-gray-400'
+                           className='text-gray-400 w-5'
                         />
-                        <span className='text-sm'>Profile Settings</span>
+                        <span className='text-sm font-medium whitespace-nowrap'>
+                           Profile Settings
+                        </span>
                      </NavLink>
+
                      <button
                         onClick={handleLogout}
                         className='w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors'
                      >
-                        <FontAwesomeIcon icon={faSignOutAlt} />
-                        <span className='text-sm'>Log Out</span>
+                        <FontAwesomeIcon icon={faSignOutAlt} className='w-5' />
+                        <span className='text-sm font-medium whitespace-nowrap'>
+                           Log Out
+                        </span>
                      </button>
                   </div>
                </div>
@@ -253,6 +270,14 @@ const DashboardSidebar = ({
          />
       </>
    );
+};
+
+DashboardSidebar.propTypes = {
+   username: PropTypes.string,
+   isCollapsed: PropTypes.bool.isRequired,
+   setIsCollapsed: PropTypes.func.isRequired,
+   isMobileOpen: PropTypes.bool.isRequired,
+   setIsMobileOpen: PropTypes.func.isRequired,
 };
 
 export default DashboardSidebar;

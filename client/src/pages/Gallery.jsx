@@ -177,7 +177,7 @@ const Gallery = () => {
                   Our Gallery
                </h1>
                <p className='text-xl md:text-2xl italic font-light'>
-                  Cherishing memories of God's work in our community
+                  Cherishing memories of God&apos;s work in our community
                </p>
             </div>
          </section>
@@ -274,7 +274,7 @@ const Gallery = () => {
                   Have Photos to Share?
                </h3>
                <p className='text-sky-100 max-w-2xl mx-auto mb-6'>
-                  If you have photos from church events that you'd like to add
+                  If you have photos from church events that you&apos;d like to add
                   to our gallery, please contact the Communication Ministry.
                </p>
                <a
