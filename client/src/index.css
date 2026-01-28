@@ -11,6 +11,12 @@
    -moz-osx-font-smoothing: grayscale;
 }
 
+/* Prevent horizontal scroll on mobile */
+html,
+body {
+   overflow-x: hidden;
+}
+
 /* Custom Animations */
 @keyframes bounce-slow {
    0%,
@@ -31,10 +37,25 @@
    }
 }
 
+@keyframes scaleIn {
+   0% {
+      opacity: 0;
+      transform: scale(0.9);
+   }
+   100% {
+      opacity: 1;
+      transform: scale(1);
+   }
+}
+
 .animate-bounce-slow {
    animation: bounce-slow 2s ease-in-out infinite;
 }
 
 .animate-slow-zoom {
    animation: slow-zoom 20s ease-in-out infinite alternate;
+}
+
+.animate-scaleIn {
+   animation: scaleIn 0.3s ease-out forwards;
 }

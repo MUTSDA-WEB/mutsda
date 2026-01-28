@@ -3,12 +3,16 @@ import { getUserByID } from "../helpers/getUserInfo";
 import checkPassword from "../helpers/checkPassword";
 import hashP from "../helpers/hashPassword";
 import client from "../helpers/prismaClient";
+import { deleteCookie } from "hono/cookie";
 
-export function login(c) {
-   const token = sign(c.get("userInfo"), process.env.JWT_SECRET);
+export async function login(c) {
+   const token = await sign(c.get("userInfo"), process.env.JWT_SECRET, "HS384");
+
+   // * Remove 'Secure' flag for localhost development (no HTTPS)
+   // TODO: Add it back for production
    c.header(
       "Set-Cookie",
-      `auth=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`,
+      `auth=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800`,
    );
    return c.json(
       {
@@ -18,8 +22,24 @@ export function login(c) {
    );
 }
 
+export async function checkLogin(c) {
+   const user = c.get("jwtPayload");
+   console.log(user);
+   return c.json({ message: "user is logged in", user }, 200);
+}
+
+export function logout(c) {
+   deleteCookie(c, "auth", {
+      path: "/",
+      sameSite: "Lax",
+      httpOnly: true,
+   });
+
+   return c.json({ message: "Successfully logged out" });
+}
+
 export async function updatePassword(c) {
-   const { oldPassword, newPassword } = c.req.json();
+   const { oldPassword, newPassword } = await c.req.json();
    const id = c.req.param("id");
 
    try {
@@ -35,10 +55,13 @@ export async function updatePassword(c) {
          data: { password: newHashedPass },
       });
 
-      return c.json({
-         message: "Password update successfully",
-         user: updatedUser,
-      });
+      return c.json(
+         {
+            message: "Password update successfully",
+            user: updatedUser,
+         },
+         201,
+      );
    } catch (error) {
       console.log(error);
       return c.json({ error: "Server error: Failed to update password!" }, 500);
@@ -46,7 +69,7 @@ export async function updatePassword(c) {
 }
 
 export async function updateProfileInfo(c) {
-   const { username, email, phoneNumber } = c.req.json();
+   const { username, email, phoneNumber } = await c.req.json();
    const id = c.req.param("id");
    try {
       const updatedUser = await client.user.update({

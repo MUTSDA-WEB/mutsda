@@ -23,7 +23,7 @@ const DashboardFooter = () => {
                      MUTSDA Family
                   </h3>
                   <p className='text-sky-300 text-sm italic'>
-                     "We love you, we value you, we cherish you"
+                     "We love you, we value you, we cherish you & we mean it"
                   </p>
                </div>
 

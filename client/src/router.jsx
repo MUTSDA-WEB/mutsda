@@ -10,20 +10,21 @@ import SabbathSchool from "./pages/SabbathSchool";
 import BibleStudy from "./pages/BibleStudy";
 import Welfare from "./pages/Welfare";
 import Donate from "./pages/Donate";
-import Contact from "./pages/ConatctUs";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Contact from "./pages/ContactUs";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 
 // Layout imports
 import PublicLayout from "./layout/PublicLayout";
 import DashboardLayout from "./layout/DashboardLayout";
 
 // Dashboard page imports
-import Dashboard from "./pages/Dashboard";
-import Notifications from "./pages/Notifications";
-import CreateEvent from "./pages/CreateEvent";
-import Settings from "./pages/Settings";
-import Profile from "./pages/Profile";
+import Dashboard from "./pages/admin/Dashboard";
+import Notifications from "./pages/admin/Notifications";
+import CreateEvent from "./pages/admin/CreateEvent";
+import Settings from "./pages/admin/Settings";
+import Profile from "./pages/admin/Profile";
+import Protected from "./components/protected";
 
 const AppRouter = () => {
    return (
@@ -50,7 +51,14 @@ const AppRouter = () => {
          </Route>
 
          {/* Dashboard Routes for registered users */}
-         <Route path='/dashboard' element={<DashboardLayout />}>
+         <Route
+            path='/dashboard'
+            element={
+               <Protected>
+                  <DashboardLayout />
+               </Protected>
+            }
+         >
             <Route index element={<Dashboard />} />
             <Route path='notifications' element={<Notifications />} />
             <Route path='create-event' element={<CreateEvent />} />

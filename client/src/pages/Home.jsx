@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
    faClock,
@@ -5,8 +6,44 @@ import {
    faPhone,
    faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
+import EventDetailsModal from "../components/EventDetailsModal";
 
 const Home = () => {
+   const [selectedEvent, setSelectedEvent] = useState(null);
+
+   const events = [
+      {
+         id: 1,
+         date: "JAN 25",
+         title: "Youth Bible Camp",
+         img: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800&auto=format&fit=crop",
+         desc: "A weekend of spiritual growth and outdoor fellowship. Join us for an unforgettable experience of Bible study, worship, nature walks, and bonding with fellow youth members.",
+         time: "8:00 AM - 6:00 PM",
+         location: "MUT Grounds",
+         attendees: "45",
+      },
+      {
+         id: 2,
+         date: "FEB 14",
+         title: "Music Concert",
+         img: "https://images.unsplash.com/photo-1514525253361-bee87184919a?q=80&w=800&auto=format&fit=crop",
+         desc: "A special night of praise featuring our main church choir. Experience uplifting performances, special guest artists, and a celebration of faith through music.",
+         time: "6:00 PM - 9:00 PM",
+         location: "Main Hall",
+         attendees: "120",
+      },
+      {
+         id: 3,
+         date: "MAR 02",
+         title: "Community Outreach",
+         img: "https://images.unsplash.com/photo-1469571483399-af239969ef4d?q=80&w=800&auto=format&fit=crop",
+         desc: "Helping local families with food and medical resources. Be part of this life-changing initiative as we serve our community with love and compassion.",
+         time: "9:00 AM - 4:00 PM",
+         location: "Murang'a Town",
+         attendees: "30",
+      },
+   ];
+
    return (
       <div className='flex flex-col animate-fadeIn'>
          {/* 1. HERO SECTION */}
@@ -103,29 +140,7 @@ const Home = () => {
                </div>
 
                <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-                  {[
-                     {
-                        id: 1,
-                        date: "JAN 25",
-                        title: "Youth Bible Camp",
-                        img: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800&auto=format&fit=crop",
-                        desc: "A weekend of spiritual growth and outdoor fellowship.",
-                     },
-                     {
-                        id: 2,
-                        date: "FEB 14",
-                        title: "Music Concert",
-                        img: "https://images.unsplash.com/photo-1514525253361-bee87184919a?q=80&w=800&auto=format&fit=crop",
-                        desc: "A special night of praise featuring our main church choir.",
-                     },
-                     {
-                        id: 3,
-                        date: "MAR 02",
-                        title: "Community Outreach",
-                        img: "https://images.unsplash.com/photo-1469571483399-af239969ef4d?q=80&w=800&auto=format&fit=crop",
-                        desc: "Helping local families with food and medical resources.",
-                     },
-                  ].map((event) => (
+                  {events.map((event) => (
                      <div
                         key={event.id}
                         className='group relative bg-white rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500'
@@ -157,7 +172,10 @@ const Home = () => {
                               {event.desc}
                            </p>
                            <div className='pt-4 flex items-center justify-between'>
-                              <button className='text-[#3298C8] font-bold text-sm hover:underline'>
+                              <button
+                                 onClick={() => setSelectedEvent(event)}
+                                 className='text-[#3298C8] font-bold text-sm hover:underline'
+                              >
                                  Event Details →
                               </button>
                               <div className='flex -space-x-2'>
@@ -170,7 +188,7 @@ const Home = () => {
                                     />
                                  ))}
                                  <div className='w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[8px] font-bold text-gray-400'>
-                                    +12
+                                    +{event.attendees}
                                  </div>
                               </div>
                            </div>
@@ -178,6 +196,13 @@ const Home = () => {
                      </div>
                   ))}
                </div>
+
+               {/* Event Details Modal */}
+               <EventDetailsModal
+                  event={selectedEvent}
+                  isOpen={!!selectedEvent}
+                  onClose={() => setSelectedEvent(null)}
+               />
             </section>
 
             {/* Redesigned 3. OUR SERVICES */}
@@ -334,6 +359,28 @@ const Home = () => {
                               className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-sky-400 outline-none transition-all placeholder:text-gray-300'
                            />
                         </div>
+                        <div className='grid grid-cols-2 gap-4'>
+                           <div className='space-y-1'>
+                              <label className='text-xs font-bold text-gray-400 uppercase ml-1'>
+                                 Phone Number
+                              </label>
+                              <input
+                                 type='tel'
+                                 placeholder='+254...'
+                                 className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-sky-400 outline-none transition-all placeholder:text-gray-300'
+                              />
+                           </div>
+                           <div className='space-y-1'>
+                              <label className='text-xs font-bold text-gray-400 uppercase ml-1'>
+                                 Email
+                              </label>
+                              <input
+                                 type='email'
+                                 placeholder='email@example.com'
+                                 className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-sky-400 outline-none transition-all placeholder:text-gray-300'
+                              />
+                           </div>
+                        </div>
                         <div className='space-y-1'>
                            <label className='text-xs font-bold text-gray-400 uppercase ml-1'>
                               Your Message
@@ -385,8 +432,18 @@ const Home = () => {
                               Phone Number
                            </label>
                            <input
-                              type='text'
+                              type='tel'
                               placeholder='+254...'
+                              className='w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-amber-500 outline-none transition-all placeholder:text-gray-600'
+                           />
+                        </div>
+                        <div className='space-y-1 text-gray-400'>
+                           <label className='text-xs font-bold uppercase ml-1'>
+                              Email Address
+                           </label>
+                           <input
+                              type='email'
+                              placeholder='email@example.com'
                               className='w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-amber-500 outline-none transition-all placeholder:text-gray-600'
                            />
                         </div>

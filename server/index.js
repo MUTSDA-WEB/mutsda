@@ -14,11 +14,24 @@ import {
    getUpcomingEvents,
 } from "./controller/getEvents.controller";
 import {
+   checkLogin,
    login,
+   logout,
    updatePassword,
    updateProfileInfo,
 } from "./controller/auth.controller";
 import verifyToken from "./middleware/verifyToken.middleware";
+import {
+   saveLeaderMessage,
+   saveMemberMessage,
+   updateMessageStatus,
+} from "./controller/addMessage.controller";
+import {
+   getCommunityMessages,
+   getDirectMessages,
+   getGroupMessages,
+} from "./controller/getMessage";
+import { getUserGroups } from "./controller/group.contoller";
 
 const App = new Hono();
 
@@ -72,12 +85,42 @@ App.post(
    login,
 );
 
+// user logout route
+App.post("/auth/logout", verifyToken, logout);
+
+// user logged in check
+App.get("/auth/check/login", verifyToken, checkLogin);
+
 // update user info route
 App.patch("/auth/updateProfile/:id", verifyToken, updateProfileInfo);
 
 // update password route
 App.patch("/auth/updatePass/:id", verifyToken, updatePassword);
 
-// ?
+// ? MESSAGE ROUTES
+//save Leader Message route
+App.post("/message/save/leader", verifyToken, saveLeaderMessage);
+
+// save visitor Message route
+App.post("/message/save/visitor/:id", saveMemberMessage);
+
+// get Leader DMs route
+App.get("/message/look/DMs/:id", verifyToken, getDirectMessages);
+
+// get Leader group messages route
+App.get("/messages/look/group/:id", verifyToken, getGroupMessages);
+
+// get community messages route
+App.get("/message/look/community", verifyToken, getCommunityMessages);
+
+// update message status route
+App.patch("/message/edit/:id", verifyToken, updateMessageStatus);
+
+// ? Group routes
+// get user Groups route
+App.get("/group/look/:id", verifyToken, getUserGroups);
+
+// create group route
+App.post("/group/create", verifyToken, createGrou);
 
 export default App;
