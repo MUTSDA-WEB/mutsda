@@ -209,15 +209,26 @@ const Contact = () => {
                   <div className='absolute top-0 right-0 w-32 h-32 bg-sky-50 rounded-bl-[5rem] z-0'></div>
 
                   <form className='relative z-10 space-y-6'>
+                     <div className='space-y-2'>
+                        <label className='text-xs font-bold uppercase text-gray-400 ml-2'>
+                           Your Name
+                        </label>
+                        <input
+                           type='text'
+                           className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] transition-all outline-none'
+                           placeholder='John Doe'
+                        />
+                     </div>
+
                      <div className='grid md:grid-cols-2 gap-6'>
                         <div className='space-y-2'>
                            <label className='text-xs font-bold uppercase text-gray-400 ml-2'>
-                              Your Name
+                              Phone Number
                            </label>
                            <input
-                              type='text'
+                              type='tel'
                               className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] transition-all outline-none'
-                              placeholder='John Doe'
+                              placeholder='+254...'
                            />
                         </div>
                         <div className='space-y-2'>

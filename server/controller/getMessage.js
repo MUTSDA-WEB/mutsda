@@ -1,4 +1,4 @@
-// Todo: write controllers to get, various message types
+// // Todo: write controllers to get, various message types
 
 import client from "../helpers/prismaClient";
 
@@ -6,6 +6,7 @@ export async function getVisitorMessages(c) {
    try {
       const visitorMsg = await client.conversation.findMany({
          where: { messageType: { equals: "visitor" } },
+         take: 20,
       });
       return c.json(
          { message: "successfully fetched visitors messages", visitorMsg },
@@ -37,7 +38,6 @@ export async function getCommunityMessages(c) {
 }
 
 export async function getGroupMessages(c) {
-   const { userId } = await c.req.json();
    try {
       const DMs = await client.conversation.findMany({
          where: {
