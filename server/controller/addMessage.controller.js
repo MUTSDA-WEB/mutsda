@@ -34,8 +34,8 @@ export async function saveMemberMessage(c) {
    // * all Visitor message will register with the "USER" role
    const userID = "ce15934d-0de4-47a4-a38c-c901c65d7087";
 
-   const { name, phoneNumber, email, message, ...c } = await c.req.json();
-   const msg = `name_${name}_phonenumber_${phoneNumber}_email_${email}_topic_${c.topic ? c.topic : ""}_message_${message}`;
+   const { name, phoneNumber, email, message, ...m } = await c.req.json();
+   const msg = `name_${name}_phonenumber_${phoneNumber}_email_${email}_topic_${m.topic ? m.topic : ""}_message_${message}`;
    try {
       const savedMessage = await client.conversation.create({
          data: {

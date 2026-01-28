@@ -59,13 +59,13 @@ model Event {
   description    String
   category       String
   imageURL       String   @map("image_url")
-  eventStartTime DateTime? @map("event_start_time")
+  eventStartTime DateTime @map("event_start_time")
   eventEndTime   DateTime? @map("event_end_time")
   eventLocation  String?  @map("event_location")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   eventStartDate DateTime @map("event_start_date")
-  eventEndDate   DateTime @map("event_end_date")
+  eventEndDate   DateTime? @map("event_end_date")
   userId         String
 }
 ```
@@ -79,13 +79,13 @@ model Event {
 | `description`    | String   | Required       | Event description                          |
 | `category`       | String   | Required       | Event category (e.g., worship, social)     |
 | `imageURL`       | String   | Required       | URL to event image                         |
-| `eventStartTime` | DateTime | Optional       | Time the event starts                      |
+| `eventStartTime` | DateTime | Required       | Time the event starts                      |
 | `eventEndTime`   | DateTime | Optional       | Time the event ends                        |
 | `eventLocation`  | String   | Optional       | Location of the event                      |
 | `createdAt`      | DateTime | Auto-generated | Timestamp when event was created           |
 | `updatedAt`      | DateTime | Auto-updated   | Timestamp when event was last modified     |
 | `eventStartDate` | DateTime | Required       | Date the event starts                      |
-| `eventEndDate`   | DateTime | Required       | Date the event ends                        |
+| `eventEndDate`   | DateTime | Optional       | Date the event ends                        |
 | `userId`         | String   | FK             | Foreign key referencing the creator (User) |
 
 #### Relations
@@ -135,15 +135,19 @@ model Group {
   groupId      String        @id @default(uuid()) @map("group_id")
   groupName    String        @map("group_name") @unique
   groupMembers GroupMember[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now())
 }
 ```
 
 #### Fields
 
-| Field       | Type   | Constraints | Description                      |
-| ----------- | ------ | ----------- | -------------------------------- |
-| `groupId`   | String | PK, UUID    | Primary identifier for the group |
-| `groupName` | String | Unique      | Name of the group                |
+| Field       | Type     | Constraints    | Description                           |
+| ----------- | -------- | -------------- | ------------------------------------- |
+| `groupId`   | String   | PK, UUID       | Primary identifier for the group      |
+| `groupName` | String   | Unique         | Name of the group                     |
+| `createdAt` | DateTime | Auto-generated | Timestamp when group was created      |
+| `updatedAt` | DateTime | Auto-generated | Timestamp when group was last updated |
 
 #### Relations
 
@@ -155,10 +159,10 @@ model Group {
 
 ```prisma
 model GroupMember {
-  id      String  @id @default(uuid())
+  id      String    @id @default(uuid())
   userId  String
   groupId String
-  role    String? // admin, member, moderator
+  role    GroupRole @default(member)  // admin, member
 
   @@unique([userId, groupId])
 }
@@ -166,12 +170,12 @@ model GroupMember {
 
 #### Fields
 
-| Field     | Type   | Constraints | Description                                      |
-| --------- | ------ | ----------- | ------------------------------------------------ |
-| `id`      | String | PK, UUID    | Primary identifier for the membership record     |
-| `userId`  | String | FK          | Foreign key referencing the User                 |
-| `groupId` | String | FK          | Foreign key referencing the Group                |
-| `role`    | String | Optional    | Role within the group (admin, member, moderator) |
+| Field     | Type            | Constraints    | Description                                  |
+| --------- | --------------- | -------------- | -------------------------------------------- |
+| `id`      | String          | PK, UUID       | Primary identifier for the membership record |
+| `userId`  | String          | FK             | Foreign key referencing the User             |
+| `groupId` | String          | FK             | Foreign key referencing the Group            |
+| `role`    | GroupRole(Enum) | Default:member | Role within the group (admin, member)        |
 
 #### Constraints
 
@@ -311,6 +315,15 @@ Group.groupMembers → GroupMember[] (One group can have many membership records
 
 ## Enums
 
+### GroupRole
+
+Defines the role of a user within a group:
+
+| Value    | Database Value | Description                    |
+| -------- | -------------- | ------------------------------ |
+| `admin`  | ADMIN          | Group administrator            |
+| `member` | MEMBER         | Regular group member (default) |
+
 ### ConvoType
 
 Defines the type of conversation:
@@ -336,28 +349,28 @@ Tracks the delivery status of messages:
 
 Defines user roles within the church organization:
 
-| Value            | Database Value | Description                     |
-| ---------------- | -------------- | ------------------------------- |
-| `user`           | USER           | Regular church member           |
-| `admin1`         | ADMIN1         | Primary administrator           |
-| `admin2`         | ADMIN2         | Secondary administrator         |
-| `elder1`         | ELDER1         | First elder                     |
-| `elder2`         | ELDER2         | Second elder                    |
-| `elder3`         | ELDER3         | Third elder                     |
-| `churchLeader`   | CHURCHLEADER   | Church leader                   |
-| `headDeacon`     | HEADDEACON     | Head deacon                     |
-| `headDeaconness` | HEADDEACONNESS | Head deaconess                  |
-| `sabbathSchool`  | SABBATHSCHOOL  | Sabbath school coordinator      |
-| `treasurer`      | TREASURER      | Church treasurer                |
-| `clerk`          | CLERK          | Church clerk                    |
-| `alo`            | ALO            | Adventist Laymen's Organization |
-| `amo`            | AMO            | Adventist Men's Organization    |
-| `prophecy`       | PROPHECY       | Prophecy ministry leader        |
-| `stewardship`    | STEWARDSHIP    | Stewardship coordinator         |
-| `music`          | MUSIC          | Music ministry leader           |
-| `welfare`        | WELFARE        | Welfare coordinator             |
-| `development`    | DEVELOPMENT    | Development coordinator         |
-| `communication`  | COMMUNICATION  | Communication coordinator       |
+| Value            | Database Value | Description                   |
+| ---------------- | -------------- | ----------------------------- |
+| `user`           | USER           | Regular church member         |
+| `admin1`         | ADMIN1         | Primary administrator         |
+| `admin2`         | ADMIN2         | Secondary administrator       |
+| `elder1`         | ELDER1         | First elder                   |
+| `elder2`         | ELDER2         | Second elder                  |
+| `elder3`         | ELDER3         | Third elder                   |
+| `churchLeader`   | CHURCHLEADER   | Church leader                 |
+| `headDeacon`     | HEADDEACON     | Head deacon                   |
+| `headDeaconness` | HEADDEACONNESS | Head deaconess                |
+| `sabbathSchool`  | SABBATHSCHOOL  | Sabbath school Supretendant   |
+| `treasurer`      | TREASURER      | Church treasurer              |
+| `clerk`          | CLERK          | Church clerk                  |
+| `alo`            | ALO            | Adventist Ladies Organization |
+| `amo`            | AMO            | Adventist Men Organization    |
+| `prophecy`       | PROPHECY       | Prophecy ministry leader      |
+| `stewardship`    | STEWARDSHIP    | Stewardship coordinator       |
+| `music`          | MUSIC          | Music ministry leader         |
+| `welfare`        | WELFARE        | Welfare coordinator           |
+| `development`    | DEVELOPMENT    | Development coordinator       |
+| `communication`  | COMMUNICATION  | Communication coordinator     |
 
 ---
 
