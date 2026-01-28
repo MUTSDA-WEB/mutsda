@@ -12,7 +12,7 @@ export async function login(c) {
    // TODO: Add it back for production
    c.header(
       "Set-Cookie",
-      `auth=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800`,
+      `auth=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400`,
    );
    return c.json(
       {
@@ -24,7 +24,6 @@ export async function login(c) {
 
 export async function checkLogin(c) {
    const user = c.get("jwtPayload");
-   console.log(user);
    return c.json({ message: "user is logged in", user }, 200);
 }
 

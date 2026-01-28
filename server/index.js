@@ -32,6 +32,7 @@ import {
    getGroupMessages,
 } from "./controller/getMessage";
 import { createGroup, getUserGroups } from "./controller/group.contoller";
+import getLeaders from "./controller/getMember";
 
 const App = new Hono();
 
@@ -122,5 +123,9 @@ App.get("/group/look/:id", verifyToken, getUserGroups);
 
 // create group route
 App.post("/group/create", verifyToken, createGroup);
+
+// user routes
+// get all users
+App.get("/users/look", verifyToken, getLeaders);
 
 export default App;

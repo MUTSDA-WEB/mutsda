@@ -174,6 +174,62 @@ const CreateEvent = () => {
                      )}
                   </div>
 
+                  {/* Event Image - Placed early so it uploads to Cloudinary while user fills other fields */}
+                  <div>
+                     <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                        <FontAwesomeIcon
+                           icon={faImage}
+                           className='mr-2 text-[#3298C8]'
+                        />
+                        Event Image
+                     </label>
+                     {formData.imagePreview ? (
+                        <div className='relative rounded-xl overflow-hidden'>
+                           <img
+                              src={formData.imagePreview}
+                              alt='Event preview'
+                              className='w-full h-48 object-cover'
+                           />
+                           <button
+                              type='button'
+                              onClick={removeImage}
+                              className='absolute top-3 right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors'
+                           >
+                              <FontAwesomeIcon icon={faTimes} />
+                           </button>
+                        </div>
+                     ) : (
+                        <label className='flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#3298C8] hover:bg-sky-50/50 transition-all'>
+                           <div className='flex flex-col items-center justify-center pt-5 pb-6'>
+                              <FontAwesomeIcon
+                                 icon={faUpload}
+                                 className='text-3xl text-gray-400 mb-3'
+                              />
+                              <p className='mb-2 text-sm text-gray-500'>
+                                 <span className='font-semibold text-[#3298C8]'>
+                                    Click to upload
+                                 </span>{" "}
+                                 or drag and drop
+                              </p>
+                              <p className='text-xs text-gray-400'>
+                                 PNG, JPG or WEBP (MAX. 5MB)
+                              </p>
+                           </div>
+                           <input
+                              type='file'
+                              accept='image/*'
+                              onChange={handleImageChange}
+                              className='hidden'
+                           />
+                        </label>
+                     )}
+                     {errors.image && (
+                        <p className='mt-1 text-sm text-red-500'>
+                           {errors.image}
+                        </p>
+                     )}
+                  </div>
+
                   {/* Description */}
                   <div>
                      <label className='block text-sm font-semibold text-gray-700 mb-2'>
@@ -356,62 +412,6 @@ const CreateEvent = () => {
                            className='w-full p-4 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#3298C8]/30 focus:border-[#3298C8] transition-all'
                         />
                      </div>
-                  </div>
-
-                  {/* Event Image */}
-                  <div>
-                     <label className='block text-sm font-semibold text-gray-700 mb-2'>
-                        <FontAwesomeIcon
-                           icon={faImage}
-                           className='mr-2 text-[#3298C8]'
-                        />
-                        Event Image
-                     </label>
-                     {formData.imagePreview ? (
-                        <div className='relative rounded-xl overflow-hidden'>
-                           <img
-                              src={formData.imagePreview}
-                              alt='Event preview'
-                              className='w-full h-48 object-cover'
-                           />
-                           <button
-                              type='button'
-                              onClick={removeImage}
-                              className='absolute top-3 right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors'
-                           >
-                              <FontAwesomeIcon icon={faTimes} />
-                           </button>
-                        </div>
-                     ) : (
-                        <label className='flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#3298C8] hover:bg-sky-50/50 transition-all'>
-                           <div className='flex flex-col items-center justify-center pt-5 pb-6'>
-                              <FontAwesomeIcon
-                                 icon={faUpload}
-                                 className='text-3xl text-gray-400 mb-3'
-                              />
-                              <p className='mb-2 text-sm text-gray-500'>
-                                 <span className='font-semibold text-[#3298C8]'>
-                                    Click to upload
-                                 </span>{" "}
-                                 or drag and drop
-                              </p>
-                              <p className='text-xs text-gray-400'>
-                                 PNG, JPG or WEBP (MAX. 5MB)
-                              </p>
-                           </div>
-                           <input
-                              type='file'
-                              accept='image/*'
-                              onChange={handleImageChange}
-                              className='hidden'
-                           />
-                        </label>
-                     )}
-                     {errors.image && (
-                        <p className='mt-1 text-sm text-red-500'>
-                           {errors.image}
-                        </p>
-                     )}
                   </div>
                </div>
 

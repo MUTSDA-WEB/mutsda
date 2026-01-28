@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-const useStore = create((set) => ({
+const userStore = create((set) => ({
    // User state
    user: null,
    isAuthenticated: false,
@@ -19,4 +19,4 @@ const useStore = create((set) => ({
    clearError: () => set({ error: null }),
 }));
 
-export default useStore;
+export default userStore;
