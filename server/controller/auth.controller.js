@@ -23,7 +23,9 @@ export async function login(c) {
 }
 
 export async function checkLogin(c) {
-   return c.json({ message: "user is logged in" }, 200);
+   const user = c.get("jwtPayload");
+   console.log(user);
+   return c.json({ message: "user is logged in", user }, 200);
 }
 
 export function logout(c) {

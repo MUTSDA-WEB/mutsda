@@ -19,12 +19,10 @@ export async function getVisitorMessages(c) {
 }
 
 export async function getCommunityMessages(c) {
-   const { userId } = await c.req.json();
    try {
       const DMs = await client.conversation.findMany({
          where: {
-            OR: [{ receiverId: userId }, { userId }],
-            messageType: { equals: "direct" },
+            messageType: { equals: "community" },
          },
       });
       return c.json(
@@ -38,13 +36,17 @@ export async function getCommunityMessages(c) {
 }
 
 export async function getGroupMessages(c) {
+   const { groupId } = c.req.param("id");
    try {
-      const DMs = await client.conversation.findMany({
+      const groupMessages = await client.conversation.findMany({
          where: {
-            messageType: { equals: "group" },
+            AND: [{ messageType: { equals: "group" } }, { groupId }],
          },
       });
-      return c.json({ message: "Successfully group messages", DMs }, 200);
+      return c.json(
+         { message: "Successfully group messages", groupMessages },
+         200,
+      );
    } catch (error) {
       console.log(error);
       return c.json({ error: "Failed to fetch group messages" });
@@ -64,5 +66,21 @@ export async function getDirectMessages(c) {
    } catch (error) {
       console.log(error);
       return c.json({ error: "Failed to fetch User's direct messages" });
+   }
+}
+
+export async function getUserGroups(c) {
+   const { userId } = c.req.param("id");
+   try {
+      const userGroups = await client.group.findMany({
+         where: { groupMembers: { some: { userId } } },
+      });
+      return c.json(
+         { message: "Successfully fetched User groups", userGroups },
+         200,
+      );
+   } catch (error) {
+      console.log(error);
+      return c.json({ error: "Failed to fetch User groups" });
    }
 }

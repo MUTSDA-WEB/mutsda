@@ -58,7 +58,8 @@ export async function saveMemberMessage(c) {
 }
 
 export async function updateMessageStatus(c) {
-   const { status, messageId } = await c.req.json();
+   const { status } = await c.req.json();
+   const { messageId } = c.req.param("id");
    try {
       await client.conversation.update({
          data: { msgStatus: status },
