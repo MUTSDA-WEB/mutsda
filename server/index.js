@@ -30,8 +30,8 @@ import {
    getCommunityMessages,
    getDirectMessages,
    getGroupMessages,
-   getUserGroups,
 } from "./controller/getMessage";
+import { getUserGroups } from "./controller/group.contoller";
 
 const App = new Hono();
 
@@ -102,7 +102,7 @@ App.patch("/auth/updatePass/:id", verifyToken, updatePassword);
 App.post("/message/save/leader", verifyToken, saveLeaderMessage);
 
 // save visitor Message route
-App.post("/message/save/visitor", saveMemberMessage);
+App.post("/message/save/visitor/:id", saveMemberMessage);
 
 // get Leader DMs route
 App.get("/message/look/DMs/:id", verifyToken, getDirectMessages);
@@ -116,7 +116,11 @@ App.get("/message/look/community", verifyToken, getCommunityMessages);
 // update message status route
 App.patch("/message/edit/:id", verifyToken, updateMessageStatus);
 
+// ? Group routes
 // get user Groups route
 App.get("/group/look/:id", verifyToken, getUserGroups);
+
+// create group route
+App.post("/group/create", verifyToken, createGrou);
 
 export default App;

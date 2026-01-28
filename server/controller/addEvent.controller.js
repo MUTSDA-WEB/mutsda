@@ -1,17 +1,18 @@
 import client from "../helpers/prismaClient";
 
 export default async function (c) {
-   const eventInfo = c.req.json();
    const {
       title,
       description,
       imageURL,
       eventStartDate,
-      eventEndDate,
       category,
       startTime,
       endTime,
-   } = eventInfo;
+      ...other
+   } = await c.req.json();
+
+   const { userID } = c.get("jwtPayload");
 
    // saving data to db
    try {
@@ -21,10 +22,12 @@ export default async function (c) {
             description,
             imageURL,
             startTime,
-            endTime,
-            eventEndDate,
             eventStartDate,
             category,
+            eventEndDate: other.eventEndDate,
+            userId: userID,
+            eventEndTime: other?.eventEndTime,
+            eventLocation: other?.eventLocation,
          },
       });
 

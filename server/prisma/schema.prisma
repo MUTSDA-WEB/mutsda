@@ -29,13 +29,13 @@ model Event {
   description    String
   category String
   imageURL       String   @map("image_url")
-  eventStartTime DateTime? @map("event_start_time")
+  eventStartTime DateTime @map("event_start_time")
   eventEndTime DateTime? @map("event_end_time")
   eventLocation String? @map("event_location")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   eventStartDate DateTime @map("event_start_date")
-  eventEndDate   DateTime @map("event_end_date")
+  eventEndDate   DateTime? @map("event_end_date")
   userId         String
   user           User     @relation("UserEvents", fields: [userId], references: [userID])
 
@@ -64,6 +64,8 @@ model Group {
   groupId String @id @default(uuid()) @map("group_id")
   groupName String @map("group_name") @unique
   groupMembers GroupMember[] 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 
   @@map("group_table")
 }
@@ -72,7 +74,7 @@ model GroupMember {
   id      String @id @default(uuid())
   userId  String
   groupId String
-  role    String? // admin, member, moderator
+  role    GroupRole @default(member)  // admin, member, moderator
 
   user  User  @relation("UserGroups", fields: [userId], references: [userID])
   group Group @relation(fields: [groupId], references: [groupId])
@@ -85,6 +87,11 @@ enum ConvoType {
   group @map("GROUP")
   direct @map("DIRECT")
   visitor @map("VISITOR")
+}
+
+enum GroupRole {
+  admin @map("ADMIN")
+  member @map("MEMBER")
 }
 
 enum MessageStatus {

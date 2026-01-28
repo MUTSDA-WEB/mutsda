@@ -3,9 +3,14 @@
 import client from "../helpers/prismaClient";
 
 export async function getVisitorMessages(c) {
+   const userId = c.req.param("id");
    try {
       const visitorMsg = await client.conversation.findMany({
-         where: { messageType: { equals: "visitor" } },
+         where: {
+            messageType: { equals: "visitor" },
+            OR: [{ receiverId: userId }, { receiverId: null }],
+         },
+         orderBy: { createdAt: "desc" },
          take: 20,
       });
       return c.json(
@@ -66,21 +71,5 @@ export async function getDirectMessages(c) {
    } catch (error) {
       console.log(error);
       return c.json({ error: "Failed to fetch User's direct messages" });
-   }
-}
-
-export async function getUserGroups(c) {
-   const { userId } = c.req.param("id");
-   try {
-      const userGroups = await client.group.findMany({
-         where: { groupMembers: { some: { userId } } },
-      });
-      return c.json(
-         { message: "Successfully fetched User groups", userGroups },
-         200,
-      );
-   } catch (error) {
-      console.log(error);
-      return c.json({ error: "Failed to fetch User groups" });
    }
 }
