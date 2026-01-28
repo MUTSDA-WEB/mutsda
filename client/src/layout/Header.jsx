@@ -7,12 +7,16 @@ import {
    faTimes,
    faSignInAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { Link} from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import churchLogo from "../assets/church_logo.png";
 
 const Header = () => {
    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+   const location = useLocation();
+
+   // Check if current path is a ministry page
+   const isMinistryActive = location.pathname.startsWith("/ministries");
 
    // Ref to hold the timer so we can cancel it if the user moves back in
    const timeoutRef = useRef(null);
@@ -51,18 +55,31 @@ const Header = () => {
 
             {/* DESKTOP NAVIGATION */}
             <nav className='hidden lg:flex gap-8 text-sm font-medium uppercase tracking-wider items-center'>
-               <Link
+               <NavLink
                   to='/'
-                  className='relative hover:text-[#3298C8] transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'
+                  end
+                  className={({ isActive }) =>
+                     `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                        isActive
+                           ? "text-[#3298C8] after:w-full"
+                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                     }`
+                  }
                >
                   Home
-               </Link>
-               <Link
+               </NavLink>
+               <NavLink
                   to='/aboutUs'
-                  className='relative hover:text-[#3298C8] transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'
+                  className={({ isActive }) =>
+                     `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                        isActive
+                           ? "text-[#3298C8] after:w-full"
+                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                     }`
+                  }
                >
                   About Us
-               </Link>
+               </NavLink>
 
                {/* Dropdown with Hover Buffer */}
                <div
@@ -70,7 +87,13 @@ const Header = () => {
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
                >
-                  <button className='relative flex items-center gap-2 hover:text-[#3298C8] transition-all duration-500 uppercase outline-none after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'>
+                  <button
+                     className={`relative flex items-center gap-2 transition-all duration-500 uppercase outline-none after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                        isMinistryActive
+                           ? "text-[#3298C8] after:w-full"
+                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                     }`}
+                  >
                      Ministries
                      <FontAwesomeIcon
                         icon={faChevronDown}
@@ -84,36 +107,60 @@ const Header = () => {
                         <div className='absolute -top-2 left-0 w-full h-2 bg-transparent'></div>
 
                         {ministriesLinks.map((link) => (
-                           <Link
+                           <NavLink
                               key={link.name}
                               to={link.to}
-                              className='block px-4 py-2 text-sm text-gray-700 hover:bg-sky-100/70 hover:text-[#3298C8] transition-colors'
+                              className={({ isActive }) =>
+                                 `block px-4 py-2 text-sm transition-colors ${
+                                    isActive
+                                       ? "bg-sky-100 text-[#3298C8] font-semibold"
+                                       : "text-gray-700 hover:bg-sky-100/70 hover:text-[#3298C8]"
+                                 }`
+                              }
                            >
                               {link.name}
-                           </Link>
+                           </NavLink>
                         ))}
                      </div>
                   )}
                </div>
 
-               <Link
+               <NavLink
                   to='/library'
-                  className='relative hover:text-[#3298C8] transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'
+                  className={({ isActive }) =>
+                     `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                        isActive
+                           ? "text-[#3298C8] after:w-full"
+                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                     }`
+                  }
                >
                   Library
-               </Link>
-               <Link
+               </NavLink>
+               <NavLink
                   to='/leaders'
-                  className='relative hover:text-[#3298C8] transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'
+                  className={({ isActive }) =>
+                     `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                        isActive
+                           ? "text-[#3298C8] after:w-full"
+                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                     }`
+                  }
                >
                   Leadership
-               </Link>
-               <Link
+               </NavLink>
+               <NavLink
                   to='/gallery'
-                  className='relative hover:text-[#3298C8] transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 hover:after:w-full'
+                  className={({ isActive }) =>
+                     `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                        isActive
+                           ? "text-[#3298C8] after:w-full"
+                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                     }`
+                  }
                >
                   Gallery
-               </Link>
+               </NavLink>
             </nav>
 
             {/* RIGHT ICONS & HAMBURGER */}
@@ -158,58 +205,97 @@ const Header = () => {
             </div>
 
             <div className='flex flex-col items-left gap-6 font-medium uppercase tracking-widest text-sky-900'>
-               <Link
+               <NavLink
                   to='/'
+                  end
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className='ml-12 hover:text-[#3298C8] transition-colors'
+                  className={({ isActive }) =>
+                     `ml-12 transition-colors ${
+                        isActive
+                           ? "text-[#3298C8] font-bold"
+                           : "hover:text-[#3298C8]"
+                     }`
+                  }
                >
                   Home
-               </Link>
-               <Link
+               </NavLink>
+               <NavLink
                   to='/aboutUs'
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className='ml-12 hover:text-[#3298C8] transition-colors'
+                  className={({ isActive }) =>
+                     `ml-12 transition-colors ${
+                        isActive
+                           ? "text-[#3298C8] font-bold"
+                           : "hover:text-[#3298C8]"
+                     }`
+                  }
                >
                   About Us
-               </Link>
+               </NavLink>
 
                <div className='bg-sky-100/60 w-full py-4 space-y-4'>
-                  <p className='text-md text-[#3298C8] underline font-bold tracking-tighter ml-12'>
+                  <p
+                     className={`text-md underline font-bold tracking-tighter ml-12 ${isMinistryActive ? "text-[#3298C8]" : "text-[#3298C8]"}`}
+                  >
                      Ministries
                   </p>
                   {ministriesLinks.map((link) => (
-                     <Link
+                     <NavLink
                         key={link.name}
                         to={link.to}
-                        className='block ml-16 text-sm py-1 hover:text-[#3298C8] hover:cursor-pointer transition-colors'
+                        className={({ isActive }) =>
+                           `block ml-16 text-sm py-1 hover:cursor-pointer transition-colors ${
+                              isActive
+                                 ? "text-[#3298C8] font-bold"
+                                 : "hover:text-[#3298C8]"
+                           }`
+                        }
                         onClick={() => setIsMobileMenuOpen(false)}
                      >
                         {link.name}
-                     </Link>
+                     </NavLink>
                   ))}
                </div>
 
-               <Link
+               <NavLink
                   to='/library'
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className='ml-12 hover:text-[#3298C8] transition-colors'
+                  className={({ isActive }) =>
+                     `ml-12 transition-colors ${
+                        isActive
+                           ? "text-[#3298C8] font-bold"
+                           : "hover:text-[#3298C8]"
+                     }`
+                  }
                >
                   Library
-               </Link>
-               <Link
+               </NavLink>
+               <NavLink
                   to='/leaders'
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className='ml-12 hover:text-[#3298C8] transition-colors'
+                  className={({ isActive }) =>
+                     `ml-12 transition-colors ${
+                        isActive
+                           ? "text-[#3298C8] font-bold"
+                           : "hover:text-[#3298C8]"
+                     }`
+                  }
                >
                   Leadership
-               </Link>
-               <Link
+               </NavLink>
+               <NavLink
                   to='/gallery'
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className='ml-12 hover:text-[#3298C8] transition-colors'
+                  className={({ isActive }) =>
+                     `ml-12 transition-colors ${
+                        isActive
+                           ? "text-[#3298C8] font-bold"
+                           : "hover:text-[#3298C8]"
+                     }`
+                  }
                >
                   Gallery
-               </Link>
+               </NavLink>
 
                <div className='flex gap-8 pt-4 border-t border-sky-200/50 w-1/2 justify-center'>
                   <Link
