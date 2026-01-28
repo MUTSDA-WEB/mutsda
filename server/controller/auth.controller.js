@@ -53,10 +53,13 @@ export async function updatePassword(c) {
          data: { password: newHashedPass },
       });
 
-      return c.json({
-         message: "Password update successfully",
-         user: updatedUser,
-      });
+      return c.json(
+         {
+            message: "Password update successfully",
+            user: updatedUser,
+         },
+         201,
+      );
    } catch (error) {
       console.log(error);
       return c.json({ error: "Server error: Failed to update password!" }, 500);
