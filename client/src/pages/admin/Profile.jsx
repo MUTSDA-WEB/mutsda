@@ -15,24 +15,28 @@ import {
    faCheckCircle,
    faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import useStore from "../../hooks/useStore";
 
 const Profile = () => {
    // User data - Replace with actual user data from API/context
-   const [userData, setUserData] = useState({
-      userId: "MUTSDA-2024-00145",
-      username: "JohnDoe",
-      email: "johndoe@example.com",
-      phoneNumber: "+254 712 345 678",
-      leadershipRole: "Choir Member",
-      memberSince: "January 2024",
-      department: "Music Ministry",
-   });
 
+   // mock user data
+   // const user =
+   //    userId: "MUTSDA-2024-00145",
+   //    username: "JohnDoe",
+   //    email: "johndoe@example.com",
+   //    phoneNumber: "+254 712 345 678",
+   //    leadershipRole: "Choir Member",
+   //    memberSince: "January 2024",
+   //    department: "Music Ministry",
+   // });
+
+   const { user } = useStore();
    const [isEditing, setIsEditing] = useState(false);
    const [editForm, setEditForm] = useState({
-      username: userData.username,
-      email: userData.email,
-      phoneNumber: userData.phoneNumber,
+      username: user?.userName,
+      email: user?.email,
+      phoneNumber: user?.phoneNumber,
    });
    const [editErrors, setEditErrors] = useState({});
    const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -109,9 +113,9 @@ const Profile = () => {
 
    const cancelEdit = () => {
       setEditForm({
-         username: userData.username,
-         email: userData.email,
-         phoneNumber: userData.phoneNumber,
+         username: user.username,
+         email: user.email,
+         phoneNumber: user.phoneNumber,
       });
       setEditErrors({});
       setIsEditing(false);
@@ -257,28 +261,28 @@ const Profile = () => {
                            <InfoItem
                               icon={faIdCard}
                               label='User ID'
-                              value={userData.userId}
+                              value={user.userId}
                               isHighlighted
                            />
                            <InfoItem
                               icon={faUser}
                               label='Username'
-                              value={userData.username}
+                              value={user.username}
                            />
                            <InfoItem
                               icon={faEnvelope}
                               label='Email Address'
-                              value={userData.email}
+                              value={user.email}
                            />
                            <InfoItem
                               icon={faPhone}
                               label='Phone Number'
-                              value={userData.phoneNumber}
+                              value={user.phoneNumber}
                            />
                            <InfoItem
                               icon={faShieldAlt}
                               label='Leadership Role'
-                              value={userData.leadershipRole}
+                              value={user.leadershipRole}
                               isHighlighted
                            />
                            <div className='grid grid-cols-2 gap-4'>
@@ -287,7 +291,7 @@ const Profile = () => {
                                     Member Since
                                  </p>
                                  <p className='font-semibold text-gray-800'>
-                                    {userData.memberSince}
+                                    {user.memberSince}
                                  </p>
                               </div>
                               <div className='p-4 bg-gray-50 rounded-xl'>
@@ -295,7 +299,7 @@ const Profile = () => {
                                     Department
                                  </p>
                                  <p className='font-semibold text-gray-800'>
-                                    {userData.department}
+                                    {user.department}
                                  </p>
                               </div>
                            </div>
@@ -308,7 +312,7 @@ const Profile = () => {
                                  User ID (Cannot be changed)
                               </p>
                               <p className='font-semibold text-gray-600'>
-                                 {userData.userId}
+                                 {user.userId}
                               </p>
                            </div>
                            <div className='p-4 bg-gray-100 rounded-xl opacity-75'>
@@ -316,7 +320,7 @@ const Profile = () => {
                                  Leadership Role (Contact admin to change)
                               </p>
                               <p className='font-semibold text-gray-600'>
-                                 {userData.leadershipRole}
+                                 {user.leadershipRole}
                               </p>
                            </div>
 

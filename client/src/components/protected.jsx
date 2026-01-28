@@ -6,7 +6,6 @@ function Protected({ children }) {
    if (!localStorage.getItem("token") || isError) {
       return <Navigate to='/' replace />;
    }
-   console.log(data, isSuccess);
    return children;
 }
 

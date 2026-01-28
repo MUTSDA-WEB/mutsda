@@ -4,10 +4,12 @@ const useStore = create((set) => ({
    // User state
    user: null,
    isAuthenticated: false,
+   groups: [],
 
    // Actions
    setUser: (user) => set({ user, isAuthenticated: !!user }),
    logout: () => set({ user: null, isAuthenticated: false }),
+   setGroups: (group) => set({ groups: group }),
 
    // UI state
    isLoading: false,
