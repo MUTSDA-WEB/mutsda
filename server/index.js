@@ -31,7 +31,7 @@ import {
    getDirectMessages,
    getGroupMessages,
 } from "./controller/getMessage";
-import { getUserGroups } from "./controller/group.contoller";
+import { createGroup, getUserGroups } from "./controller/group.contoller";
 
 const App = new Hono();
 
@@ -121,6 +121,6 @@ App.patch("/message/edit/:id", verifyToken, updateMessageStatus);
 App.get("/group/look/:id", verifyToken, getUserGroups);
 
 // create group route
-App.post("/group/create", verifyToken, createGrou);
+App.post("/group/create", verifyToken, createGroup);
 
 export default App;
