@@ -17,7 +17,6 @@ function Protected({ children }) {
    if (!localStorage.getItem("token") || isError) {
       return <Navigate to='/' replace />;
    }
-
    return children;
 }
 

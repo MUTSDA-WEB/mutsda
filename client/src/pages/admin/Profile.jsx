@@ -15,11 +15,13 @@ import {
    faCheckCircle,
    faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import userStore from "../../hooks/useStore";
+import useStore from "../../hooks/useStore";
 
 const Profile = () => {
    // User data - Replace with actual user data from API/context
-   // const [user, setUser] = useState({
+
+   // mock user data
+   // const user =
    //    userId: "MUTSDA-2024-00145",
    //    username: "JohnDoe",
    //    email: "johndoe@example.com",
@@ -29,14 +31,12 @@ const Profile = () => {
    //    department: "Music Ministry",
    // });
 
-   // load data from Zustand store
-   const { user } = userStore();
-
+   const { user } = useStore();
    const [isEditing, setIsEditing] = useState(false);
    const [editForm, setEditForm] = useState({
-      username: user.userName,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
+      username: user?.userName,
+      email: user?.email,
+      phoneNumber: user?.phoneNumber,
    });
    const [editErrors, setEditErrors] = useState({});
    const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -261,13 +261,13 @@ const Profile = () => {
                            <InfoItem
                               icon={faIdCard}
                               label='User ID'
-                              value={user.userID}
+                              value={user.userId}
                               isHighlighted
                            />
                            <InfoItem
                               icon={faUser}
                               label='Username'
-                              value={user.userName}
+                              value={user.username}
                            />
                            <InfoItem
                               icon={faEnvelope}
@@ -282,7 +282,7 @@ const Profile = () => {
                            <InfoItem
                               icon={faShieldAlt}
                               label='Leadership Role'
-                              value={user.role}
+                              value={user.leadershipRole}
                               isHighlighted
                            />
                            <div className='grid grid-cols-2 gap-4'>
@@ -312,7 +312,7 @@ const Profile = () => {
                                  User ID (Cannot be changed)
                               </p>
                               <p className='font-semibold text-gray-600'>
-                                 {user.userID}
+                                 {user.userId}
                               </p>
                            </div>
                            <div className='p-4 bg-gray-100 rounded-xl opacity-75'>
@@ -320,7 +320,7 @@ const Profile = () => {
                                  Leadership Role (Contact admin to change)
                               </p>
                               <p className='font-semibold text-gray-600'>
-                                 {user.role}
+                                 {user.leadershipRole}
                               </p>
                            </div>
 
