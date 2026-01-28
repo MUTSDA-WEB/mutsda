@@ -3,11 +3,13 @@ import { Outlet } from "react-router-dom";
 import DashboardHeader from "./DashboardHeader";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardFooter from "./DashboardFooter";
+import userStore from "../hooks/useStore";
 
 const DashboardLayout = ({ username = "User" }) => {
    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-
+   const { user } = userStore();
+   username = user?.userName;
    return (
       <div className='min-h-screen bg-linear-to-br from-gray-50 to-sky-50/30 flex flex-col'>
          <DashboardHeader
