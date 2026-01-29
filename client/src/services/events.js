@@ -21,4 +21,14 @@ function useGetEvents() {
    });
 }
 
-export { useCreateEvent, useGetEvents };
+function useGetUpcomingEvents() {
+   return useQuery({
+      queryKey: ["UPCOMING_EVENTS"],
+      queryFn: async () => {
+         const upcoming = await Ax.get("/event/upcoming");
+         return upcoming.data;
+      },
+   });
+}
+
+export { useCreateEvent, useGetEvents, useGetUpcomingEvents };

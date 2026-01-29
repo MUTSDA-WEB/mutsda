@@ -10,7 +10,7 @@ import EventDetailsModal from "../components/EventDetailsModal";
 import userStore from "../hooks/useStore";
 
 const Home = () => {
-   const { events } = userStore();
+   const { upcomingEvents } = userStore();
    const [selectedEvent, setSelectedEvent] = useState(null);
 
    // const event = [
@@ -142,7 +142,7 @@ const Home = () => {
                </div>
 
                <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-                  {events.map((event) => (
+                  {upcomingEvents.map((event) => (
                      <div
                         key={event.id}
                         className='group relative bg-white rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500'

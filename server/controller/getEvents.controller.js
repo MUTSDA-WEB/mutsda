@@ -8,6 +8,7 @@ export async function getUpcomingEvents(c) {
          orderBy: {
             eventStartDate: "asc",
          },
+         include: { user: true },
          omit: { updatedAt: true },
       });
       return (

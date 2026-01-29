@@ -17,9 +17,10 @@ const userStore = create((set) => ({
    // store all events
    upcomingEvents: [],
    pastEvents: [],
+   allEvents: [],
 
    // Actions
-   setEvents: (events) => set({ events }),
+   setAllEvents: (events) => set({ allEvents: events }),
    setUser: (user) => set({ user, isAuthenticated: !!user }),
    logout: () => set({ user: null, isAuthenticated: false }),
 
