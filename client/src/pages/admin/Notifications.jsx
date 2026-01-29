@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
    faComments,
@@ -13,6 +13,15 @@ import {
    EmptyState,
    VisitorMessages,
 } from "../../components/chat/index";
+import userStore from "../../hooks/useStore";
+import { useGetUserGroups } from "../../services/getGroups";
+import { useGetUsers } from "../../services/getUsers";
+import {
+   useGetCommunityMessages,
+   useGetGroupMessages,
+   useGetUserDirectMsg,
+   useGetVisitorMessages,
+} from "../../services/message";
 
 const Notifications = () => {
    const [activeTab, setActiveTab] = useState("messages");
@@ -23,280 +32,138 @@ const Notifications = () => {
    const [newGroupName, setNewGroupName] = useState("");
    const [selectedMembers, setSelectedMembers] = useState([]);
 
-   // Sample data - Replace with actual API data
-   const [directMessages, setDirectMessages] = useState([
-      {
-         id: 1,
-         name: "John Doe",
-         avatar: "JD",
-         lastMessage: "See you at the event tomorrow!",
-         time: "2 min ago",
-         unread: 2,
-         online: true,
-         messages: [
-            {
-               id: 1,
-               sender: "them",
-               text: "Hello! How are you?",
-               time: "10:30 AM",
-            },
-            {
-               id: 2,
-               sender: "me",
-               text: "I'm doing great, thanks! How about you?",
-               time: "10:32 AM",
-            },
-            {
-               id: 3,
-               sender: "them",
-               text: "Good! Are you coming to the event tomorrow?",
-               time: "10:35 AM",
-            },
-            {
-               id: 4,
-               sender: "me",
-               text: "Yes, definitely! What time does it start?",
-               time: "10:36 AM",
-            },
-            {
-               id: 5,
-               sender: "them",
-               text: "It starts at 8 AM. See you there!",
-               time: "10:38 AM",
-            },
-            {
-               id: 6,
-               sender: "them",
-               text: "See you at the event tomorrow!",
-               time: "10:40 AM",
-            },
-         ],
-      },
-      {
-         id: 2,
-         name: "Sarah Wilson",
-         avatar: "SW",
-         lastMessage: "Thanks for the help!",
-         time: "1 hour ago",
-         unread: 0,
-         online: false,
-         messages: [
-            {
-               id: 1,
-               sender: "me",
-               text: "Hi Sarah, did you need help with the choir practice?",
-               time: "9:00 AM",
-            },
-            {
-               id: 2,
-               sender: "them",
-               text: "Yes please! I'm struggling with the alto part.",
-               time: "9:15 AM",
-            },
-            {
-               id: 3,
-               sender: "me",
-               text: "No problem, I'll send you the recording.",
-               time: "9:20 AM",
-            },
-            {
-               id: 4,
-               sender: "them",
-               text: "Thanks for the help!",
-               time: "9:25 AM",
-            },
-         ],
-      },
-      {
-         id: 3,
-         name: "Michael Brown",
-         avatar: "MB",
-         lastMessage: "God bless you!",
-         time: "Yesterday",
-         unread: 0,
-         online: true,
-         messages: [
-            {
-               id: 1,
-               sender: "them",
-               text: "God bless you!",
-               time: "Yesterday",
-            },
-         ],
-      },
+   // Todo:  get user groups
+   const {
+      data: groupData,
+      isSuccess: groupSuccess,
+      isLoading: groupLoading,
+      isError: groupError,
+   } = useGetUserGroups();
+   // Todo: get users from the db
+   const {
+      data: users,
+      isSuccess: userSuccess,
+      isLoading: userLoading,
+      isError: userError,
+   } = useGetUsers();
+   // Todo: get user DirectMessages
+   const {
+      data: userDMs,
+      isSuccess: DMSuccess,
+      isLoading: DMloading,
+      isError: DMError,
+   } = useGetUserDirectMsg();
+   // Todo: get group messages
+   // const {data: groupMsg, isSuccess: gSuccess, isLoading: gLoading, isError: gError} = useGetGroupMessages()
+   // Todo: get comminity messages
+   const {
+      data: comMsg,
+      isSuccess: comSuccess,
+      isLoading: comLoading,
+      isError: comError,
+   } = useGetCommunityMessages();
+   // Todo: get visitor messages
+   const {
+      data: visitorMsg,
+      isSuccess: visitorSuccess,
+      isLoading: visitorLoading,
+      isError: visitorError,
+   } = useGetVisitorMessages();
+
+   //  destructure userStore to get the necessary resources
+   const {
+      setGroups,
+      setMembers,
+      setComMsg,
+      setVisitorMsg,
+      groups,
+      directMessages,
+      communityMessages,
+      members,
+      visitorMessages,
+      // groupMessages,
+      // setGroupMessages,
+      setDMs,
+   } = userStore();
+
+   // update the stores whenever the data is ready/available
+   useEffect(() => {
+      if (groupData && groupSuccess) setGroups(groupData);
+      if (users && userSuccess) setMembers(users);
+      if (comMsg && comSuccess) setComMsg(comMsg);
+      if (userDMs && DMSuccess) setDMs(userDMs);
+      // if(groupMsg && gSuccess) setGroupMessages(groupMsg)
+      if (visitorMsg && visitorSuccess) setVisitorMsg(visitorMsg);
+
+      // gSuccess, groupMsg - removed from the dependency array for now
+   }, [
+      groupData,
+      users,
+      comMsg,
+      visitorMsg,
+      userDMs,
+      groupSuccess,
+      visitorSuccess,
+      DMSuccess,
+      comSuccess,
+      userSuccess,
    ]);
-
-   // hardcorded groupdata
-   // const [groups, setGroups] = useState([
-   //    {
-   //       id: 1,
-   //       name: "Youth Ministry",
-   //       avatar: "YM",
-   //       members: 24,
-   //       lastMessage: "Meeting rescheduled to 5 PM",
-   //       time: "5 min ago",
-   //       unread: 5,
-   //       messages: [
-   //          {
-   //             id: 1,
-   //             sender: "John",
-   //             text: "Hey everyone! Quick update about tomorrow.",
-   //             time: "3:00 PM",
-   //          },
-   //          {
-   //             id: 2,
-   //             sender: "Sarah",
-   //             text: "What's the update?",
-   //             time: "3:02 PM",
-   //          },
-   //          {
-   //             id: 3,
-   //             sender: "John",
-   //             text: "Meeting rescheduled to 5 PM",
-   //             time: "3:05 PM",
-   //          },
-   //       ],
-   //    },
-   //    {
-   //       id: 2,
-   //       name: "Choir Group",
-   //       avatar: "CG",
-   //       members: 15,
-   //       lastMessage: "Practice tomorrow at 4 PM",
-   //       time: "2 hours ago",
-   //       unread: 0,
-   //       messages: [
-   //          {
-   //             id: 1,
-   //             sender: "Leader",
-   //             text: "Practice tomorrow at 4 PM",
-   //             time: "1:00 PM",
-   //          },
-   //       ],
-   //    },
-   //    {
-   //       id: 3,
-   //       name: "Bible Study Team",
-   //       avatar: "BS",
-   //       members: 12,
-   //       lastMessage: "This week's topic: Book of Romans",
-   //       time: "Yesterday",
-   //       unread: 0,
-   //       messages: [
-   //          {
-   //             id: 1,
-   //             sender: "Pastor",
-   //             text: "This week's topic: Book of Romans",
-   //             time: "Yesterday",
-   //          },
-   //       ],
-   //    },
-   // ]);
-
-   // getting group data from the database
-
-   const [communityMessages, setCommunityMessages] = useState([
-      {
-         id: 1,
-         sender: "Pastor James",
-         text: "Good morning everyone! Blessed Sabbath to all.",
-         time: "8:00 AM",
-         avatar: "PJ",
-      },
-      {
-         id: 2,
-         sender: "Mary Johnson",
-         text: "Blessed Sabbath! 🙏",
-         time: "8:05 AM",
-         avatar: "MJ",
-      },
-      {
-         id: 3,
-         sender: "David Kim",
-         text: "Amen! See everyone at service.",
-         time: "8:10 AM",
-         avatar: "DK",
-      },
-      {
-         id: 4,
-         sender: "Sarah Wilson",
-         text: "Looking forward to today's sermon!",
-         time: "8:15 AM",
-         avatar: "SW",
-      },
-      {
-         id: 5,
-         sender: "John Doe",
-         text: "Don't forget the youth event after service!",
-         time: "8:20 AM",
-         avatar: "JD",
-      },
-   ]);
-
-   const allUsers = [
-      { id: 1, name: "John Doe", avatar: "JD" },
-      { id: 2, name: "Sarah Wilson", avatar: "SW" },
-      { id: 3, name: "Michael Brown", avatar: "MB" },
-      { id: 4, name: "Mary Johnson", avatar: "MJ" },
-      { id: 5, name: "David Kim", avatar: "DK" },
-      { id: 6, name: "Pastor James", avatar: "PJ" },
-      { id: 7, name: "Anna Lee", avatar: "AL" },
-      { id: 8, name: "Peter Chen", avatar: "PC" },
-   ];
 
    const handleSendMessage = () => {
       if (!message.trim()) return;
 
       const newMessage = {
          id: Date.now(),
-         sender: activeTab === "community" ? "You" : "me",
+         sender: activeTab === "community" ? user?.username || "You" : "me",
          text: message,
          time: new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
          }),
-         avatar: "YO",
+         avatar: user?.username?.substring(0, 2).toUpperCase() || "YO",
       };
 
       if (activeTab === "messages" && selectedChat) {
-         setDirectMessages((prev) =>
-            prev.map((chat) =>
-               chat.id === selectedChat.id
-                  ? {
-                       ...chat,
-                       messages: [...chat.messages, newMessage],
-                       lastMessage: message,
-                       time: "Just now",
-                    }
-                  : chat,
-            ),
+         // Update direct messages in store
+         const updatedDMs = directMessages.map((chat) =>
+            chat.id === selectedChat.id
+               ? {
+                    ...chat,
+                    messages: [...(chat.messages || []), newMessage],
+                    lastMessage: message,
+                    time: "Just now",
+                 }
+               : chat,
          );
+         setDMs(updatedDMs);
          setSelectedChat((prev) => ({
             ...prev,
-            messages: [...prev.messages, newMessage],
+            messages: [...(prev.messages || []), newMessage],
          }));
       } else if (activeTab === "groups" && selectedChat) {
-         setGroups((prev) =>
-            prev.map((group) =>
-               group.id === selectedChat.id
-                  ? {
-                       ...group,
-                       messages: [...group.messages, newMessage],
-                       lastMessage: message,
-                       time: "Just now",
-                    }
-                  : group,
-            ),
+         // Update groups in store
+         const updatedGroups = groups.map((group) =>
+            group.id === selectedChat.id
+               ? {
+                    ...group,
+                    messages: [...(group.messages || []), newMessage],
+                    lastMessage: message,
+                    time: "Just now",
+                 }
+               : group,
          );
+         setGroups(updatedGroups);
          setSelectedChat((prev) => ({
             ...prev,
-            messages: [...prev.messages, newMessage],
+            messages: [...(prev.messages || []), newMessage],
          }));
       } else if (activeTab === "community") {
-         setCommunityMessages((prev) => [...prev, newMessage]);
+         // Update community messages in store
+         setComMsg([...communityMessages, newMessage]);
       }
 
       setMessage("");
+      // TODO: Send message to backend API
    };
 
    const handleCreateGroup = () => {
@@ -320,10 +187,12 @@ const Notifications = () => {
          ],
       };
 
-      setGroups((prev) => [newGroup, ...prev]);
+      // Update groups in store
+      setGroups([newGroup, ...groups]);
       setShowCreateGroup(false);
       setNewGroupName("");
       setSelectedMembers([]);
+      // TODO: Create group via backend API
    };
 
    const tabs = [
@@ -440,7 +309,7 @@ const Notifications = () => {
             setGroupName={setNewGroupName}
             selectedMembers={selectedMembers}
             setSelectedMembers={setSelectedMembers}
-            allUsers={allUsers}
+            allUsers={members}
             onCreateGroup={handleCreateGroup}
          />
       </div>

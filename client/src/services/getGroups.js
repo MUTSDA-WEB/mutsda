@@ -5,7 +5,7 @@ export function useGetUserGroups() {
    return useQuery({
       queryKey: ["GET_USER_GROUPS"],
       queryFn: async () => {
-         const userGroups = await Ax.get("/group/user");
+         const userGroups = await Ax.get("/group/look");
          return userGroups.data;
       },
    });

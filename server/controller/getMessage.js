@@ -11,7 +11,7 @@ export async function getVisitorMessages(c) {
             OR: [{ receiverId: userId }, { receiverId: null }],
          },
          orderBy: { createdAt: "desc" },
-         omit: { groupId, msgStatus, userId },
+         omit: { groupId: true, msgStatus: true, userId: true },
          take: 20,
       });
       return c.json(

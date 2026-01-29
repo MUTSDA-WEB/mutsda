@@ -10,7 +10,7 @@ const ChatList = ({
    setSelectedChat,
    onCreateGroup,
 }) => {
-   const filtered = items.filter((item) =>
+   const filtered = items?.filter((item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()),
    );
 

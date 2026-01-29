@@ -123,7 +123,7 @@ App.patch("/message/edit/:id", verifyToken, updateMessageStatus);
 
 // ? Group routes
 // get user Groups route
-App.get("/group/look/", verifyToken, getUserGroups);
+App.get("/group/look", verifyToken, getUserGroups);
 
 // create group route
 App.post("/group/create", verifyToken, createGroup);
