@@ -20,7 +20,7 @@ const Login = () => {
    });
 
    // call the login hook
-   const { mutate: login, isSuccess, isPending } = useLogin();
+   const { mutate: login, isSuccess, isPending, isError } = useLogin();
 
    const [showPassword, setShowPassword] = useState(false);
    const [errors, setErrors] = useState({});
@@ -32,11 +32,11 @@ const Login = () => {
          setIsLoading(true);
          setLoading(true);
       }
-      if (isSuccess) {
+      if (isSuccess || isError) {
          setIsLoading(false);
          setLoading(false);
       }
-   }, [isPending, isSuccess]);
+   }, [isPending, isSuccess, isError]);
 
    const validateForm = () => {
       const newErrors = {};
