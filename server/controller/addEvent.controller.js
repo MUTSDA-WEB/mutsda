@@ -24,7 +24,7 @@ export default async function (c) {
             startTime,
             eventStartDate,
             category,
-            eventEndDate: other.eventEndDate,
+            eventEndDate: other?.eventEndDate,
             userId: userID,
             eventEndTime: other?.eventEndTime,
             eventLocation: other?.eventLocation,
