@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useCheckLoggedIn } from "../services/login";
 import userStore from "../hooks/useStore";
 
+// eslint-disable-next-line react/prop-types
 function Protected({ children }) {
    const { data, isError, isSuccess } = useCheckLoggedIn();
    const { setUser } = userStore();

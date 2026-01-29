@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
    faCalendarPlus,
@@ -12,7 +12,9 @@ import {
    faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { useCreateEvent } from "../../services/events";
 import GlobalLoader from "../../components/GlobalLoader";
+import { queryClient } from "../../main";
 
 const CreateEvent = () => {
    const navigate = useNavigate();
@@ -23,15 +25,18 @@ const CreateEvent = () => {
       description: "",
       eventStartDate: "",
       eventEndDate: "",
-      startTime: "",
-      endTime: "",
-      location: "",
+      eventStartTime: "",
+      eventEndTime: "",
+      eventLocation: "",
       category: "",
       maxAttendees: "",
-      image: null,
+      imageURL: null,
       imagePreview: null,
    });
    const [errors, setErrors] = useState({});
+
+   // calling the create event API Service
+   const { data, isSuccess, isLoading, mutate: createEvent } = useCreateEvent();
 
    const categories = [
       "Youth Event",
@@ -44,6 +49,13 @@ const CreateEvent = () => {
       "Workshop",
       "Other",
    ];
+
+   useEffect(() => {
+      if (isSuccess && data) {
+         console.log(data);
+         // setAllEvents(data.event)
+      }
+   }, [isSuccess, data]);
 
    const handleChange = (e) => {
       const { name, value } = e.target;
@@ -64,17 +76,36 @@ const CreateEvent = () => {
             }));
             return;
          }
-         setFormData((prev) => ({
-            ...prev,
-            image: file,
-            imagePreview: URL.createObjectURL(file),
-         }));
+
+         // Read file as base64 and save to localStorage
+         const reader = new FileReader();
+         reader.onload = (event) => {
+            const base64String = event.target.result;
+
+            // Generate filename
+            const fileExtension = file.name.split(".").pop();
+            const generatedFilename = `${Date.now()}.${fileExtension}`;
+            const imageURL = `/uploads/${generatedFilename}`;
+
+            // Save base64 image to localStorage with filename as key
+            localStorage.setItem(`image_${generatedFilename}`, base64String);
+            console.log(`Image saved locally: image_${generatedFilename}`);
+
+            setFormData((prev) => ({
+               ...prev,
+               imageURL: imageURL, // only store the URL
+               imagePreview: URL.createObjectURL(file), // for preview only
+            }));
+         };
+         reader.readAsDataURL(file);
          setErrors((prev) => ({ ...prev, image: "" }));
       }
    };
 
+   const handleClearSuccess = () => setShowSuccess(false);
+
    const removeImage = () => {
-      setFormData((prev) => ({ ...prev, image: null, imagePreview: null }));
+      setFormData((prev) => ({ ...prev, imageURL: null, imagePreview: null }));
    };
 
    const validateForm = () => {
@@ -83,9 +114,12 @@ const CreateEvent = () => {
       if (!formData.description.trim())
          newErrors.description = "Description is required";
       if (!formData.eventStartDate) newErrors.date = "Date is required";
-      if (!formData.startTime) newErrors.startTime = "Start time is required";
-      if (!formData.location.trim())
+      if (!formData.eventStartTime)
+         newErrors.startTime = "Start time is required";
+      if (!formData.eventLocation.trim()) {
+         console.log(formData.eventLocation);
          newErrors.location = "Location is required";
+      }
       if (!formData.category) newErrors.category = "Please select a category";
 
       setErrors(newErrors);
@@ -98,30 +132,60 @@ const CreateEvent = () => {
 
       setIsSubmitting(true);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Combine date and time into ISO-8601 DateTime format
+      const eventStartDateTime = formData.eventStartDate
+         ? new Date(
+              `${formData.eventStartDate}T${formData.eventStartTime || "00:00"}:00`,
+           ).toISOString()
+         : null;
 
-      console.log("Event Created:", formData);
-      setIsSubmitting(false);
-      setShowSuccess(true);
+      const eventEndDateTime = formData.eventEndDate
+         ? new Date(
+              `${formData.eventEndDate}T${formData.eventEndTime || "23:59"}:59`,
+           ).toISOString()
+         : null;
 
-      // Reset form after success
-      setTimeout(() => {
-         setShowSuccess(false);
-         setFormData({
-            title: "",
-            description: "",
-            eventStartDate: "",
-            eventEndDate: "",
-            eventStartTime: "",
-            eventEndTime: "",
-            eventLocation: "",
-            category: "",
-            maxAttendees: "",
-            imageURL: null,
-            imagePreview: null,
-         });
-      }, 2000);
+      // Send only JSON with imageURL (no file, no base64)
+      const submitData = {
+         title: formData.title,
+         description: formData.description,
+         eventStartTime: eventStartDateTime,
+         eventEndTime: eventEndDateTime,
+         eventStartDate: eventStartDateTime,
+         eventEndDate: eventEndDateTime,
+         eventLocation: formData.eventLocation,
+         category: formData.category,
+         imageURL: formData.imageURL, // only send the URL string
+         maxAttendees: formData.maxAttendees
+            ? parseInt(formData.maxAttendees)
+            : null,
+      };
+
+      createEvent(submitData, {
+         onSuccess: () => {
+            setIsSubmitting(false);
+            setShowSuccess(true);
+            // Reset form after success
+            setFormData({
+               title: "",
+               description: "",
+               eventStartDate: "",
+               eventEndDate: "",
+               eventStartTime: "",
+               eventEndTime: "",
+               eventLocation: "",
+               category: "",
+               maxAttendees: "",
+               imageURL: null,
+               imagePreview: null,
+            });
+            queryClient.invalidateQueries(["UPCOMING_EVENTS"]);
+         },
+         onError: (error) => {
+            setIsSubmitting(false);
+            setErrors({ submit: error.message || "Failed to create event" });
+         },
+      });
    };
 
    return (
@@ -189,7 +253,7 @@ const CreateEvent = () => {
                      {formData.imagePreview ? (
                         <div className='relative rounded-xl overflow-hidden'>
                            <img
-                              src={formData.imagePreview}
+                              src={formData.imageURL}
                               alt='Event preview'
                               className='w-full h-48 object-cover'
                            />
@@ -270,7 +334,7 @@ const CreateEvent = () => {
                         </label>
                         <input
                            type='date'
-                           name='date'
+                           name='eventStartDate'
                            value={formData.eventStartDate}
                            onChange={handleChange}
                            min={new Date().toISOString().split("T")[0]}
@@ -298,7 +362,7 @@ const CreateEvent = () => {
                         </label>
                         <input
                            type='date'
-                           name='endDate'
+                           name='eventEndDate'
                            value={formData.eventEndDate}
                            onChange={handleChange}
                            min={
@@ -323,8 +387,8 @@ const CreateEvent = () => {
                         </label>
                         <input
                            type='time'
-                           name='startTime'
-                           value={formData.startTime}
+                           name='eventStartTime'
+                           value={formData.eventStartTime}
                            onChange={handleChange}
                            className={`w-full p-4 border rounded-xl outline-none transition-all ${
                               errors.startTime
@@ -350,8 +414,8 @@ const CreateEvent = () => {
                         </label>
                         <input
                            type='time'
-                           name='endTime'
-                           value={formData.endTime}
+                           name='eventEndTime'
+                           value={formData.eventEndTime}
                            onChange={handleChange}
                            className='w-full p-4 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#3298C8]/30 focus:border-[#3298C8] transition-all'
                         />
@@ -369,8 +433,8 @@ const CreateEvent = () => {
                      </label>
                      <input
                         type='text'
-                        name='location'
-                        value={formData.location}
+                        name='eventLocation'
+                        value={formData.eventLocation}
                         onChange={handleChange}
                         placeholder='Enter event location...'
                         className={`w-full p-4 border rounded-xl outline-none transition-all ${
@@ -474,7 +538,10 @@ const CreateEvent = () => {
 
             {/* Success Modal */}
             {showSuccess && (
-               <div className='fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4'>
+               <div
+                  onClick={handleClearSuccess}
+                  className='fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4'
+               >
                   <div className='bg-white rounded-2xl p-8 text-center animate-fadeIn max-w-sm w-full'>
                      <div className='w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
                         <FontAwesomeIcon

@@ -1,44 +1,47 @@
 import client from "../helpers/prismaClient";
 
 export default async function (c) {
-   const {
-      title,
-      description,
-      imageURL,
-      eventStartDate,
-      category,
-      startTime,
-      endTime,
-      ...other
-   } = await c.req.json();
-
-   const { userID } = c.get("jwtPayload");
-
-   // saving data to db
    try {
+      const {
+         title,
+         description,
+         eventStartTime,
+         eventEndTime,
+         eventStartDate,
+         eventEndDate,
+         category,
+         eventLocation,
+         imageURL,
+         // maxAttendees,
+      } = await c.req.json();
+
+      const { userID } = c.get("jwtPayload");
+
+      // Save event to database with imageURL
       const newEvent = await client.event.create({
          data: {
             title,
             description,
-            imageURL,
-            startTime,
+            imageURL, // store the URL only
+            eventStartTime,
+            eventEndTime,
             eventStartDate,
+            eventEndDate,
             category,
-            eventEndDate: other?.eventEndDate,
+            eventLocation,
+            // maxAttendees: maxAttendees ? parseInt(maxAttendees) : null,
             userId: userID,
-            eventEndTime: other?.eventEndTime,
-            eventLocation: other?.eventLocation,
          },
       });
 
       if (newEvent) {
          return c.json(
-            { message: "Event created Successfully", event: newEvent },
+            { message: "Event created successfully", event: newEvent },
             201,
          );
       }
    } catch (error) {
       console.log(error);
-      return c.json({ error: "Failed to Create new event!!" }, 500);
+      return c.json({ error: "Failed to create new event" }, 500);
    }
 }

@@ -7,42 +7,44 @@ import {
    faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import EventDetailsModal from "../components/EventDetailsModal";
+import userStore from "../hooks/useStore";
 
 const Home = () => {
+   const { upcomingEvents } = userStore();
    const [selectedEvent, setSelectedEvent] = useState(null);
 
-   const events = [
-      {
-         id: 1,
-         date: "JAN 25",
-         title: "Youth Bible Camp",
-         img: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800&auto=format&fit=crop",
-         desc: "A weekend of spiritual growth and outdoor fellowship. Join us for an unforgettable experience of Bible study, worship, nature walks, and bonding with fellow youth members.",
-         time: "8:00 AM - 6:00 PM",
-         location: "MUT Grounds",
-         attendees: "45",
-      },
-      {
-         id: 2,
-         date: "FEB 14",
-         title: "Music Concert",
-         img: "https://images.unsplash.com/photo-1514525253361-bee87184919a?q=80&w=800&auto=format&fit=crop",
-         desc: "A special night of praise featuring our main church choir. Experience uplifting performances, special guest artists, and a celebration of faith through music.",
-         time: "6:00 PM - 9:00 PM",
-         location: "Main Hall",
-         attendees: "120",
-      },
-      {
-         id: 3,
-         date: "MAR 02",
-         title: "Community Outreach",
-         img: "https://images.unsplash.com/photo-1469571483399-af239969ef4d?q=80&w=800&auto=format&fit=crop",
-         desc: "Helping local families with food and medical resources. Be part of this life-changing initiative as we serve our community with love and compassion.",
-         time: "9:00 AM - 4:00 PM",
-         location: "Murang'a Town",
-         attendees: "30",
-      },
-   ];
+   // const event = [
+   //    {
+   //       id: 1,
+   //       date: "JAN 25",
+   //       title: "Youth Bible Camp",
+   //       img: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800&auto=format&fit=crop",
+   //       desc: "A weekend of spiritual growth and outdoor fellowship. Join us for an unforgettable experience of Bible study, worship, nature walks, and bonding with fellow youth members.",
+   //       time: "8:00 AM - 6:00 PM",
+   //       location: "MUT Grounds",
+   //       attendees: "45",
+   //    },
+   //    {
+   //       id: 2,
+   //       date: "FEB 14",
+   //       title: "Music Concert",
+   //       img: "https://images.unsplash.com/photo-1514525253361-bee87184919a?q=80&w=800&auto=format&fit=crop",
+   //       desc: "A special night of praise featuring our main church choir. Experience uplifting performances, special guest artists, and a celebration of faith through music.",
+   //       time: "6:00 PM - 9:00 PM",
+   //       location: "Main Hall",
+   //       attendees: "120",
+   //    },
+   //    {
+   //       id: 3,
+   //       date: "MAR 02",
+   //       title: "Community Outreach",
+   //       img: "https://images.unsplash.com/photo-1469571483399-af239969ef4d?q=80&w=800&auto=format&fit=crop",
+   //       desc: "Helping local families with food and medical resources. Be part of this life-changing initiative as we serve our community with love and compassion.",
+   //       time: "9:00 AM - 4:00 PM",
+   //       location: "Murang'a Town",
+   //       attendees: "30",
+   //    },
+   // ];
 
    return (
       <div className='flex flex-col animate-fadeIn'>
@@ -85,10 +87,10 @@ const Home = () => {
 
                {/* Tagline */}
                <p className='text-xl md:text-2xl lg:text-3xl font-light mb-4 text-sky-100'>
-                  Murang'a University of Technology Seventh Day Adventist
+                  Murang&apos;a University of Technology Seventh Day Adventist
                </p>
                <p className='text-lg md:text-xl italic font-light mb-10 text-white/80'>
-                  "We love you, we value you and we cherish you"
+                  &quot;We love you, we value you and we cherish you&quot;
                </p>
 
                {/* CTA Buttons */}
@@ -140,7 +142,7 @@ const Home = () => {
                </div>
 
                <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-                  {events.map((event) => (
+                  {upcomingEvents.map((event) => (
                      <div
                         key={event.id}
                         className='group relative bg-white rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500'
