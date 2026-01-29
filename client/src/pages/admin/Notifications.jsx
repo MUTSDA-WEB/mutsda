@@ -81,21 +81,20 @@ const Notifications = () => {
       communityMessages,
       members,
       visitorMessages,
-      // groupMessages,
-      // setGroupMessages,
       setDMs,
+      user,
    } = userStore();
 
    // update the stores whenever the data is ready/available
    useEffect(() => {
-      if (groupData && groupSuccess) setGroups(groupData);
-      if (users && userSuccess) setMembers(users);
-      if (comMsg && comSuccess) setComMsg(comMsg);
-      if (userDMs && DMSuccess) setDMs(userDMs);
-      // if(groupMsg && gSuccess) setGroupMessages(groupMsg)
-      if (visitorMsg && visitorSuccess) setVisitorMsg(visitorMsg);
-
-      // gSuccess, groupMsg - removed from the dependency array for now
+      // API returns { message: "...", dataKey: [...] }, extract the array
+      if (groupData?.userGroups && groupSuccess)
+         setGroups(groupData.userGroups);
+      if (users?.leaders && userSuccess) setMembers(users.leaders);
+      if (comMsg?.DMs && comSuccess) setComMsg(comMsg.DMs);
+      if (userDMs?.DMs && DMSuccess) setDMs(userDMs.DMs);
+      if (visitorMsg?.visitorMsg && visitorSuccess)
+         setVisitorMsg(visitorMsg.visitorMsg);
    }, [
       groupData,
       users,
@@ -107,6 +106,11 @@ const Notifications = () => {
       DMSuccess,
       comSuccess,
       userSuccess,
+      setGroups,
+      setMembers,
+      setComMsg,
+      setDMs,
+      setVisitorMsg,
    ]);
 
    const handleSendMessage = () => {

@@ -13,104 +13,51 @@ import {
    faSearch,
    faFilter,
 } from "@fortawesome/free-solid-svg-icons";
+import userStore from "../../hooks/useStore";
 
 const VisitorMessages = () => {
    const [selectedMessage, setSelectedMessage] = useState(null);
    const [searchQuery, setSearchQuery] = useState("");
    const [filterStatus, setFilterStatus] = useState("all"); // all, unread, read
 
-   // Sample visitor messages data - Replace with actual API data
-   const [visitorMessages, setVisitorMessages] = useState([
-      {
-         id: 1,
-         name: "Grace Wanjiku",
-         email: "grace.wanjiku@example.com",
-         phone: "+254 712 345 678",
-         message:
-            "Hello, I would like to know more about the youth programs at MUTSDA. My daughter is interested in joining. Can someone contact me?",
-         time: "10 min ago",
-         date: "2026-01-27",
-         source: "Contact Page",
-         isRead: false,
-      },
-      {
-         id: 2,
-         name: "Peter Kamau",
-         email: "peter.kamau@email.com",
-         phone: "+254 723 456 789",
-         message:
-            "I am a new student at MUT and looking for a church community. What time are your Sabbath services? Where exactly is the church located?",
-         time: "1 hour ago",
-         date: "2026-01-27",
-         source: "Contact Page",
-         isRead: false,
-      },
-      {
-         id: 3,
-         name: "Mary Njeri",
-         email: "marynjeri2000@gmail.com",
-         phone: "+254 734 567 890",
-         message:
-            "Good afternoon. I attended your church last Sabbath and was blessed by the sermon. How can I become a member?",
-         time: "3 hours ago",
-         date: "2026-01-27",
-         source: "Contact Page",
-         isRead: true,
-      },
-      {
-         id: 4,
-         name: "David Omondi",
-         email: "david.omondi@university.ac.ke",
-         phone: "+254 745 678 901",
-         message:
-            "Hi, I'm organizing a campus event and would like to invite your choir to perform. Who should I speak to about this?",
-         time: "Yesterday",
-         date: "2026-01-26",
-         source: "Contact Page",
-         isRead: true,
-      },
-      {
-         id: 5,
-         name: "Faith Akinyi",
-         email: "faithakinyi@outlook.com",
-         phone: null,
-         message:
-            "I need spiritual guidance and counseling. Is there a pastor I can speak with privately? Please let me know how to arrange a meeting.",
-         time: "2 days ago",
-         date: "2026-01-25",
-         source: "Contact Page",
-         isRead: true,
-      },
-   ]);
+   // Get visitor messages from store
+   const { visitorMessages, setVisitorMsg } = userStore();
 
    const handleMarkAsRead = (id) => {
-      setVisitorMessages((prev) =>
-         prev.map((msg) => (msg.id === id ? { ...msg, isRead: true } : msg)),
+      const updated = visitorMessages.map((msg) =>
+         msg.id === id ? { ...msg, isRead: true } : msg,
       );
+      setVisitorMsg(updated);
+      // TODO: Update read status via backend API
    };
 
    const handleDeleteMessage = (id) => {
-      setVisitorMessages((prev) => prev.filter((msg) => msg.id !== id));
+      const updated = visitorMessages.filter((msg) => msg.id !== id);
+      setVisitorMsg(updated);
       if (selectedMessage?.id === id) {
          setSelectedMessage(null);
       }
+      // TODO: Delete message via backend API
    };
 
-   const filteredMessages = visitorMessages.filter((msg) => {
+   // Ensure visitorMessages is an array
+   const messagesArray = Array.isArray(visitorMessages) ? visitorMessages : [];
+
+   const filteredMessages = messagesArray.filter((msg) => {
       const matchesSearch =
-         msg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-         msg.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-         msg.message.toLowerCase().includes(searchQuery.toLowerCase());
+         msg?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+         msg?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+         msg?.message?.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesFilter =
          filterStatus === "all" ||
-         (filterStatus === "unread" && !msg.isRead) ||
-         (filterStatus === "read" && msg.isRead);
+         (filterStatus === "unread" && !msg?.isRead) ||
+         (filterStatus === "read" && msg?.isRead);
 
       return matchesSearch && matchesFilter;
    });
 
-   const unreadCount = visitorMessages.filter((msg) => !msg.isRead).length;
+   const unreadCount = messagesArray.filter((msg) => !msg?.isRead).length;
 
    return (
       <div className='flex h-full'>

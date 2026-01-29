@@ -55,7 +55,7 @@ const ChatView = ({
             <div className='flex-1'>
                <h3 className='font-bold text-gray-800'>
                   {activeTab === "community"
-                     ? "MUTSDA Community"
+                     ? "MUTSDA Leaders Community"
                      : selectedChat?.name}
                </h3>
                <p className='text-xs text-gray-500'>
