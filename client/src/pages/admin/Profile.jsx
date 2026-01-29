@@ -32,7 +32,7 @@ const Profile = () => {
    // });
 
    const { user } = userStore();
-   const { userName, userID, email, phoneNumber, role } = user || {};
+   const { userName, email, phoneNumber, role } = user || {};
    const [isEditing, setIsEditing] = useState(false);
    const [editForm, setEditForm] = useState({
       username: "",
@@ -108,6 +108,7 @@ const Profile = () => {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
+      // eslint-disable-next-line no-undef
       setUser((prev) => ({
          ...prev,
          username: editForm.username,
@@ -200,6 +201,7 @@ const Profile = () => {
       setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
    };
 
+   // eslint-disable-next-line react/prop-types
    const InfoItem = ({ icon, label, value, isHighlighted = false }) => (
       <div className='flex items-start gap-4 p-4 bg-gray-50 rounded-xl'>
          <div
@@ -270,12 +272,12 @@ const Profile = () => {
                   <div className='p-6'>
                      {!isEditing ? (
                         <div className='space-y-4'>
-                           <InfoItem
+                           {/* <InfoItem
                               icon={faIdCard}
                               label='User ID'
                               value={userID}
                               isHighlighted
-                           />
+                           /> */}
                            <InfoItem
                               icon={faUser}
                               label='Username'
@@ -319,14 +321,14 @@ const Profile = () => {
                      ) : (
                         <div className='space-y-4'>
                            {/* Non-editable fields */}
-                           <div className='p-4 bg-gray-100 rounded-xl opacity-75'>
+                           {/* <div className='p-4 bg-gray-100 rounded-xl opacity-75'>
                               <p className='text-xs text-gray-500 uppercase tracking-wider mb-1'>
                                  User ID (Cannot be changed)
                               </p>
                               <p className='font-semibold text-gray-600'>
                                  {userID}
                               </p>
-                           </div>
+                           </div> */}
                            <div className='p-4 bg-gray-100 rounded-xl opacity-75'>
                               <p className='text-xs text-gray-500 uppercase tracking-wider mb-1'>
                                  Leadership Role (Contact admin to change)
