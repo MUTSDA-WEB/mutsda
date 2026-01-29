@@ -3,7 +3,7 @@
 import client from "../helpers/prismaClient";
 
 export async function getVisitorMessages(c) {
-   const userId = c.req.param("id");
+   const { userID: userId } = c.get("jwtPayload");
    try {
       const visitorMsg = await client.conversation.findMany({
          where: {
@@ -11,6 +11,7 @@ export async function getVisitorMessages(c) {
             OR: [{ receiverId: userId }, { receiverId: null }],
          },
          orderBy: { createdAt: "desc" },
+         omit: { groupId, msgStatus, userId },
          take: 20,
       });
       return c.json(
@@ -59,12 +60,12 @@ export async function getGroupMessages(c) {
 }
 
 export async function getDirectMessages(c) {
-   const { userId } = await c.req.json();
+   const { userID } = c.get("jwtPayload");
    try {
       const DMs = await client.conversation.findMany({
          where: {
-            OR: [{ receiverId: userId }, { userId }],
             messageType: { equals: "direct" },
+            OR: [{ receiverId: userID }, { userId: userID }],
          },
       });
       return c.json({ message: "Successfully fetched User DMs", DMs }, 200);

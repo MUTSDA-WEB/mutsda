@@ -39,7 +39,7 @@ export async function createGroup(c) {
 }
 
 export async function getUserGroups(c) {
-   const { userId } = c.req.param("id");
+   const { userID: userId } = c.get("jwtPayload");
    try {
       const userGroups = await client.group.findMany({
          where: { groupMembers: { some: { userId } } },

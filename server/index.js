@@ -30,9 +30,10 @@ import {
    getCommunityMessages,
    getDirectMessages,
    getGroupMessages,
+   getVisitorMessages,
 } from "./controller/getMessage";
 import { createGroup, getUserGroups } from "./controller/group.contoller";
-import getLeaders from "./controller/getMember";
+import getLeaders from "./controller/getMembers";
 
 const App = new Hono();
 
@@ -106,7 +107,7 @@ App.post("/message/save/leader", verifyToken, saveLeaderMessage);
 App.post("/message/save/visitor/:id", saveMemberMessage);
 
 // get Leader DMs route
-App.get("/message/look/DMs/:id", verifyToken, getDirectMessages);
+App.get("/message/look/DMs", verifyToken, getDirectMessages);
 
 // get Leader group messages route
 App.get("/messages/look/group/:id", verifyToken, getGroupMessages);
@@ -114,18 +115,21 @@ App.get("/messages/look/group/:id", verifyToken, getGroupMessages);
 // get community messages route
 App.get("/message/look/community", verifyToken, getCommunityMessages);
 
+// get Visitor messages
+App.get("/message/look/visitor", verifyToken, getVisitorMessages);
+
 // update message status route
 App.patch("/message/edit/:id", verifyToken, updateMessageStatus);
 
 // ? Group routes
 // get user Groups route
-App.get("/group/look/:id", verifyToken, getUserGroups);
+App.get("/group/look/", verifyToken, getUserGroups);
 
 // create group route
 App.post("/group/create", verifyToken, createGroup);
 
-// user routes
+// ? user routes
 // get all users
-App.get("/users/look", verifyToken, getLeaders);
+App.get("/user/look", verifyToken, getLeaders);
 
 export default App;

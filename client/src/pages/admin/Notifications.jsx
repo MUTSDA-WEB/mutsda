@@ -126,71 +126,74 @@ const Notifications = () => {
       },
    ]);
 
-   const [groups, setGroups] = useState([
-      {
-         id: 1,
-         name: "Youth Ministry",
-         avatar: "YM",
-         members: 24,
-         lastMessage: "Meeting rescheduled to 5 PM",
-         time: "5 min ago",
-         unread: 5,
-         messages: [
-            {
-               id: 1,
-               sender: "John",
-               text: "Hey everyone! Quick update about tomorrow.",
-               time: "3:00 PM",
-            },
-            {
-               id: 2,
-               sender: "Sarah",
-               text: "What's the update?",
-               time: "3:02 PM",
-            },
-            {
-               id: 3,
-               sender: "John",
-               text: "Meeting rescheduled to 5 PM",
-               time: "3:05 PM",
-            },
-         ],
-      },
-      {
-         id: 2,
-         name: "Choir Group",
-         avatar: "CG",
-         members: 15,
-         lastMessage: "Practice tomorrow at 4 PM",
-         time: "2 hours ago",
-         unread: 0,
-         messages: [
-            {
-               id: 1,
-               sender: "Leader",
-               text: "Practice tomorrow at 4 PM",
-               time: "1:00 PM",
-            },
-         ],
-      },
-      {
-         id: 3,
-         name: "Bible Study Team",
-         avatar: "BS",
-         members: 12,
-         lastMessage: "This week's topic: Book of Romans",
-         time: "Yesterday",
-         unread: 0,
-         messages: [
-            {
-               id: 1,
-               sender: "Pastor",
-               text: "This week's topic: Book of Romans",
-               time: "Yesterday",
-            },
-         ],
-      },
-   ]);
+   // hardcorded groupdata
+   // const [groups, setGroups] = useState([
+   //    {
+   //       id: 1,
+   //       name: "Youth Ministry",
+   //       avatar: "YM",
+   //       members: 24,
+   //       lastMessage: "Meeting rescheduled to 5 PM",
+   //       time: "5 min ago",
+   //       unread: 5,
+   //       messages: [
+   //          {
+   //             id: 1,
+   //             sender: "John",
+   //             text: "Hey everyone! Quick update about tomorrow.",
+   //             time: "3:00 PM",
+   //          },
+   //          {
+   //             id: 2,
+   //             sender: "Sarah",
+   //             text: "What's the update?",
+   //             time: "3:02 PM",
+   //          },
+   //          {
+   //             id: 3,
+   //             sender: "John",
+   //             text: "Meeting rescheduled to 5 PM",
+   //             time: "3:05 PM",
+   //          },
+   //       ],
+   //    },
+   //    {
+   //       id: 2,
+   //       name: "Choir Group",
+   //       avatar: "CG",
+   //       members: 15,
+   //       lastMessage: "Practice tomorrow at 4 PM",
+   //       time: "2 hours ago",
+   //       unread: 0,
+   //       messages: [
+   //          {
+   //             id: 1,
+   //             sender: "Leader",
+   //             text: "Practice tomorrow at 4 PM",
+   //             time: "1:00 PM",
+   //          },
+   //       ],
+   //    },
+   //    {
+   //       id: 3,
+   //       name: "Bible Study Team",
+   //       avatar: "BS",
+   //       members: 12,
+   //       lastMessage: "This week's topic: Book of Romans",
+   //       time: "Yesterday",
+   //       unread: 0,
+   //       messages: [
+   //          {
+   //             id: 1,
+   //             sender: "Pastor",
+   //             text: "This week's topic: Book of Romans",
+   //             time: "Yesterday",
+   //          },
+   //       ],
+   //    },
+   // ]);
+
+   // getting group data from the database
 
    const [communityMessages, setCommunityMessages] = useState([
       {
