@@ -10,24 +10,11 @@ import {
    faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import userStore from "../../hooks/useStore";
 
 const Dashboard = () => {
    // Sample data - replace with actual data from API
-   const upcomingEvents = [
-      {
-         id: 1,
-         title: "Youth Bible Camp",
-         date: "Jan 25, 2026",
-         time: "8:00 AM",
-      },
-      { id: 2, title: "Music Concert", date: "Feb 14, 2026", time: "6:00 PM" },
-      {
-         id: 3,
-         title: "Community Outreach",
-         date: "Mar 02, 2026",
-         time: "9:00 AM",
-      },
-   ];
+   const { events } = userStore();
 
    const quickLinks = [
       {
@@ -69,8 +56,8 @@ const Dashboard = () => {
                   Welcome Back!
                </h1>
                <p className='text-sky-100 text-lg'>
-                  We're glad to have you here. Explore your dashboard and stay
-                  connected.
+                  We&apos;re glad to have you here. Explore your dashboard and
+                  stay connected.
                </p>
             </div>
          </section>
@@ -135,7 +122,7 @@ const Dashboard = () => {
                      </div>
 
                      <div className='space-y-4'>
-                        {upcomingEvents.map((event) => (
+                        {events.map((event) => (
                            <div
                               key={event.id}
                               className='flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-sky-50 transition-colors group cursor-pointer'
@@ -224,9 +211,9 @@ const Dashboard = () => {
                         Scripture of the Day
                      </p>
                      <blockquote className='text-xl md:text-2xl font-light italic mb-4'>
-                        "Trust in the LORD with all your heart and lean not on
-                        your own understanding; in all your ways submit to him,
-                        and he will make your paths straight."
+                        &quot;Trust in the LORD with all your heart and lean not
+                        on your own understanding; in all your ways submit to
+                        him, and he will make your paths straight.&quot;
                      </blockquote>
                      <p className='text-sky-200 font-medium'>
                         — Proverbs 3:5-6

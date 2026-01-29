@@ -5,8 +5,10 @@ const userStore = create((set) => ({
    user: null,
    isAuthenticated: false,
    groups: [],
+   events: [],
 
    // Actions
+   setEvents: (events) => set({ events }),
    setUser: (user) => set({ user, isAuthenticated: !!user }),
    logout: () => set({ user: null, isAuthenticated: false }),
    setGroups: (group) => set({ groups: group }),

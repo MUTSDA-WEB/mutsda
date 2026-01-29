@@ -12,6 +12,8 @@ import {
    faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import userStore from "../../hooks/useStore";
+import { useCreateEvent } from "../../services/events";
 
 const CreateEvent = () => {
    const navigate = useNavigate();
@@ -30,6 +32,9 @@ const CreateEvent = () => {
       imagePreview: null,
    });
    const [errors, setErrors] = useState({});
+
+   // calling the create event API Service
+   const { data, isSuccess, isLoading, mutate: createEvent } = useCreateEvent();
 
    const categories = [
       "Youth Event",
@@ -94,31 +99,35 @@ const CreateEvent = () => {
       e.preventDefault();
       if (!validateForm()) return;
 
+      createEvent(
+         {},
+         {
+            onSuccess: () => {
+               setIsSubmitting(false);
+               setShowSuccess(true);
+            },
+         },
+      );
+
       setIsSubmitting(true);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
       console.log("Event Created:", formData);
-      setIsSubmitting(false);
-      setShowSuccess(true);
 
       // Reset form after success
-      setTimeout(() => {
-         setShowSuccess(false);
-         setFormData({
-            title: "",
-            description: "",
-            date: "",
-            startTime: "",
-            endTime: "",
-            location: "",
-            category: "",
-            maxAttendees: "",
-            image: null,
-            imagePreview: null,
-         });
-      }, 2000);
+
+      setShowSuccess(false);
+      setFormData({
+         title: "",
+         description: "",
+         date: "",
+         startTime: "",
+         endTime: "",
+         location: "",
+         category: "",
+         maxAttendees: "",
+         image: null,
+         imagePreview: null,
+      });
    };
 
    return (

@@ -72,6 +72,7 @@ const Settings = () => {
       { id: "account", name: "Account", icon: faUserCog },
    ];
 
+   // eslint-disable-next-line react/prop-types
    const ToggleSwitch = ({ enabled, onToggle }) => (
       <button
          onClick={onToggle}
@@ -333,7 +334,7 @@ const Settings = () => {
                                     Show Online Status
                                  </p>
                                  <p className='text-sm text-gray-500'>
-                                    Let others see when you're online
+                                    Let others see when you&apos;re online
                                  </p>
                               </div>
                               <ToggleSwitch
