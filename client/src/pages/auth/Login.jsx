@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import useLogin from "../../services/login";
 import { isAxiosError } from "axios";
+import userStore from "../../hooks/useStore";
 
 const Login = () => {
    const navigate = useNavigate();
@@ -19,11 +20,23 @@ const Login = () => {
    });
 
    // call the login hook
-   const { mutate: login, data, isSuccess, isPending } = useLogin();
+   const { mutate: login, isSuccess, isPending } = useLogin();
 
    const [showPassword, setShowPassword] = useState(false);
    const [errors, setErrors] = useState({});
    const [isLoading, setIsLoading] = useState(false);
+   const { setLoading } = userStore();
+
+   useEffect(() => {
+      if (isPending) {
+         setIsLoading(true);
+         setLoading(true);
+      }
+      if (isSuccess) {
+         setIsLoading(false);
+         setLoading(false);
+      }
+   }, [isPending, isSuccess]);
 
    const validateForm = () => {
       const newErrors = {};

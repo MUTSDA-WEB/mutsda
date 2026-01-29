@@ -4,14 +4,37 @@ const userStore = create((set) => ({
    // User state
    user: null,
    isAuthenticated: false,
+
+   // all the groups where the user is a member
    groups: [],
-   events: [],
+   // all the user DMs
+   directMessages: [],
+   // all community messages
+   communityMessages: [],
+   // all visitor Messages to the user
+   visitorMessages: [],
+
+   // store all events
+   upcomingEvents: [],
+   pastEvents: [],
 
    // Actions
    setEvents: (events) => set({ events }),
    setUser: (user) => set({ user, isAuthenticated: !!user }),
    logout: () => set({ user: null, isAuthenticated: false }),
+
+   // update groups and messages
    setGroups: (group) => set({ groups: group }),
+   setMessages: (dms, com, visitor) =>
+      set({
+         directMessages: dms,
+         communityMessages: com,
+         visitorMessages: visitor,
+      }),
+
+   // update events
+   setUpcomingEvents: (e) => set({ upcomingEvents: e }),
+   setPastEvents: (e) => set({ pastEvents: e }),
 
    // UI state
    isLoading: false,

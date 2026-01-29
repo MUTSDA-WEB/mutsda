@@ -14,6 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import userStore from "../../hooks/useStore";
 import { useCreateEvent } from "../../services/events";
+import GlobalLoader from "../../components/GlobalLoader";
 
 const CreateEvent = () => {
    const navigate = useNavigate();
@@ -22,7 +23,8 @@ const CreateEvent = () => {
    const [formData, setFormData] = useState({
       title: "",
       description: "",
-      date: "",
+      eventStartDate: "",
+      eventEndDate: "",
       startTime: "",
       endTime: "",
       location: "",
@@ -85,7 +87,7 @@ const CreateEvent = () => {
       if (!formData.title.trim()) newErrors.title = "Event title is required";
       if (!formData.description.trim())
          newErrors.description = "Description is required";
-      if (!formData.date) newErrors.date = "Date is required";
+      if (!formData.eventStartDate) newErrors.date = "Date is required";
       if (!formData.startTime) newErrors.startTime = "Start time is required";
       if (!formData.location.trim())
          newErrors.location = "Location is required";
@@ -119,13 +121,14 @@ const CreateEvent = () => {
       setFormData({
          title: "",
          description: "",
-         date: "",
-         startTime: "",
-         endTime: "",
-         location: "",
+         eventStartDate: "",
+         eventEndDate: "",
+         eventStartTime: "",
+         eventEndTime: "",
+         eventLocation: "",
          category: "",
          maxAttendees: "",
-         image: null,
+         imageURL: null,
          imagePreview: null,
       });
    };
@@ -263,21 +266,21 @@ const CreateEvent = () => {
                      )}
                   </div>
 
-                  {/* Date and Time Row */}
-                  <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                     {/* Date */}
+                  {/* Date Row */}
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                     {/* Start Date */}
                      <div>
                         <label className='block text-sm font-semibold text-gray-700 mb-2'>
                            <FontAwesomeIcon
                               icon={faCalendarPlus}
                               className='mr-2 text-[#3298C8]'
                            />
-                           Date <span className='text-red-500'>*</span>
+                           Start Date <span className='text-red-500'>*</span>
                         </label>
                         <input
                            type='date'
                            name='date'
-                           value={formData.date}
+                           value={formData.eventStartDate}
                            onChange={handleChange}
                            min={new Date().toISOString().split("T")[0]}
                            className={`w-full p-4 border rounded-xl outline-none transition-all ${
@@ -293,6 +296,31 @@ const CreateEvent = () => {
                         )}
                      </div>
 
+                     {/* End Date */}
+                     <div>
+                        <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                           <FontAwesomeIcon
+                              icon={faCalendarPlus}
+                              className='mr-2 text-gray-400'
+                           />
+                           End Date
+                        </label>
+                        <input
+                           type='date'
+                           name='endDate'
+                           value={formData.eventEndDate}
+                           onChange={handleChange}
+                           min={
+                              formData.eventStartDate ||
+                              new Date().toISOString().split("T")[0]
+                           }
+                           className='w-full p-4 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#3298C8]/30 focus:border-[#3298C8] transition-all'
+                        />
+                     </div>
+                  </div>
+
+                  {/* Time Row */}
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                      {/* Start Time */}
                      <div>
                         <label className='block text-sm font-semibold text-gray-700 mb-2'>
@@ -473,6 +501,7 @@ const CreateEvent = () => {
                </div>
             )}
          </div>
+         <GlobalLoader />
       </div>
    );
 };
