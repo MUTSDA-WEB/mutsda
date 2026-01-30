@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  userID      String  @id @unique @default(uuid()) @map("id")
+  email       String  @unique
+  userName    String  @unique @map("username")
+  password    String  @unique
+  phoneNumber Int     @map("phone_number")
+  role        Role    @unique
+
+  // relations 
+  events      Event[] @relation("UserEvents")
+  messages Conversation[] @relation("UserMessages")
+  groups GroupMember[] @relation("UserGroups")
+
+  @@map("user_table")
+}
+
+model Event {
+  eventID        String   @id @default(uuid()) @map("event_id")
+  title          String
+  description    String
+  category String
+  imageURL       String   @map("image_url")
+  eventStartTime DateTime @map("event_start_time")
+  eventEndTime DateTime? @map("event_end_time")
+  eventLocation String? @map("event_location")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  eventStartDate DateTime @map("event_start_date")
+  eventEndDate   DateTime? @map("event_end_date")
+  userId         String
+  user           User     @relation("UserEvents", fields: [userId], references: [userID])
+
+  @@map("event_table")
+}
+
+
+// Table model for the messages named Converstions
+model Conversation {
+  messageId String @id @default(uuid()) @map("message_id")
+  messageType ConvoType @map("message_type")
+  msgStatus MessageStatus @map("message_status")
+  content String 
+  userId String
+  createdAt DateTime @default(now()) @map("created_at")
+  receiverId String?  
+  groupId String? 
+  
+  // one to many relationship between user and messages 
+  convoUser User @relation("UserMessages", fields: [userId], references: [userID])
+
+  @@map("conversation_table")
+}
+
+model Group {
+  groupId String @id @default(uuid()) @map("group_id")
+  groupName String @map("group_name") @unique
+  groupMembers GroupMember[] 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("group_table")
+}
+
+model GroupMember {
+  id      String @id @default(uuid())
+  userId  String
+  groupId String
+  role    GroupRole @default(member)  // admin, member, moderator
+
+  user  User  @relation("UserGroups", fields: [userId], references: [userID])
+  group Group @relation(fields: [groupId], references: [groupId])
+
+  @@unique([userId, groupId])
+}
+
+enum ConvoType {
+  community @map("COMMUNITY")
+  group @map("GROUP")
+  direct @map("DIRECT")
+  visitor @map("VISITOR")
+}
+
+enum GroupRole {
+  admin @map("ADMIN")
+  member @map("MEMBER")
+}
+
+enum MessageStatus {
+  sent @map("SENT")
+  delivered @map("DELIVERED")
+  read @map("READ")
+}
+
+enum Role {
+  user           @map("USER")
+  admin1         @map("ADMIN1")
+  admin2         @map("ADMIN2")
+  elder1         @map("ELDER1")
+  elder2         @map("ELDER2")
+  elder3         @map("ELDER3")
+  churchLeader   @map("CHURCHLEADER")
+  headDeacon     @map("HEADDEACON")
+  headDeaconness @map("HEADDEACONNESS")
+  sabbathSchool  @map("SABBATHSCHOOL")
+  treasurer      @map("TREASURER")
+  clerk          @map("CLERK")
+  alo            @map("ALO")
+  amo            @map("AMO")
+  prophecy       @map("PROPHECY")
+  stewardship    @map("STEWARDSHIP")
+  music          @map("MUSIC")
+  welfare        @map("WELFARE")
+  development    @map("DEVELOPMENT")
+  communication  @map("COMMUNICATION")
+}
