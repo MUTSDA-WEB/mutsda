@@ -127,7 +127,7 @@ const Home = () => {
             </div>
 
             {/* Bottom Gradient Fade */}
-            <div className='absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-sky-100 to-transparent z-10'></div>
+            <div className='absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-[#7F5741] to-transparent z-10'></div>
          </section>
 
          {/* MAIN CONTENT WRAPPER */}

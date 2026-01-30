@@ -22,6 +22,7 @@ import {
    useGetUserDirectMsg,
    useGetVisitorMessages,
 } from "../../services/message";
+import useChatSocket from "../../hooks/useChatSocket";
 
 const Notifications = () => {
    const [activeTab, setActiveTab] = useState("messages");
@@ -125,10 +126,31 @@ const Notifications = () => {
             minute: "2-digit",
          }),
          avatar: user?.username?.substring(0, 2).toUpperCase() || "YO",
+         // Add type and routing info for socket
+         type:
+            activeTab === "messages"
+               ? "direct"
+               : activeTab === "groups"
+                 ? "group"
+                 : activeTab === "community"
+                   ? "community"
+                   : "visitor",
+         userId: user?.userID,
+         receiverId:
+            activeTab === "messages" && selectedChat
+               ? selectedChat.id
+               : undefined,
+         groupId:
+            activeTab === "groups" && selectedChat
+               ? selectedChat.id
+               : undefined,
+         room: activeTab === "community" ? "community" : selectedChat?.id,
       };
 
+      sendMessage(newMessage); // send via socket and localforage
+
+      // Optimistically update UI as before
       if (activeTab === "messages" && selectedChat) {
-         // Update direct messages in store
          const updatedDMs = directMessages.map((chat) =>
             chat.id === selectedChat.id
                ? {
@@ -145,7 +167,6 @@ const Notifications = () => {
             messages: [...(prev.messages || []), newMessage],
          }));
       } else if (activeTab === "groups" && selectedChat) {
-         // Update groups in store
          const updatedGroups = groups.map((group) =>
             group.id === selectedChat.id
                ? {
@@ -162,12 +183,10 @@ const Notifications = () => {
             messages: [...(prev.messages || []), newMessage],
          }));
       } else if (activeTab === "community") {
-         // Update community messages in store
          setComMsg([...communityMessages, newMessage]);
       }
 
       setMessage("");
-      // TODO: Send message to backend API
    };
 
    const handleCreateGroup = () => {
@@ -214,6 +233,9 @@ const Notifications = () => {
    const getCurrentItems = () => {
       return activeTab === "messages" ? directMessages : groups;
    };
+
+   // Integrate chat socket
+   const { sendMessage } = useChatSocket({ activeTab, selectedChat });
 
    return (
       <div className='h-[calc(100vh-80px)] flex flex-col animate-fadeIn'>

@@ -1,5 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
+import userStore from "../../hooks/useStore";
 
 const ChatList = ({
    activeTab,
@@ -15,6 +17,22 @@ const ChatList = ({
    const filtered = itemsArray.filter((item) =>
       item?.name?.toLowerCase().includes(searchQuery.toLowerCase()),
    );
+
+   const [showAddChat, setShowAddChat] = useState(false);
+
+   const handleStartChat = (user) => {
+      setShowAddChat(false);
+      setSelectedChat({
+         id: user.id,
+         name: user.name,
+         avatar: user.avatar || user.name?.substring(0, 2).toUpperCase(),
+         messages: [],
+         online: true,
+         lastMessage: "",
+         time: "Just now",
+         unread: 0,
+      });
+   };
 
    return (
       <div className='flex flex-col h-full'>
@@ -40,6 +58,15 @@ const ChatList = ({
                >
                   <FontAwesomeIcon icon={faPlus} />
                   Create New Group
+               </button>
+            )}
+            {activeTab === "messages" && (
+               <button
+                  onClick={() => setShowAddChat(true)}
+                  className='w-full flex items-center justify-center gap-2 p-3 bg-[#3298C8] text-white rounded-xl hover:bg-sky-600 transition-colors'
+               >
+                  <FontAwesomeIcon icon={faPlus} />
+                  Add Chat
                </button>
             )}
          </div>
@@ -97,6 +124,58 @@ const ChatList = ({
                   </div>
                ))
             )}
+         </div>
+      </div>
+   );
+};
+
+const AddChatModal = ({ show, onClose, onStartChat }) => {
+   const { members } = userStore();
+   const [search, setSearch] = useState("");
+   const filtered = members.filter((m) =>
+      (m.name || m.userName)?.toLowerCase().includes(search.toLowerCase()),
+   );
+   if (!show) return null;
+   return (
+      <div className='fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50'>
+         <div className='bg-white rounded-xl p-6 w-full max-w-md shadow-lg'>
+            <h3 className='font-bold text-lg mb-4'>Start a New Chat</h3>
+            <input
+               type='text'
+               value={search}
+               onChange={(e) => setSearch(e.target.value)}
+               placeholder='Search users...'
+               className='w-full mb-4 p-2 border rounded'
+            />
+            <div className='max-h-60 overflow-y-auto'>
+               {filtered.length === 0 ? (
+                  <div className='text-gray-400 text-center py-8'>
+                     No users found
+                  </div>
+               ) : (
+                  filtered.map((user) => (
+                     <div
+                        key={user.id}
+                        className='flex items-center gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer'
+                        onClick={() => onStartChat(user)}
+                     >
+                        <div className='w-8 h-8 bg-[#3298C8] text-white rounded-full flex items-center justify-center font-semibold'>
+                           {user.avatar ||
+                              user.name?.substring(0, 2).toUpperCase()}
+                        </div>
+                        <span className='font-medium text-gray-800'>
+                           {user.name || user.userName}
+                        </span>
+                     </div>
+                  ))
+               )}
+            </div>
+            <button
+               onClick={onClose}
+               className='mt-4 w-full p-2 bg-gray-200 rounded hover:bg-gray-300'
+            >
+               Cancel
+            </button>
          </div>
       </div>
    );
