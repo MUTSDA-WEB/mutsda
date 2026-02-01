@@ -13,6 +13,7 @@ import Donate from "./pages/Donate";
 import Contact from "./pages/ContactUs";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import NotFound from "./pages/NotFound";
 
 // Layout imports
 import PublicLayout from "./layout/PublicLayout";
@@ -78,6 +79,9 @@ const AppRouter = () => {
                <Route path='sabbathschool' element={<SabbathSchool />} />
             </Route>
          </Route>
+
+         {/* 404 Catch-all Route */}
+         <Route path='*' element={<NotFound />} />
       </Routes>
    );
 };

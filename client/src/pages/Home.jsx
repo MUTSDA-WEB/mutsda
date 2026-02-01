@@ -5,8 +5,10 @@ import {
    faEnvelope,
    faPhone,
    faChevronDown,
+   faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import EventDetailsModal from "../components/EventDetailsModal";
+import NoEvents from "../components/NoEvents";
 import userStore from "../hooks/useStore";
 
 const Home = () => {
@@ -49,7 +51,7 @@ const Home = () => {
    return (
       <div className='flex flex-col animate-fadeIn'>
          {/* 1. HERO SECTION */}
-         <section className='relative min-h-[90vh] flex items-center justify-center text-white overflow-hidden'>
+         <section className='relative min-h-[91vh] flex items-center justify-center text-white overflow-hidden'>
             {/* Background Image with Overlay */}
             <div className='absolute inset-0 z-0'>
                <img
@@ -90,7 +92,8 @@ const Home = () => {
                   Murang&apos;a University of Technology Seventh Day Adventist
                </p>
                <p className='text-lg md:text-xl italic font-light mb-10 text-white/80'>
-                  &quot;We love you, we value you and we cherish you&quot;
+                  &quot;We love you, we value you, we cherish you and we mean
+                  it&quot;
                </p>
 
                {/* CTA Buttons */}
@@ -141,63 +144,67 @@ const Home = () => {
                   <div className='absolute -bottom-2 left-0 w-full h-1 bg-[#3298C8] rounded-full'></div>
                </div>
 
-               <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-                  {upcomingEvents.map((event) => (
-                     <div
-                        key={event.id}
-                        className='group relative bg-white rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500'
-                     >
-                        {/* Image Container */}
-                        <div className='h-72 overflow-hidden relative'>
-                           <img
-                              src={event.img}
-                              alt={event.title}
-                              className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
-                           />
-                           {/* Date Badge */}
-                           <div className='absolute top-4 left-4 bg-white rounded-2xl p-2 px-4 shadow-md text-center'>
-                              <span className='block text-[#3298C8] font-black text-lg leading-none'>
-                                 {event.date.split(" ")[1]}
-                              </span>
-                              <span className='block text-gray-400 text-[10px] font-bold uppercase'>
-                                 {event.date.split(" ")[0]}
-                              </span>
+               {upcomingEvents && upcomingEvents.length > 0 ? (
+                  <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+                     {upcomingEvents.map((event) => (
+                        <div
+                           key={event.id}
+                           className='group relative bg-white rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500'
+                        >
+                           {/* Image Container */}
+                           <div className='h-72 overflow-hidden relative'>
+                              <img
+                                 src={event.img}
+                                 alt={event.title}
+                                 className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
+                              />
+                              {/* Date Badge */}
+                              <div className='absolute top-4 left-4 bg-white rounded-2xl p-2 px-4 shadow-md text-center'>
+                                 <span className='block text-[#3298C8] font-black text-lg leading-none'>
+                                    {event.date.split(" ")[1]}
+                                 </span>
+                                 <span className='block text-gray-400 text-[10px] font-bold uppercase'>
+                                    {event.date.split(" ")[0]}
+                                 </span>
+                              </div>
                            </div>
-                        </div>
 
-                        {/* Content Area */}
-                        <div className='p-6 text-left space-y-2'>
-                           <h3 className='text-xl font-bold text-gray-800 group-hover:text-[#3298C8] transition-colors'>
-                              {event.title}
-                           </h3>
-                           <p className='text-sm text-gray-500 line-clamp-2'>
-                              {event.desc}
-                           </p>
-                           <div className='pt-4 flex items-center justify-between'>
-                              <button
-                                 onClick={() => setSelectedEvent(event)}
-                                 className='text-[#3298C8] font-bold text-sm hover:underline'
-                              >
-                                 Event Details →
-                              </button>
-                              <div className='flex -space-x-2'>
-                                 {[1, 2, 3].map((i) => (
-                                    <img
-                                       key={i}
-                                       className='w-6 h-6 rounded-full border-2 border-white'
-                                       src={`https://i.pravatar.cc/100?u=${event.id + i}`}
-                                       alt='Attendee'
-                                    />
-                                 ))}
-                                 <div className='w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[8px] font-bold text-gray-400'>
-                                    +{event.attendees}
+                           {/* Content Area */}
+                           <div className='p-6 text-left space-y-2'>
+                              <h3 className='text-xl font-bold text-gray-800 group-hover:text-[#3298C8] transition-colors'>
+                                 {event.title}
+                              </h3>
+                              <p className='text-sm text-gray-500 line-clamp-2'>
+                                 {event.desc}
+                              </p>
+                              <div className='pt-4 flex items-center justify-between'>
+                                 <button
+                                    onClick={() => setSelectedEvent(event)}
+                                    className='text-[#3298C8] font-bold text-sm hover:underline'
+                                 >
+                                    Event Details →
+                                 </button>
+                                 <div className='flex -space-x-2'>
+                                    {[1, 2, 3].map((i) => (
+                                       <img
+                                          key={i}
+                                          className='w-6 h-6 rounded-full border-2 border-white'
+                                          src={`https://i.pravatar.cc/100?u=${event.id + i}`}
+                                          alt='Attendee'
+                                       />
+                                    ))}
+                                    <div className='w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[8px] font-bold text-gray-400'>
+                                       +{event.attendees}
+                                    </div>
                                  </div>
                               </div>
                            </div>
                         </div>
-                     </div>
-                  ))}
-               </div>
+                     ))}
+                  </div>
+               ) : (
+                  <NoEvents />
+               )}
 
                {/* Event Details Modal */}
                <EventDetailsModal
@@ -205,6 +212,145 @@ const Home = () => {
                   isOpen={!!selectedEvent}
                   onClose={() => setSelectedEvent(null)}
                />
+            </section>
+
+            {/* CALENDAR OF EVENTS SECTION */}
+            <section className='space-y-10'>
+               <div className='text-center'>
+                  <div className='inline-flex items-center gap-3 mb-4'>
+                     <FontAwesomeIcon
+                        icon={faCalendarAlt}
+                        className='text-3xl text-[#3298C8]'
+                     />
+                     <h2 className='text-4xl font-black text-gray-800 tracking-tight uppercase'>
+                        Calendar of Events
+                     </h2>
+                  </div>
+                  <p className='text-gray-500 max-w-2xl mx-auto'>
+                     Plan ahead and mark your calendars for these exciting
+                     upcoming activities and gatherings.
+                  </p>
+                  <div className='w-24 h-1.5 bg-[#3298C8] mx-auto mt-4 rounded-full'></div>
+               </div>
+
+               <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 items-start'>
+                  {/* Events Table */}
+                  <div className='bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100'>
+                     <div className='bg-[#3298C8] p-6 text-white'>
+                        <h3 className='text-xl font-bold'>Scheduled Events</h3>
+                        <p className='text-sky-100 text-sm mt-1'>
+                           Semester Program Overview
+                        </p>
+                     </div>
+                     <div className='overflow-x-auto'>
+                        <table className='w-full'>
+                           <thead className='bg-gray-50'>
+                              <tr>
+                                 <th className='px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider'>
+                                    Date
+                                 </th>
+                                 <th className='px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider'>
+                                    Event
+                                 </th>
+                                 <th className='px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider'>
+                                    Description
+                                 </th>
+                              </tr>
+                           </thead>
+                           <tbody className='divide-y divide-gray-100'>
+                              <tr className='hover:bg-gray-50 transition-colors'>
+                                 <td className='px-6 py-4 whitespace-nowrap'>
+                                    <span className='bg-[#3298C8]/10 text-[#3298C8] px-3 py-1 rounded-full text-sm font-semibold'>
+                                       Feb 8
+                                    </span>
+                                 </td>
+                                 <td className='px-6 py-4 font-medium text-gray-800'>
+                                    Youth Rally
+                                 </td>
+                                 <td className='px-6 py-4 text-gray-500 text-sm'>
+                                    Annual youth gathering with guest speakers
+                                 </td>
+                              </tr>
+                              <tr className='hover:bg-gray-50 transition-colors'>
+                                 <td className='px-6 py-4 whitespace-nowrap'>
+                                    <span className='bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-semibold'>
+                                       Feb 15
+                                    </span>
+                                 </td>
+                                 <td className='px-6 py-4 font-medium text-gray-800'>
+                                    Prayer Week
+                                 </td>
+                                 <td className='px-6 py-4 text-gray-500 text-sm'>
+                                    Week of spiritual revival and prayer
+                                 </td>
+                              </tr>
+                              <tr className='hover:bg-gray-50 transition-colors'>
+                                 <td className='px-6 py-4 whitespace-nowrap'>
+                                    <span className='bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold'>
+                                       Feb 22
+                                    </span>
+                                 </td>
+                                 <td className='px-6 py-4 font-medium text-gray-800'>
+                                    Community Outreach
+                                 </td>
+                                 <td className='px-6 py-4 text-gray-500 text-sm'>
+                                    Serving the local community
+                                 </td>
+                              </tr>
+                              <tr className='hover:bg-gray-50 transition-colors'>
+                                 <td className='px-6 py-4 whitespace-nowrap'>
+                                    <span className='bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold'>
+                                       Mar 1
+                                    </span>
+                                 </td>
+                                 <td className='px-6 py-4 font-medium text-gray-800'>
+                                    Music Sabbath
+                                 </td>
+                                 <td className='px-6 py-4 text-gray-500 text-sm'>
+                                    Special musical program and worship
+                                 </td>
+                              </tr>
+                              <tr className='hover:bg-gray-50 transition-colors'>
+                                 <td className='px-6 py-4 whitespace-nowrap'>
+                                    <span className='bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-sm font-semibold'>
+                                       Mar 15
+                                    </span>
+                                 </td>
+                                 <td className='px-6 py-4 font-medium text-gray-800'>
+                                    Fellowship Dinner
+                                 </td>
+                                 <td className='px-6 py-4 text-gray-500 text-sm'>
+                                    End of semester celebration
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+
+                  {/* Calendar Image */}
+                  <div className='bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100'>
+                     <div className='bg-linear-to-r from-gray-800 to-gray-900 p-6 text-white'>
+                        <h3 className='text-xl font-bold'>Events Summary</h3>
+                        <p className='text-gray-300 text-sm mt-1'>
+                           Visual overview of our calendar
+                        </p>
+                     </div>
+                     <div className='p-4'>
+                        <img
+                           src='/MUTSDAEvents.jpeg'
+                           alt='MUTSDA Events Calendar'
+                           className='w-full h-auto rounded-2xl object-cover shadow-md hover:shadow-xl transition-shadow duration-300'
+                        />
+                     </div>
+                     <div className='px-6 pb-6'>
+                        <p className='text-gray-500 text-sm text-center italic'>
+                           Download or screenshot the calendar for your
+                           reference
+                        </p>
+                     </div>
+                  </div>
+               </div>
             </section>
 
             {/* Redesigned 3. OUR SERVICES */}
