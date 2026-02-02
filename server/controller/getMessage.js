@@ -42,16 +42,26 @@ export async function getCommunityMessages(c) {
 }
 
 export async function getGroupMessages(c) {
-   const { groupId } = c.req.param("id");
+   const groupId = c.req.param("id");
+   console.log(groupId);
    try {
       const groupMessages = await client.conversation.findMany({
          where: {
             groupId,
             messageType: { equals: "group" },
          },
+         include: {
+            user: {
+               select: { userName: true },
+            },
+         },
+         orderBy: { createdAt: "asc" },
       });
       return c.json(
-         { message: "Successfully group messages", groupMessages },
+         {
+            message: "Successfully fetched group messages",
+            messages: groupMessages,
+         },
          200,
       );
    } catch (error) {
