@@ -11,6 +11,7 @@ const CreateGroupModal = ({
    setSelectedMembers,
    allUsers,
    onCreateGroup,
+   isLoading,
 }) => {
    const { user } = userStore();
 
@@ -101,10 +102,14 @@ const CreateGroupModal = ({
                </button>
                <button
                   onClick={onCreateGroup}
-                  disabled={!groupName.trim() || selectedMembers.length === 0}
+                  disabled={
+                     !groupName.trim() ||
+                     selectedMembers.length === 0 ||
+                     isLoading
+                  }
                   className='flex-1 p-3 bg-[#3298C8] text-white rounded-xl hover:bg-sky-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed'
                >
-                  Create Group
+                  {isLoading ? "Creating Group..." : "Create Group"}
                </button>
             </div>
          </div>

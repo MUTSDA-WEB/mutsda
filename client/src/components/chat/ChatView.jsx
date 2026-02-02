@@ -84,13 +84,13 @@ const ChatView = ({
                      className={`max-w-[70%] ${
                         msg.sender === "me" || msg.sender === "You"
                            ? "bg-[#3298C8] text-white rounded-2xl rounded-br-md"
-                           : "bg-white text-gray-800 rounded-2xl rounded-bl-md shadow-sm"
+                           : "bg-gray-700 text-gray-100 rounded-2xl rounded-bl-md shadow-sm"
                      } px-4 py-3`}
                   >
                      {(activeTab === "community" || activeTab === "groups") &&
                         msg.sender !== "me" &&
                         msg.sender !== "You" && (
-                           <p className='text-xs font-semibold text-[#3298C8] mb-1'>
+                           <p className='text-xs font-semibold text-sky-300 mb-1'>
                               {msg.sender}
                            </p>
                         )}

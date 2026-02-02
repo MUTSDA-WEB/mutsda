@@ -14,7 +14,7 @@ import {
    VisitorMessages,
 } from "../../components/chat/index";
 import userStore from "../../hooks/useStore";
-import { useGetUserGroups } from "../../services/getGroups";
+import { useCreateGroup, useGetUserGroups } from "../../services/groups";
 import { useGetUsers } from "../../services/getUsers";
 import {
    useGetCommunityMessages,
@@ -23,6 +23,7 @@ import {
    useGetVisitorMessages,
 } from "../../services/message";
 import useChatSocket from "../../hooks/useChatSocket";
+import { queryClient } from "../../main";
 
 const Notifications = () => {
    const [activeTab, setActiveTab] = useState("messages");
@@ -36,37 +37,40 @@ const Notifications = () => {
    // Integrate chat socket - moved up to be available for handleSendMessage
    const { sendMessage } = useChatSocket({ activeTab, selectedChat });
 
-   // Todo:  get user groups
+   // * run the create group service
+   const { mutate: createGroup, isLoading, data } = useCreateGroup();
+
+   // *  get user groups
    const {
       data: groupData,
       isSuccess: groupSuccess,
       isLoading: groupLoading,
       isError: groupError,
    } = useGetUserGroups();
-   // Todo: get users from the db
+   // * get users from the db
    const {
       data: users,
       isSuccess: userSuccess,
       isLoading: userLoading,
       isError: userError,
    } = useGetUsers();
-   // Todo: get user DirectMessages
+   // * get user DirectMessages
    const {
       data: userDMs,
       isSuccess: DMSuccess,
       isLoading: DMloading,
       isError: DMError,
    } = useGetUserDirectMsg();
-   // Todo: get group messages
+   // * get group messages
    // const {data: groupMsg, isSuccess: gSuccess, isLoading: gLoading, isError: gError} = useGetGroupMessages()
-   // Todo: get comminity messages
+   // * get comminity messages
    const {
       data: comMsg,
       isSuccess: comSuccess,
       isLoading: comLoading,
       isError: comError,
    } = useGetCommunityMessages();
-   // Todo: get visitor messages
+   // * get visitor messages
    const {
       data: visitorMsg,
       isSuccess: visitorSuccess,
@@ -92,8 +96,25 @@ const Notifications = () => {
    // update the stores whenever the data is ready/available
    useEffect(() => {
       // API returns { message: "...", dataKey: [...] }, extract the array
-      if (groupData?.userGroups && groupSuccess)
-         setGroups(groupData.userGroups);
+      // Transform groups to match expected shape (id, name, avatar, etc.)
+      if (groupData?.userGroups && groupSuccess) {
+         const transformedGroups = groupData.userGroups.map((group) => ({
+            id: group.groupId,
+            name: group.groupName,
+            avatar: group.groupName?.substring(0, 2).toUpperCase() || "GR",
+            members: group.groupMembers?.length || 0,
+            lastMessage: group.lastMessage || "No messages yet",
+            time: group.updatedAt
+               ? new Date(group.updatedAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                 })
+               : "",
+            unread: 0,
+            messages: [],
+         }));
+         setGroups(transformedGroups);
+      }
       if (users?.leaders && userSuccess) setMembers(users.leaders);
       if (comMsg?.DMs && comSuccess) setComMsg(comMsg.DMs);
       if (visitorMsg?.visitorMsg && visitorSuccess)
@@ -255,31 +276,24 @@ const Notifications = () => {
 
    const handleCreateGroup = () => {
       if (!newGroupName.trim() || selectedMembers.length === 0) return;
-
-      const newGroup = {
-         id: Date.now(),
-         name: newGroupName,
-         avatar: newGroupName.substring(0, 2).toUpperCase(),
-         members: selectedMembers.length + 1,
-         lastMessage: "Group created",
-         time: "Just now",
-         unread: 0,
-         messages: [
-            {
-               id: 1,
-               sender: "System",
-               text: "Group created. Start chatting!",
-               time: "Just now",
+      // Create group via backend API
+      createGroup(
+         { newGroupName, selectedMembers },
+         {
+            onSuccess: (response) => {
+               console.log("Group created:", response?.group);
+               // Invalidate and refetch groups
+               queryClient.invalidateQueries({ queryKey: ["GET_USER_GROUPS"] });
+               // Close modal and reset form
+               setShowCreateGroup(false);
+               setNewGroupName("");
+               setSelectedMembers([]);
             },
-         ],
-      };
-
-      // Update groups in store
-      setGroups([newGroup, ...groups]);
-      setShowCreateGroup(false);
-      setNewGroupName("");
-      setSelectedMembers([]);
-      // TODO: Create group via backend API
+            onError: (error) => {
+               console.log("Failed to create group:", error);
+            },
+         },
+      );
    };
 
    const tabs = [
@@ -397,6 +411,7 @@ const Notifications = () => {
             selectedMembers={selectedMembers}
             setSelectedMembers={setSelectedMembers}
             allUsers={members}
+            isLoading={isLoading}
             onCreateGroup={handleCreateGroup}
          />
       </div>
