@@ -1,33 +1,66 @@
-import amqp from "amqplib";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import Redis from "ioredis";
+import prisma from "./helpers/prismaClient.js";
 
-const RABBIT_URL = process.env.RABBIT_URL || "amqp://localhost";
+const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
-(async () => {
-   const conn = await amqp.connect(RABBIT_URL);
-   const channel = await conn.createChannel();
-   await channel.assertQueue("chat-messages");
+async function startWorker() {
+   try {
+      const redis = new Redis(REDIS_URL);
 
-   channel.consume("chat-messages", async (msg) => {
-      if (msg !== null) {
-         const chatMsg = JSON.parse(msg.content.toString());
+      redis.on("connect", () => {
+         console.log("Worker connected to Redis");
+      });
+
+      redis.on("error", (err) => {
+         console.error("Redis error:", err.message);
+      });
+
+      console.log("Worker started, waiting for messages...");
+
+      // Continuously process messages from Redis list
+      while (true) {
          try {
-            await prisma.conversation.create({
-               data: {
-                  messageType: chatMsg.type,
-                  content: chatMsg.content,
-                  userId: chatMsg.userId,
-                  receiverId: chatMsg.receiverId,
-                  groupId: chatMsg.groupId,
-                  msgStatus: "sent",
-               },
-            });
-            channel.ack(msg);
+            // BRPOP blocks until a message is available (timeout 0 = wait forever)
+            const result = await redis.brpop("chat:messages", 0);
+
+            if (result) {
+               const [, messageStr] = result;
+               const chatMsg = JSON.parse(messageStr);
+
+               // Map frontend message type to enum
+               const messageTypeMap = {
+                  direct: "direct",
+                  group: "group",
+                  community: "community",
+                  visitor: "visitor",
+               };
+
+               await prisma.conversation.create({
+                  data: {
+                     messageType: messageTypeMap[chatMsg.type] || "direct",
+                     content: chatMsg.text || chatMsg.content || "",
+                     userId: chatMsg.userId || chatMsg.senderId,
+                     receiverId: chatMsg.receiverId || null,
+                     groupId: chatMsg.groupId || null,
+                     msgStatus: "sent",
+                  },
+               });
+
+               console.log(
+                  `Message saved: ${chatMsg.type} from ${chatMsg.userId || chatMsg.senderId}`,
+               );
+            }
          } catch (err) {
-            console.error("DB save failed", err);
-            // Optionally: channel.nack(msg, false, true); // requeue
+            console.error("Error processing message:", err.message);
+            // Small delay before retrying on error
+            await new Promise((resolve) => setTimeout(resolve, 1000));
          }
       }
-   });
-})();
+   } catch (err) {
+      console.error("Worker failed to start:", err.message);
+      // Retry connection after 5 seconds
+      setTimeout(startWorker, 5000);
+   }
+}
+
+startWorker();
