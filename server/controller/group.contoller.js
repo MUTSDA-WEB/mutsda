@@ -5,7 +5,6 @@ export async function createGroup(c) {
       await c.req.json();
    const { userID: creatorId } = c.get("jwtPayload");
 
-   console.log(groupMembers, groupName);
    try {
       // Todo create an empty group then create the memberships and feed then to the group
       // * Wrap the two operations in a transaction to provide fall back incase any fails
@@ -60,6 +59,11 @@ export async function getUserGroups(c) {
    try {
       const userGroups = await client.group.findMany({
          where: { groupMembers: { some: { userId } } },
+         include: {
+            _count: {
+               select: { groupMembers: true },
+            },
+         },
       });
       return c.json(
          { message: "Successfully fetched User groups", userGroups },

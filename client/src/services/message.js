@@ -5,11 +5,12 @@ import Ax from "../helpers/axios";
 
 function useGetGroupMessages(groupId) {
    return useQuery({
-      queryKey: ["GET_GROUP_MESSAGES"],
+      queryKey: ["GET_GROUP_MESSAGES", groupId],
       queryFn: async () => {
          const groupMessages = await Ax.get(`/message/look/group/${groupId}`);
          return groupMessages.data;
       },
+      enabled: !!groupId, // Only fetch when groupId is provided
    });
 }
 

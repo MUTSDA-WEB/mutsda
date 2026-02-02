@@ -38,7 +38,11 @@ const Notifications = () => {
    const { sendMessage } = useChatSocket({ activeTab, selectedChat });
 
    // * run the create group service
-   const { mutate: createGroup, isLoading, data } = useCreateGroup();
+   const {
+      mutate: createGroup,
+      isLoading: createGLoad,
+      data,
+   } = useCreateGroup();
 
    // *  get user groups
    const {
@@ -61,8 +65,15 @@ const Notifications = () => {
       isLoading: DMloading,
       isError: DMError,
    } = useGetUserDirectMsg();
-   // * get group messages
-   // const {data: groupMsg, isSuccess: gSuccess, isLoading: gLoading, isError: gError} = useGetGroupMessages()
+   // * get group messages - fetch when a group is selected
+   const {
+      data: groupMsg,
+      isSuccess: gSuccess,
+      isLoading: gLoading,
+      isError: gError,
+   } = useGetGroupMessages(
+      activeTab === "groups" && selectedChat?.id ? selectedChat.id : null,
+   );
    // * get comminity messages
    const {
       data: comMsg,
@@ -102,7 +113,7 @@ const Notifications = () => {
             id: group.groupId,
             name: group.groupName,
             avatar: group.groupName?.substring(0, 2).toUpperCase() || "GR",
-            members: group.groupMembers?.length || 0,
+            members: group._count?.groupMembers || 0,
             lastMessage: group.lastMessage || "No messages yet",
             time: group.updatedAt
                ? new Date(group.updatedAt).toLocaleTimeString([], {
@@ -198,6 +209,40 @@ const Notifications = () => {
       setVisitorMsg,
       user?.userID,
    ]);
+
+   // Update selected chat with group messages when they are fetched
+   useEffect(() => {
+      if (
+         gSuccess &&
+         groupMsg?.messages &&
+         selectedChat &&
+         activeTab === "groups"
+      ) {
+         const transformedMessages = groupMsg.messages.map((msg) => ({
+            id: msg.messageId,
+            sender:
+               msg.userId === user?.userID
+                  ? "me"
+                  : msg.user?.userName || "Unknown",
+            text: msg.content,
+            time: new Date(msg.createdAt).toLocaleTimeString([], {
+               hour: "2-digit",
+               minute: "2-digit",
+            }),
+            avatar: msg.user?.userName?.substring(0, 2).toUpperCase() || "??",
+         }));
+         setSelectedChat((prev) => ({
+            ...prev,
+            messages: transformedMessages,
+         }));
+      }
+   }, [gSuccess, groupMsg, selectedChat?.id, activeTab, user?.userID]);
+
+   // Compute overall loading and error states
+   const isLoading =
+      groupLoading || userLoading || DMloading || comLoading || visitorLoading;
+   const hasError =
+      groupError || userError || DMError || comError || visitorError;
 
    const handleSendMessage = () => {
       if (!message.trim()) return;
@@ -342,63 +387,97 @@ const Notifications = () => {
 
          {/* Main Content */}
          <div className='flex-1 flex overflow-hidden'>
+            {/* Loading State */}
+            {isLoading && (
+               <div className='flex-1 flex items-center justify-center'>
+                  <div className='flex flex-col items-center gap-3'>
+                     <div className='w-10 h-10 border-4 border-[#3298C8] border-t-transparent rounded-full animate-spin'></div>
+                     <p className='text-gray-500'>Loading...</p>
+                  </div>
+               </div>
+            )}
+
+            {/* Error State */}
+            {hasError && !isLoading && (
+               <div className='flex-1 flex items-center justify-center'>
+                  <div className='flex flex-col items-center gap-3 text-center px-4'>
+                     <div className='w-16 h-16 bg-red-100 rounded-full flex items-center justify-center'>
+                        <span className='text-red-500 text-2xl'>!</span>
+                     </div>
+                     <p className='text-gray-700 font-medium'>
+                        Something went wrong
+                     </p>
+                     <p className='text-gray-500 text-sm'>
+                        Failed to load data. Please try again.
+                     </p>
+                  </div>
+               </div>
+            )}
+
             {/* Visitors Tab */}
-            {activeTab === "visitors" ? (
+            {!isLoading && !hasError && activeTab === "visitors" ? (
                <VisitorMessages />
             ) : (
-               <>
-                  {/* Sidebar - Chat List (for messages and groups) */}
-                  {activeTab !== "community" && (
+               !isLoading &&
+               !hasError && (
+                  <>
+                     {/* Sidebar - Chat List (for messages and groups) */}
+                     {activeTab !== "community" && (
+                        <div
+                           className={`w-full lg:w-80 bg-white border-r border-gray-200 flex flex-col ${
+                              selectedChat ? "hidden lg:flex" : "flex"
+                           }`}
+                        >
+                           <ChatList
+                              activeTab={activeTab}
+                              items={getCurrentItems()}
+                              searchQuery={searchQuery}
+                              setSearchQuery={setSearchQuery}
+                              selectedChat={selectedChat}
+                              setSelectedChat={setSelectedChat}
+                              onCreateGroup={() => setShowCreateGroup(true)}
+                           />
+                        </div>
+                     )}
+
+                     {/* Chat View */}
                      <div
-                        className={`w-full lg:w-80 bg-white border-r border-gray-200 flex flex-col ${
-                           selectedChat ? "hidden lg:flex" : "flex"
+                        className={`flex-1 flex flex-col bg-white ${
+                           activeTab !== "community" && !selectedChat
+                              ? "hidden lg:flex"
+                              : "flex"
                         }`}
                      >
-                        <ChatList
-                           activeTab={activeTab}
-                           items={getCurrentItems()}
-                           searchQuery={searchQuery}
-                           setSearchQuery={setSearchQuery}
-                           selectedChat={selectedChat}
-                           setSelectedChat={setSelectedChat}
-                           onCreateGroup={() => setShowCreateGroup(true)}
-                        />
+                        {activeTab === "community" ? (
+                           <ChatView
+                              activeTab={activeTab}
+                              selectedChat={null}
+                              setSelectedChat={setSelectedChat}
+                              messages={getCurrentMessages()}
+                              message={message}
+                              setMessage={setMessage}
+                              onSendMessage={handleSendMessage}
+                              isLoadingMessages={comLoading}
+                           />
+                        ) : selectedChat ? (
+                           <ChatView
+                              activeTab={activeTab}
+                              selectedChat={selectedChat}
+                              setSelectedChat={setSelectedChat}
+                              messages={getCurrentMessages()}
+                              message={message}
+                              setMessage={setMessage}
+                              onSendMessage={handleSendMessage}
+                              isLoadingMessages={
+                                 activeTab === "groups" ? gLoading : false
+                              }
+                           />
+                        ) : (
+                           <EmptyState activeTab={activeTab} />
+                        )}
                      </div>
-                  )}
-
-                  {/* Chat View */}
-                  <div
-                     className={`flex-1 flex flex-col bg-white ${
-                        activeTab !== "community" && !selectedChat
-                           ? "hidden lg:flex"
-                           : "flex"
-                     }`}
-                  >
-                     {activeTab === "community" ? (
-                        <ChatView
-                           activeTab={activeTab}
-                           selectedChat={null}
-                           setSelectedChat={setSelectedChat}
-                           messages={getCurrentMessages()}
-                           message={message}
-                           setMessage={setMessage}
-                           onSendMessage={handleSendMessage}
-                        />
-                     ) : selectedChat ? (
-                        <ChatView
-                           activeTab={activeTab}
-                           selectedChat={selectedChat}
-                           setSelectedChat={setSelectedChat}
-                           messages={getCurrentMessages()}
-                           message={message}
-                           setMessage={setMessage}
-                           onSendMessage={handleSendMessage}
-                        />
-                     ) : (
-                        <EmptyState activeTab={activeTab} />
-                     )}
-                  </div>
-               </>
+                  </>
+               )
             )}
          </div>
 
@@ -411,7 +490,7 @@ const Notifications = () => {
             selectedMembers={selectedMembers}
             setSelectedMembers={setSelectedMembers}
             allUsers={members}
-            isLoading={isLoading}
+            isLoading={createGLoad}
             onCreateGroup={handleCreateGroup}
          />
       </div>

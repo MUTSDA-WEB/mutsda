@@ -18,6 +18,7 @@ const ChatView = ({
    message,
    setMessage,
    onSendMessage,
+   isLoadingMessages = false,
 }) => {
    const messagesEndRef = useRef(null);
 
@@ -75,40 +76,58 @@ const ChatView = ({
 
          {/* Messages Area */}
          <div className='flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50'>
-            {messages.map((msg) => (
-               <div
-                  key={msg.id}
-                  className={`flex ${msg.sender === "me" || msg.sender === "You" ? "justify-end" : "justify-start"}`}
-               >
-                  <div
-                     className={`max-w-[70%] ${
-                        msg.sender === "me" || msg.sender === "You"
-                           ? "bg-[#3298C8] text-white rounded-2xl rounded-br-md"
-                           : "bg-gray-700 text-gray-100 rounded-2xl rounded-bl-md shadow-sm"
-                     } px-4 py-3`}
-                  >
-                     {(activeTab === "community" || activeTab === "groups") &&
-                        msg.sender !== "me" &&
-                        msg.sender !== "You" && (
-                           <p className='text-xs font-semibold text-sky-300 mb-1'>
-                              {msg.sender}
-                           </p>
-                        )}
-                     <p className='text-sm'>{msg.text}</p>
-                     <div
-                        className={`flex items-center justify-end gap-1 mt-1 ${msg.sender === "me" || msg.sender === "You" ? "text-sky-100" : "text-gray-400"}`}
-                     >
-                        <span className='text-[10px]'>{msg.time}</span>
-                        {(msg.sender === "me" || msg.sender === "You") && (
-                           <FontAwesomeIcon
-                              icon={faCheckDouble}
-                              className='text-[10px]'
-                           />
-                        )}
-                     </div>
+            {isLoadingMessages ? (
+               <div className='flex items-center justify-center h-full'>
+                  <div className='flex flex-col items-center gap-3'>
+                     <div className='w-8 h-8 border-3 border-[#3298C8] border-t-transparent rounded-full animate-spin'></div>
+                     <p className='text-gray-500 text-sm'>
+                        Loading messages...
+                     </p>
                   </div>
                </div>
-            ))}
+            ) : messages.length === 0 ? (
+               <div className='flex items-center justify-center h-full'>
+                  <p className='text-gray-400 text-sm'>
+                     No messages yet. Start the conversation!
+                  </p>
+               </div>
+            ) : (
+               messages.map((msg) => (
+                  <div
+                     key={msg.id}
+                     className={`flex ${msg.sender === "me" || msg.sender === "You" ? "justify-end" : "justify-start"}`}
+                  >
+                     <div
+                        className={`max-w-[70%] ${
+                           msg.sender === "me" || msg.sender === "You"
+                              ? "bg-[#3298C8] text-white rounded-2xl rounded-br-md"
+                              : "bg-gray-700 text-gray-100 rounded-2xl rounded-bl-md shadow-sm"
+                        } px-4 py-3`}
+                     >
+                        {(activeTab === "community" ||
+                           activeTab === "groups") &&
+                           msg.sender !== "me" &&
+                           msg.sender !== "You" && (
+                              <p className='text-xs font-semibold text-sky-300 mb-1'>
+                                 {msg.sender}
+                              </p>
+                           )}
+                        <p className='text-sm'>{msg.text}</p>
+                        <div
+                           className={`flex items-center justify-end gap-1 mt-1 ${msg.sender === "me" || msg.sender === "You" ? "text-sky-100" : "text-gray-400"}`}
+                        >
+                           <span className='text-[10px]'>{msg.time}</span>
+                           {(msg.sender === "me" || msg.sender === "You") && (
+                              <FontAwesomeIcon
+                                 icon={faCheckDouble}
+                                 className='text-[10px]'
+                              />
+                           )}
+                        </div>
+                     </div>
+                  </div>
+               ))
+            )}
             <div ref={messagesEndRef} />
          </div>
 

@@ -46,7 +46,8 @@ export async function getGroupMessages(c) {
    try {
       const groupMessages = await client.conversation.findMany({
          where: {
-            AND: [{ messageType: { equals: "group" } }, { groupId }],
+            groupId,
+            messageType: { equals: "group" },
          },
       });
       return c.json(
