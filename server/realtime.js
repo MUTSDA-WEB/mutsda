@@ -1,17 +1,17 @@
 import { Server } from "socket.io";
 import Redis from "ioredis";
 
-const PORT = process.env.SOCKET_PORT || 3001;
+const PORT = process.env.SOCKET_PORT;
 const io = new Server(PORT, {
    cors: {
-      origin: process.env.CLIENT_URL || "http://localhost:5173",
+      origin: process.env.CLIENT_URL,
       methods: ["GET", "POST"],
       credentials: true,
    },
 });
 
 // Redis setup for message queuing
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL;
 let redis = null;
 
 try {
