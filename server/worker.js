@@ -1,7 +1,7 @@
 import Redis from "ioredis";
 import prisma from "./helpers/prismaClient.js";
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL;
 
 async function startWorker() {
    try {
@@ -26,6 +26,7 @@ async function startWorker() {
             if (result) {
                const [, messageStr] = result;
                const chatMsg = JSON.parse(messageStr);
+               console.log(chatMsg);
 
                // Map frontend message type to enum
                const messageTypeMap = {

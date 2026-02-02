@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import userStore from "../../hooks/useStore";
 
 const CreateGroupModal = ({
    show,
@@ -11,7 +12,12 @@ const CreateGroupModal = ({
    allUsers,
    onCreateGroup,
 }) => {
+   const { user } = userStore();
+
    if (!show) return null;
+
+   // Filter out the current user (creator) from the list
+   const availableUsers = allUsers.filter((u) => u.userID !== user?.userID);
 
    return (
       <div className='fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4'>
@@ -49,24 +55,24 @@ const CreateGroupModal = ({
                      Add Members ({selectedMembers.length} selected)
                   </label>
                   <div className='max-h-48 overflow-y-auto border border-gray-200 rounded-xl'>
-                     {allUsers.map((user) => (
+                     {availableUsers.map((user) => (
                         <label
-                           key={user.id}
+                           key={user.userID}
                            className='flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0'
                         >
                            <input
                               type='checkbox'
-                              checked={selectedMembers.includes(user.id)}
+                              checked={selectedMembers.includes(user.userID)}
                               onChange={(e) => {
                                  if (e.target.checked) {
                                     setSelectedMembers([
                                        ...selectedMembers,
-                                       user.id,
+                                       user.userID,
                                     ]);
                                  } else {
                                     setSelectedMembers(
                                        selectedMembers.filter(
-                                          (id) => id !== user.id,
+                                          (id) => id !== user.userID,
                                        ),
                                     );
                                  }
@@ -74,10 +80,11 @@ const CreateGroupModal = ({
                               className='w-5 h-5 text-[#3298C8] rounded focus:ring-[#3298C8]'
                            />
                            <div className='w-10 h-10 bg-linear-to-br from-[#3298C8] to-sky-600 rounded-full flex items-center justify-center text-white text-sm font-semibold'>
-                              {user.avatar}
+                              {user.userName?.substring(0, 2).toUpperCase() ||
+                                 "??"}
                            </div>
                            <span className='font-medium text-gray-800'>
-                              {user.name}
+                              {user.userName}
                            </span>
                         </label>
                      ))}

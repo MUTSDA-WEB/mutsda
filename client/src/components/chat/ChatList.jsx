@@ -23,9 +23,9 @@ const ChatList = ({
    const handleStartChat = (user) => {
       setShowAddChat(false);
       setSelectedChat({
-         id: user.id,
-         name: user.name,
-         avatar: user.avatar || user.name?.substring(0, 2).toUpperCase(),
+         id: user.userID,
+         name: user.userName,
+         avatar: user.userName?.substring(0, 2).toUpperCase() || "??",
          messages: [],
          online: true,
          lastMessage: "",
@@ -125,6 +125,13 @@ const ChatList = ({
                ))
             )}
          </div>
+
+         {/* Add Chat Modal */}
+         <AddChatModal
+            show={showAddChat}
+            onClose={() => setShowAddChat(false)}
+            onStartChat={handleStartChat}
+         />
       </div>
    );
 };
@@ -133,12 +140,18 @@ const AddChatModal = ({ show, onClose, onStartChat }) => {
    const { members } = userStore();
    const [search, setSearch] = useState("");
    const filtered = members.filter((m) =>
-      (m.name || m.userName)?.toLowerCase().includes(search.toLowerCase()),
+      m.userName?.toLowerCase().includes(search.toLowerCase()),
    );
    if (!show) return null;
    return (
-      <div className='fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50'>
-         <div className='bg-white rounded-xl p-6 w-full max-w-md shadow-lg'>
+      <div
+         className='fixed inset-0 bg-black/30 flex items-center justify-center z-50'
+         onClick={onClose}
+      >
+         <div
+            className='bg-white rounded-xl p-6 w-full max-w-md shadow-lg mx-4'
+            onClick={(e) => e.stopPropagation()}
+         >
             <h3 className='font-bold text-lg mb-4'>Start a New Chat</h3>
             <input
                type='text'
@@ -155,16 +168,16 @@ const AddChatModal = ({ show, onClose, onStartChat }) => {
                ) : (
                   filtered.map((user) => (
                      <div
-                        key={user.id}
+                        key={user.userID}
                         className='flex items-center gap-3 p-2 hover:bg-gray-100 rounded cursor-pointer'
                         onClick={() => onStartChat(user)}
                      >
                         <div className='w-8 h-8 bg-[#3298C8] text-white rounded-full flex items-center justify-center font-semibold'>
-                           {user.avatar ||
-                              user.name?.substring(0, 2).toUpperCase()}
+                           {user.userName?.substring(0, 2).toUpperCase() ||
+                              "??"}
                         </div>
                         <span className='font-medium text-gray-800'>
-                           {user.name || user.userName}
+                           {user.userName}
                         </span>
                      </div>
                   ))

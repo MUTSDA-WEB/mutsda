@@ -96,9 +96,69 @@ const Notifications = () => {
          setGroups(groupData.userGroups);
       if (users?.leaders && userSuccess) setMembers(users.leaders);
       if (comMsg?.DMs && comSuccess) setComMsg(comMsg.DMs);
-      if (userDMs?.DMs && DMSuccess) setDMs(userDMs.DMs);
       if (visitorMsg?.visitorMsg && visitorSuccess)
          setVisitorMsg(visitorMsg.visitorMsg);
+
+      // Transform raw DM data into grouped chat list format
+      if (userDMs?.DMs && DMSuccess && users?.leaders) {
+         const rawDMs = userDMs.DMs;
+         const leadersMap = new Map(
+            users.leaders.map((l) => [l.userID, l.userName]),
+         );
+
+         // Group messages by the other person in the conversation
+         const chatMap = new Map();
+         rawDMs.forEach((dm) => {
+            // Determine the other person's ID
+            const otherUserId =
+               dm.userId === user?.userID ? dm.receiverId : dm.userId;
+            if (!otherUserId) return;
+
+            if (!chatMap.has(otherUserId)) {
+               const otherUserName =
+                  leadersMap.get(otherUserId) || "Unknown User";
+               chatMap.set(otherUserId, {
+                  id: otherUserId,
+                  name: otherUserName,
+                  avatar: otherUserName.substring(0, 2).toUpperCase(),
+                  messages: [],
+                  online: false,
+                  lastMessage: "",
+                  time: "",
+                  unread: 0,
+               });
+            }
+
+            const chat = chatMap.get(otherUserId);
+            chat.messages.push({
+               id: dm.messageId,
+               sender:
+                  dm.userId === user?.userID
+                     ? "me"
+                     : leadersMap.get(dm.userId) || "Unknown",
+               text: dm.content,
+               time: new Date(dm.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+               }),
+            });
+         });
+
+         // Set lastMessage and time from the most recent message
+         chatMap.forEach((chat) => {
+            if (chat.messages.length > 0) {
+               // Sort messages by time (newest last)
+               chat.messages.sort((a, b) => new Date(a.id) - new Date(b.id));
+               const lastMsg = chat.messages[chat.messages.length - 1];
+               chat.lastMessage =
+                  lastMsg.text?.substring(0, 30) +
+                  (lastMsg.text?.length > 30 ? "..." : "");
+               chat.time = lastMsg.time;
+            }
+         });
+
+         setDMs(Array.from(chatMap.values()));
+      }
    }, [
       groupData,
       users,
@@ -115,6 +175,7 @@ const Notifications = () => {
       setComMsg,
       setDMs,
       setVisitorMsg,
+      user?.userID,
    ]);
 
    const handleSendMessage = () => {
