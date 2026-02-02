@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+   line-height: 1.5;
+   font-weight: 400;
+
+   font-synthesis: none;
+   text-rendering: optimizeLegibility;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent horizontal scroll on mobile */
+html,
+body {
+   overflow-x: hidden;
+}
+
+/* Custom Animations */
+@keyframes bounce-slow {
+   0%,
+   100% {
+      transform: translateY(0);
+   }
+   50% {
+      transform: translateY(8px);
+   }
+}
+
+@keyframes slow-zoom {
+   0% {
+      transform: scale(1);
+   }
+   100% {
+      transform: scale(1.1);
+   }
+}
+
+@keyframes scaleIn {
+   0% {
+      opacity: 0;
+      transform: scale(0.9);
+   }
+   100% {
+      opacity: 1;
+      transform: scale(1);
+   }
+}
+
+.animate-bounce-slow {
+   animation: bounce-slow 2s ease-in-out infinite;
+}
+
+.animate-slow-zoom {
+   animation: slow-zoom 20s ease-in-out infinite alternate;
+}
+
+.animate-scaleIn {
+   animation: scaleIn 0.3s ease-out forwards;
+}
+
+/* Blinking cursor animation */
+@keyframes blink {
+   0%,
+   50% {
+      opacity: 1;
+   }
+   51%,
+   100% {
+      opacity: 0;
+   }
+}
+
+.animate-blink {
+   animation: blink 0.8s ease-in-out infinite;
+}
