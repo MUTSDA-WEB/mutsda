@@ -33,6 +33,9 @@ const Notifications = () => {
    const [newGroupName, setNewGroupName] = useState("");
    const [selectedMembers, setSelectedMembers] = useState([]);
 
+   // Integrate chat socket - moved up to be available for handleSendMessage
+   const { sendMessage } = useChatSocket({ activeTab, selectedChat });
+
    // Todo:  get user groups
    const {
       data: groupData,
@@ -233,9 +236,6 @@ const Notifications = () => {
    const getCurrentItems = () => {
       return activeTab === "messages" ? directMessages : groups;
    };
-
-   // Integrate chat socket
-   const { sendMessage } = useChatSocket({ activeTab, selectedChat });
 
    return (
       <div className='h-[calc(100vh-80px)] flex flex-col animate-fadeIn'>

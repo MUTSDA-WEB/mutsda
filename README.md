@@ -18,6 +18,64 @@
     - Prisma ORM
     - Postgres DB
 
+#### Real-time Chat
+
+    - Socket.IO (WebSocket server)
+    - Redis (Message queue)
+    - Zustand (Client state management)
+
+## REAL-TIME CHAT SYSTEM
+
+The application includes a real-time chat system supporting:
+
+- **Direct Messages (DMs)** - Private 1-on-1 conversations
+- **Group Chats** - Multi-user group conversations
+- **Community Chat** - Shared space for church leaders
+- **Visitor Messages** - Messages from website visitors
+
+### Architecture
+
+```
+React Client ◄──► Socket.IO Server ──► Redis Queue ──► Worker ──► PostgreSQL
+```
+
+### Running the Chat System
+
+You need to run **3 separate processes**:
+
+1. **Main API Server** (Hono)
+
+```bash
+cd server && bun run index.js
+```
+
+2. **Socket.IO Server** (Real-time)
+
+```bash
+cd server && bun run realtime.js
+```
+
+3. **Message Worker** (Persistence)
+
+```bash
+cd server && bun run worker.js
+```
+
+### Prerequisites
+
+- **Redis** must be running locally or provide `REDIS_URL` environment variable
+- Add these to your `.env`:
+
+```env
+REDIS_URL=redis://localhost:6379
+SOCKET_PORT=3001
+CLIENT_URL=http://localhost:5173
+```
+
+> 📖 For detailed documentation, see [chat.md](./chat.md)
+
+---
+
 ## DATABASE SETUP
 
 - install prisma

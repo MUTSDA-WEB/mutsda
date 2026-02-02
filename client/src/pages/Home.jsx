@@ -15,38 +15,151 @@ const Home = () => {
    const { upcomingEvents } = userStore();
    const [selectedEvent, setSelectedEvent] = useState(null);
 
-   // const event = [
-   //    {
-   //       id: 1,
-   //       date: "JAN 25",
-   //       title: "Youth Bible Camp",
-   //       img: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800&auto=format&fit=crop",
-   //       desc: "A weekend of spiritual growth and outdoor fellowship. Join us for an unforgettable experience of Bible study, worship, nature walks, and bonding with fellow youth members.",
-   //       time: "8:00 AM - 6:00 PM",
-   //       location: "MUT Grounds",
-   //       attendees: "45",
-   //    },
-   //    {
-   //       id: 2,
-   //       date: "FEB 14",
-   //       title: "Music Concert",
-   //       img: "https://images.unsplash.com/photo-1514525253361-bee87184919a?q=80&w=800&auto=format&fit=crop",
-   //       desc: "A special night of praise featuring our main church choir. Experience uplifting performances, special guest artists, and a celebration of faith through music.",
-   //       time: "6:00 PM - 9:00 PM",
-   //       location: "Main Hall",
-   //       attendees: "120",
-   //    },
-   //    {
-   //       id: 3,
-   //       date: "MAR 02",
-   //       title: "Community Outreach",
-   //       img: "https://images.unsplash.com/photo-1469571483399-af239969ef4d?q=80&w=800&auto=format&fit=crop",
-   //       desc: "Helping local families with food and medical resources. Be part of this life-changing initiative as we serve our community with love and compassion.",
-   //       time: "9:00 AM - 4:00 PM",
-   //       location: "Murang'a Town",
-   //       attendees: "30",
-   //    },
-   // ];
+   // Calendar of Events data
+   const calendarEvents = [
+      {
+         date: "Jan 10",
+         event: "Thanksgiving Sabbath",
+         description:
+            "A special Sabbath dedicated to gratitude and acknowledging God's blessings",
+         color: "bg-[#3298C8]/10 text-[#3298C8]",
+      },
+      {
+         date: "Jan 17",
+         event: "Holy Communion Sabbath",
+         description:
+            "A sacred service focusing on the Lord's Supper and spiritual renewal",
+         color: "bg-purple-100 text-purple-700",
+      },
+      {
+         date: "Jan 18",
+         event: "Joint Board Meeting",
+         description:
+            "Combined meeting of church leadership to review plans and ministries",
+         color: "bg-gray-100 text-gray-700",
+      },
+      {
+         date: "Jan 21-30",
+         event: "The 10 Days of Prayer",
+         description: "A period of intensive prayer and spiritual revival",
+         color: "bg-amber-100 text-amber-700",
+      },
+      {
+         date: "Jan 24",
+         event: "SOP and VOP Sabbath",
+         description:
+            "Highlighting Spirit of Prophecy and Voice of Prophecy ministries",
+         color: "bg-green-100 text-green-700",
+      },
+      {
+         date: "Jan 25-31",
+         event: "Week of Spiritual Emphasis",
+         description:
+            "Week-long spiritual revival with sermons and devotionals",
+         color: "bg-rose-100 text-rose-700",
+      },
+      {
+         date: "Jan 31",
+         event: "Prayer and Leadership Sabbath",
+         description: "Dedicated to prayer and empowerment of church leaders",
+         color: "bg-indigo-100 text-indigo-700",
+      },
+      {
+         date: "Feb 1",
+         event: "Church Board Meeting",
+         description: "Regular leadership meeting for church administration",
+         color: "bg-gray-100 text-gray-700",
+      },
+      {
+         date: "Feb 7",
+         event: "Internal Music Sabbath",
+         description:
+            "Worship service led by internal church choirs and music groups",
+         color: "bg-cyan-100 text-cyan-700",
+      },
+      {
+         date: "Feb 8",
+         event: "AMM and ALO Sunday",
+         description:
+            "Adventist Men's Ministry and Adventist Ladies Organization activities",
+         color: "bg-pink-100 text-pink-700",
+      },
+      {
+         date: "Feb 14",
+         event: "Mini-Harambee & Communication Sabbath",
+         description: "Fundraising and communication-focused Sabbath",
+         color: "bg-orange-100 text-orange-700",
+      },
+      {
+         date: "Feb 21",
+         event: "Finalist Sabbath",
+         description: "Recognizing and praying for completing students",
+         color: "bg-teal-100 text-teal-700",
+      },
+      {
+         date: "Feb 22",
+         event: "Hike",
+         description: "Outdoor fellowship promoting health and bonding",
+         color: "bg-lime-100 text-lime-700",
+      },
+      {
+         date: "Feb 28",
+         event: "Family Life & Appreciation Sabbath",
+         description:
+            "Emphasizing family values and appreciation of church workers",
+         color: "bg-violet-100 text-violet-700",
+      },
+      {
+         date: "Mar 1",
+         event: "Church Board Meeting",
+         description: "Leadership meeting for planning and coordination",
+         color: "bg-gray-100 text-gray-700",
+      },
+      {
+         date: "Mar 7",
+         event: "External Music Sabbath / Music Night",
+         description: "Worship event with guest musicians for evangelism",
+         color: "bg-[#3298C8]/10 text-[#3298C8]",
+      },
+      {
+         date: "Mar 14",
+         event: "Mega Harambee & Associate Sabbath",
+         description: "Major fundraising Sabbath with associate members",
+         color: "bg-amber-100 text-amber-700",
+      },
+      {
+         date: "Mar 21",
+         event: "GYD and GCD Sabbath",
+         description:
+            "Global Youth Day and Global Children's Day service and outreach",
+         color: "bg-green-100 text-green-700",
+      },
+      {
+         date: "Mar 22-28",
+         event: "Youth Week of Prayer",
+         description: "Week dedicated to youth spiritual growth and leadership",
+         color: "bg-rose-100 text-rose-700",
+      },
+      {
+         date: "Mar 28",
+         event: "Marching Out Sabbath",
+         description: "Ceremonial Sabbath for outgoing leaders commissioning",
+         color: "bg-indigo-100 text-indigo-700",
+      },
+      {
+         date: "Apr 4",
+         event: "Holy Communion Sabbath",
+         description:
+            "Communion service emphasizing humility and reconciliation",
+         color: "bg-purple-100 text-purple-700",
+      },
+      {
+         date: "Apr 11",
+         event: "Sabbath School Sabbath",
+         description: "Celebrating Sabbath School ministries and Bible study",
+         color: "bg-cyan-100 text-cyan-700",
+      },
+   ];
 
    return (
       <div className='flex flex-col animate-fadeIn'>
@@ -235,7 +348,7 @@ const Home = () => {
 
                <div className='grid grid-cols-1 lg:grid-cols-[5fr_3.45fr] gap-8 items-stretch'>
                   {/* Events Table */}
-                  <div className='bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 flex flex-col h-150'>
+                  <div className='bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 flex flex-col h-135'>
                      <div className='bg-[#3298C8] p-6 text-white shrink-0'>
                         <h3 className='text-xl font-bold'>Scheduled Events</h3>
                         <p className='text-sky-100 text-sm mt-1'>
@@ -258,321 +371,33 @@ const Home = () => {
                               </tr>
                            </thead>
                            <tbody className='divide-y divide-gray-100'>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-[#3298C8]/10 text-[#3298C8] px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Jan 10
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Thanksgiving Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    A special Sabbath dedicated to gratitude and
-                                    acknowledging God's blessings
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Jan 17
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Holy Communion Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    A sacred service focusing on the Lord's
-                                    Supper and spiritual renewal
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Jan 18
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Joint Board Meeting
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Combined meeting of church leadership to
-                                    review plans and ministries
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Jan 21-30
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    The 10 Days of Prayer
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    A period of intensive prayer and spiritual
-                                    revival
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Jan 24
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    SOP and VOP Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Highlighting Spirit of Prophecy and Voice of
-                                    Prophecy ministries
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Jan 25-31
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Week of Spiritual Emphasis
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Week-long spiritual revival with sermons and
-                                    devotionals
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Jan 31
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Prayer and Leadership Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Dedicated to prayer and empowerment of
-                                    church leaders
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Feb 1
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Church Board Meeting
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Regular leadership meeting for church
-                                    administration
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Feb 7
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Internal Music Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Worship service led by internal church
-                                    choirs and music groups
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Feb 8
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    AMM and ALO Sunday
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Adventist Men's Ministry and Adventist
-                                    Ladies Organization activities
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Feb 14
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Mini-Harambee & Communication Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Fundraising and communication-focused
-                                    Sabbath
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Feb 21
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Finalist Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Recognizing and praying for completing
-                                    students
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-lime-100 text-lime-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Feb 22
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Hike
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Outdoor fellowship promoting health and
-                                    bonding
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-violet-100 text-violet-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Feb 28
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Family Life & Appreciation Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Emphasizing family values and appreciation
-                                    of church workers
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Mar 1
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Church Board Meeting
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Leadership meeting for planning and
-                                    coordination
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-[#3298C8]/10 text-[#3298C8] px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Mar 7
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    External Music Sabbath / Music Night
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Worship event with guest musicians for
-                                    evangelism
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Mar 14
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Mega Harambee & Associate Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Major fundraising Sabbath with associate
-                                    members
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Mar 21
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    GYD and GCD Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Global Youth Day and Global Children's Day
-                                    service and outreach
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Mar 22-28
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Youth Week of Prayer
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Week dedicated to youth spiritual growth and
-                                    leadership
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Mar 28
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Marching Out Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Ceremonial Sabbath for outgoing leaders
-                                    commissioning
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Apr 4
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Holy Communion Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Communion service emphasizing humility and
-                                    reconciliation
-                                 </td>
-                              </tr>
-                              <tr className='hover:bg-gray-50 transition-colors'>
-                                 <td className='px-6 py-4 whitespace-nowrap'>
-                                    <span className='bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-sm font-semibold'>
-                                       Apr 11
-                                    </span>
-                                 </td>
-                                 <td className='px-6 py-4 font-medium text-gray-800'>
-                                    Sabbath School Sabbath
-                                 </td>
-                                 <td className='px-6 py-4 text-gray-500 text-sm'>
-                                    Celebrating Sabbath School ministries and
-                                    Bible study
-                                 </td>
-                              </tr>
+                              {calendarEvents.map((item, index) => (
+                                 <tr
+                                    key={index}
+                                    className='hover:bg-gray-50 transition-colors'
+                                 >
+                                    <td className='px-6 py-4 whitespace-nowrap'>
+                                       <span
+                                          className={`${item.color} px-3 py-1 rounded-full text-sm font-semibold`}
+                                       >
+                                          {item.date}
+                                       </span>
+                                    </td>
+                                    <td className='px-6 py-4 font-medium text-gray-800'>
+                                       {item.event}
+                                    </td>
+                                    <td className='px-6 py-4 text-gray-500 text-sm'>
+                                       {item.description}
+                                    </td>
+                                 </tr>
+                              ))}
                            </tbody>
                         </table>
                      </div>
                   </div>
 
                   {/* Calendar Image */}
-                  <div className='bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 flex flex-col h-150'>
+                  <div className='bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 flex flex-col h-135'>
                      <div className='bg-linear-to-r from-gray-700 to-gray-900 p-6 text-white shrink-0'>
                         <h3 className='text-xl font-bold'>Events Summary</h3>
                         <p className='text-gray-300 text-sm mt-1'>
