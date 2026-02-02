@@ -114,9 +114,12 @@ const Notifications = () => {
             name: group.groupName,
             avatar: group.groupName?.substring(0, 2).toUpperCase() || "GR",
             members: group._count?.groupMembers || 0,
-            lastMessage: group.lastMessage || "No messages yet",
-            time: group.updatedAt
-               ? new Date(group.updatedAt).toLocaleTimeString([], {
+            lastMessage: group.lastMessage
+               ? group.lastMessage.substring(0, 30) +
+                 (group.lastMessage.length > 30 ? "..." : "")
+               : "No messages yet",
+            time: group.lastMessageTime
+               ? new Date(group.lastMessageTime).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                  })
@@ -127,7 +130,24 @@ const Notifications = () => {
          setGroups(transformedGroups);
       }
       if (users?.leaders && userSuccess) setMembers(users.leaders);
-      if (comMsg?.DMs && comSuccess) setComMsg(comMsg.DMs);
+      // Transform community messages to match expected shape
+      if (comMsg?.com && comSuccess) {
+         const transformedComMsg = comMsg.com.map((msg) => ({
+            id: msg.messageId,
+            sender:
+               msg.userId === user?.userID
+                  ? "You"
+                  : msg.convoUser?.userName || "Unknown",
+            text: msg.content,
+            time: new Date(msg.createdAt).toLocaleTimeString([], {
+               hour: "2-digit",
+               minute: "2-digit",
+            }),
+            avatar:
+               msg.convoUser?.userName?.substring(0, 2).toUpperCase() || "??",
+         }));
+         setComMsg(transformedComMsg);
+      }
       if (visitorMsg?.visitorMsg && visitorSuccess)
          setVisitorMsg(visitorMsg.visitorMsg);
 
@@ -223,13 +243,14 @@ const Notifications = () => {
             sender:
                msg.userId === user?.userID
                   ? "me"
-                  : msg.user?.userName || "Unknown",
+                  : msg.convoUser?.userName || "Unknown",
             text: msg.content,
             time: new Date(msg.createdAt).toLocaleTimeString([], {
                hour: "2-digit",
                minute: "2-digit",
             }),
-            avatar: msg.user?.userName?.substring(0, 2).toUpperCase() || "??",
+            avatar:
+               msg.convoUser?.userName?.substring(0, 2).toUpperCase() || "??",
          }));
          setSelectedChat((prev) => ({
             ...prev,

@@ -4,7 +4,7 @@
    "type": "module",
    "private": true,
    "scripts": {
-      "all": "bun index.ts",
+      "all": "bun --hot index.ts",
       "format": "prettier --write .",
       "prepare": "husky"
    },

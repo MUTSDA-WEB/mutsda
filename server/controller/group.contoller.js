@@ -65,8 +65,34 @@ export async function getUserGroups(c) {
             },
          },
       });
+
+      // Fetch last message for each group
+      const groupsWithLastMessage = await Promise.all(
+         userGroups.map(async (group) => {
+            const lastMessage = await client.conversation.findFirst({
+               where: {
+                  groupId: group.groupId,
+                  messageType: "group",
+               },
+               orderBy: { createdAt: "desc" },
+               select: {
+                  content: true,
+                  createdAt: true,
+               },
+            });
+            return {
+               ...group,
+               lastMessage: lastMessage?.content || null,
+               lastMessageTime: lastMessage?.createdAt || null,
+            };
+         }),
+      );
+
       return c.json(
-         { message: "Successfully fetched User groups", userGroups },
+         {
+            message: "Successfully fetched User groups",
+            userGroups: groupsWithLastMessage,
+         },
          200,
       );
    } catch (error) {

@@ -26,13 +26,14 @@ export async function getVisitorMessages(c) {
 
 export async function getCommunityMessages(c) {
    try {
-      const DMs = await client.conversation.findMany({
+      const com = await client.conversation.findMany({
          where: {
             messageType: { equals: "community" },
          },
+         include: { convoUser: { select: { userName: true } } },
       });
       return c.json(
-         { message: "Successfully fetched community messages", DMs },
+         { message: "Successfully fetched community messages", com },
          200,
       );
    } catch (error) {
@@ -51,7 +52,7 @@ export async function getGroupMessages(c) {
             messageType: { equals: "group" },
          },
          include: {
-            user: {
+            convoUser: {
                select: { userName: true },
             },
          },

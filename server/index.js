@@ -110,7 +110,7 @@ App.post("/message/save/visitor/:id", saveMemberMessage);
 App.get("/message/look/DMs", verifyToken, getDirectMessages);
 
 // get Leader group messages route
-App.get("/messages/look/group/:id", verifyToken, getGroupMessages);
+App.get("/message/look/group/:id", verifyToken, getGroupMessages);
 
 // get community messages route
 App.get("/message/look/community", verifyToken, getCommunityMessages);
