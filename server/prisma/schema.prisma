@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-  userID      String  @id @unique @default(uuid()) @map("id")
+  userID      String  @id @unique @default(cuid()) @map("id")
   email       String  @unique
   userName    String  @unique @map("username")
   password    String  @unique
   phoneNumber Int     @map("phone_number")
   role        Role    @unique
+  imageURL    String? @map("image_url") @default("LeaderF.png")
 
   // relations 
   events      Event[] @relation("UserEvents")
@@ -24,18 +25,16 @@ model User {
 }
 
 model Event {
-  eventID        String   @id @default(uuid()) @map("event_id")
+  eventID        String   @id @default(cuid()) @map("event_id")
   title          String
   description    String
-  category String
-  imageURL       String   @map("image_url")
-  eventStartTime DateTime @map("event_start_time")
-  eventEndTime DateTime? @map("event_end_time")
-  eventLocation String? @map("event_location")
+  category       String
+  imageURL       String?  @map("image_url")
+  startDateTime  DateTime @map("start_date_time")
+  endDateTime    DateTime? @map("end_date_time")
+  eventLocation  String?  @map("event_location")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
-  eventStartDate DateTime @map("event_start_date")
-  eventEndDate   DateTime? @map("event_end_date")
   userId         String
   user           User     @relation("UserEvents", fields: [userId], references: [userID])
 
@@ -45,7 +44,7 @@ model Event {
 
 // Table model for the messages named Converstions
 model Conversation {
-  messageId String @id @default(uuid()) @map("message_id")
+  messageId String @id @default(cuid()) @map("message_id")
   messageType ConvoType @map("message_type")
   msgStatus MessageStatus @map("message_status")
   content String 
@@ -61,7 +60,7 @@ model Conversation {
 }
 
 model Group {
-  groupId String @id @default(uuid()) @map("group_id")
+  groupId String @id @default(cuid()) @map("group_id")
   groupName String @map("group_name") @unique
   groupMembers GroupMember[] 
   createdAt DateTime @default(now())
@@ -71,7 +70,7 @@ model Group {
 }
 
 model GroupMember {
-  id      String @id @default(uuid())
+  id      String @id @default(cuid())
   userId  String
   groupId String
   role    GroupRole @default(member)  // admin, member, moderator
@@ -104,6 +103,7 @@ enum Role {
   user           @map("USER")
   admin1         @map("ADMIN1")
   admin2         @map("ADMIN2")
+  pastor         @map("PASTOR")
   elder1         @map("ELDER1")
   elder2         @map("ELDER2")
   elder3         @map("ELDER3")

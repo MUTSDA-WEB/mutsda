@@ -22,6 +22,7 @@ const userStore = create((set) => ({
    upcomingEvents: [],
    pastEvents: [],
    allEvents: [],
+   announcements: [],
 
    // Actions
    setAllEvents: (events) => set({ allEvents: events }),
@@ -40,6 +41,7 @@ const userStore = create((set) => ({
    // update events
    setUpcomingEvents: (e) => set({ upcomingEvents: e }),
    setPastEvents: (e) => set({ pastEvents: e }),
+   setAnnouncements: (e) => set({ announcements: e }),
 
    // UI state
    isLoading: false,

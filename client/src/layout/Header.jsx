@@ -6,6 +6,7 @@ import {
    faBars,
    faTimes,
    faSignInAlt,
+   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import churchLogo from "../assets/church_logo.png";
@@ -165,6 +166,12 @@ const Header = () => {
 
             {/* RIGHT ICONS & HAMBURGER */}
             <div className='flex items-center gap-5 text-xl'>
+               <Link to='/donate' title='Donate to MUTSDA'>
+                  <FontAwesomeIcon
+                     icon={faHeart}
+                     className='hidden sm:block cursor-pointer text-pink-500 hover:text-pink-600 transition-colors animate-pulse'
+                  />
+               </Link>
                <Link to='/contactUs' title='Contact Us'>
                   <FontAwesomeIcon
                      icon={faAddressBook}

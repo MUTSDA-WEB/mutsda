@@ -15,7 +15,6 @@ import {
 } from "../../components/chat/index";
 import userStore from "../../hooks/useStore";
 import { useCreateGroup, useGetUserGroups } from "../../services/groups";
-import { useGetUsers } from "../../services/getUsers";
 import {
    useGetCommunityMessages,
    useGetGroupMessages,
@@ -24,6 +23,7 @@ import {
 } from "../../services/message";
 import useChatSocket from "../../hooks/useChatSocket";
 import { queryClient } from "../../main";
+import { useGetUsers } from "../../services/user";
 
 const Notifications = () => {
    const [activeTab, setActiveTab] = useState("messages");
