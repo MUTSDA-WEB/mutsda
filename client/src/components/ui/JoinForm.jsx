@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faSpinner, faCheck } from "@fortawesome/free-solid-svg-icons";
-import { useSaveVisitorMessage } from "../services/message";
+import { useSaveVisitorMessage } from "../../services/message";
 
 const JoinForm = ({
    isOpen,

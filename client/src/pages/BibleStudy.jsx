@@ -8,7 +8,7 @@ import {
    faBookOpenReader,
    faCirclePlay,
 } from "@fortawesome/free-solid-svg-icons";
-import JoinForm from "../components/JoinForm";
+import JoinForm from "../components/ui/JoinForm";
 
 const BibleStudy = () => {
    const [showJoinForm, setShowJoinForm] = useState(false);

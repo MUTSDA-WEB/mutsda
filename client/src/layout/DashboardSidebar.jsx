@@ -16,7 +16,7 @@ import {
 import PropTypes from "prop-types";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLogout } from "../services/logout";
-import LogoutConfirmModal from "../components/LogoutConfirmModal";
+import LogoutConfirmModal from "../components/ui/LogoutConfirmModal";
 
 const DashboardSidebar = ({
    username = "User",

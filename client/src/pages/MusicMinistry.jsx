@@ -8,7 +8,7 @@ import {
    faPhone,
    faEnvelope,
 } from "@fortawesome/free-solid-svg-icons";
-import JoinForm from "../components/JoinForm";
+import JoinForm from "../components/ui/JoinForm";
 import subChoirs from "../../utilities/subchoirs";
 
 const MusicMinistry = () => {

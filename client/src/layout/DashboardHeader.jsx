@@ -14,7 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import churchLogo from "../assets/church_logo.png";
-import LogoutConfirmModal from "../components/LogoutConfirmModal";
+import LogoutConfirmModal from "../components/ui/LogoutConfirmModal";
 import { useLogout } from "../services/logout";
 
 const DashboardHeader = ({ username = "User", onMenuClick }) => {

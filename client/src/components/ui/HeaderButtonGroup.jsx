@@ -18,7 +18,7 @@ const HeaderButtonGroup = ({ buttons }) => {
                className={`
                   relative flex items-center justify-center w-9 h-9 rounded-full
                   transition-all duration-300 hover:scale-110
-                  ${button.color || "text-sky-900 hover:text-sky-800 hover:bg-sky-100/70"}
+                  ${button.color || "text-sky-500 hover:text-sky-800 hover:bg-sky-100/70"}
                   ${button.className || ""}
                   ${index !== buttons.length - 1 ? "mr-0.5" : ""}
                `}
