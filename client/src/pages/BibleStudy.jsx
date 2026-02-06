@@ -192,6 +192,7 @@ const BibleStudy = () => {
                         description='Enter your details to find a group near you'
                         buttonText='Find My Group'
                         darkMode={true}
+                        message={"I would like to join a bible study group"}
                      />
                   )}
                </div>

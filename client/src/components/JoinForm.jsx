@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faSpinner, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { useSaveVisitorMessage } from "../services/message";
 
 const JoinForm = ({
    isOpen,
@@ -8,42 +9,45 @@ const JoinForm = ({
    title = "Join Us",
    description = "Fill in your details below",
    buttonText = "Submit",
-   onSubmit,
    darkMode = false,
+   message,
 }) => {
    const [formData, setFormData] = useState({
       name: "",
       email: "",
       phoneNumber: "",
    });
-   const [isSubmitting, setIsSubmitting] = useState(false);
    const [submitted, setSubmitted] = useState(false);
+
+   // save the userInfo
+   const { mutate: saveMessage, isLoading } = useSaveVisitorMessage();
+   const handleSubmit = () => {
+      saveMessage(
+         {
+            message,
+            name: formData.name,
+            email: formData.email,
+            phoneNumber: formData.phoneNumber,
+         },
+         {
+            onSuccess: () => {
+               setSubmitted(true);
+               console.log("Join message sent successfully");
+            },
+            onError: (e) =>
+               console.log(
+                  "Failed to save join message",
+                  message,
+                  "Error: ",
+                  e.message,
+               ),
+         },
+      );
+   };
 
    const handleChange = (e) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
-   };
-
-   const handleSubmit = async (e) => {
-      e.preventDefault();
-      setIsSubmitting(true);
-
-      // Simulate submission or call actual onSubmit
-      if (onSubmit) {
-         await onSubmit(formData);
-      } else {
-         await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-
-      setIsSubmitting(false);
-      setSubmitted(true);
-
-      // Reset after showing success
-      setTimeout(() => {
-         setSubmitted(false);
-         setFormData({ name: "", email: "", phoneNumber: "" });
-         if (onClose) onClose();
-      }, 2000);
    };
 
    if (!isOpen) return null;
@@ -155,10 +159,10 @@ const JoinForm = ({
                </div>
                <button
                   type='submit'
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                   className={buttonClass}
                >
-                  {isSubmitting ? (
+                  {isLoading ? (
                      <span className='flex items-center justify-center gap-2'>
                         <FontAwesomeIcon
                            icon={faSpinner}
