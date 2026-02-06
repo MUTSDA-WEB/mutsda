@@ -14,6 +14,45 @@ import {
    faWhatsapp,
    faSquareXTwitter,
 } from "@fortawesome/free-brands-svg-icons";
+import { useSaveVisitorMessage } from "../services/message";
+
+// form state
+const [formData, setFormData] = useState({
+   name: "",
+   topic: "",
+   phoneNumber: "",
+   message: "",
+   email: "",
+});
+
+// send Visitors' messages to the server and save it
+const { mutate: saveMessage, isLoading } = useSaveVisitorMessage();
+
+const handleSendMessage = () => {
+   saveMessage(
+      {
+         name: formData.name,
+         message: formData.message,
+         email: formData.email,
+         topic: formData.topic,
+      },
+      {
+         onError: (e) =>
+            console.log(
+               "Failed to send visitor message from contact page!",
+               "Error: ",
+               e.message,
+            ),
+         onSuccess: () => {},
+      },
+   );
+};
+
+// handle typing in the contact form
+const handleChange = (e) => {
+   const { name, value } = e.target;
+   setFormData((prev) => ({ ...prev, [name]: value }));
+};
 
 const Contact = () => {
    const [showMap, setShowMap] = useState(false);
@@ -208,13 +247,19 @@ const Contact = () => {
                <div className='bg-white p-10 md:p-14 rounded-[3rem] shadow-2xl border border-gray-50 relative overflow-hidden'>
                   <div className='absolute top-0 right-0 w-32 h-32 bg-sky-50 rounded-bl-[5rem] z-0'></div>
 
-                  <form className='relative z-10 space-y-6'>
+                  <form
+                     onSubmit={handleSendMessage}
+                     className='relative z-10 space-y-6'
+                  >
                      <div className='space-y-2'>
                         <label className='text-xs font-bold uppercase text-gray-400 ml-2'>
                            Your Name
                         </label>
                         <input
                            type='text'
+                           name='name'
+                           value={formData.name}
+                           onChange={handleChange}
                            className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] transition-all outline-none'
                            placeholder='John Doe'
                         />
@@ -227,6 +272,9 @@ const Contact = () => {
                            </label>
                            <input
                               type='tel'
+                              name='phoneNumber'
+                              value={formData.phoneNumber}
+                              onChange={handleChange}
                               className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] transition-all outline-none'
                               placeholder='+254...'
                            />
@@ -237,6 +285,9 @@ const Contact = () => {
                            </label>
                            <input
                               type='email'
+                              name='email'
+                              value={formData.email}
+                              onChange={handleChange}
                               className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] transition-all outline-none'
                               placeholder='john@example.com'
                            />
@@ -247,7 +298,14 @@ const Contact = () => {
                         <label className='text-xs font-bold uppercase text-gray-400 ml-2'>
                            Subject
                         </label>
-                        <select className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] transition-all outline-none text-gray-500'>
+                        <select
+                           className='w-full p-4 rounded-2xl bg-gray-50 border-none
+                         focus:ring-2 focus:ring-[#3298C8] transition-all outline-none
+                          text-gray-500'
+                           name='topic'
+                           value={formData.topic}
+                           onChange={handleChange}
+                        >
                            <option>General Inquiry</option>
                            <option>Prayer Request</option>
                            <option>Membership</option>
@@ -260,14 +318,18 @@ const Contact = () => {
                            Message
                         </label>
                         <textarea
-                           className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] transition-all outline-none h-40 resize-none'
+                           value={formData.message}
+                           className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2
+                           focus:ring-[#3298C8] transition-all outline-none h-40 resize-none'
                            placeholder='How can we help?'
                         ></textarea>
                      </div>
 
                      <button
                         type='submit'
-                        className='w-full bg-[#3298C8] text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-sky-700 shadow-lg shadow-sky-200 transition-all active:scale-[0.98]'
+                        className='w-full bg-[#3298C8] text-white py-4 rounded-2xl 
+                        font-black uppercase tracking-widest hover:bg-sky-700 shadow-lg
+                        shadow-sky-200 transition-all active:scale-[0.98]'
                      >
                         Send Message
                      </button>
