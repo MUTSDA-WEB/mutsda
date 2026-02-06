@@ -35,7 +35,7 @@ export async function saveMemberMessage(c) {
    const userID = "ce15934d-0de4-47a4-a38c-c901c65d7087";
 
    const { name, phoneNumber, email, message, ...m } = await c.req.json();
-   const msg = `name_${name} phonenumber_${phoneNumber} email_${email} topic_${m.topic ? m.topic : ""} message_${message}`;
+   const msg = `name_${name} phonenumber_${phoneNumber} email_${email} topic_${m.topic ? m.topic : "Visitor Message"} message_${message}`;
    try {
       const savedMessage = await client.conversation.create({
          data: {
