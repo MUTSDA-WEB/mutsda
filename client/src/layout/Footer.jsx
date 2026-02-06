@@ -11,7 +11,6 @@ import {
    faPhone,
    faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
-import churchLogo from "../assets/church_logo.png";
 
 function Footer() {
    return (
@@ -23,7 +22,7 @@ function Footer() {
                <div className='lg:col-span-1 space-y-6'>
                   <div className='bg-white/10 backdrop-blur-sm p-4 w-fit rounded-2xl border border-white/10'>
                      <img
-                        src={churchLogo}
+                        src={"./church_logo.png"}
                         alt='Church Logo'
                         className='h-16 w-auto object-contain'
                      />

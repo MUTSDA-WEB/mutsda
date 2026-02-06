@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import logo from "../assets/church_logo.png";
-import userStore from "../hooks/useStore";
+import userStore from "../../hooks/useStore";
 
 const GlobalLoader = () => {
    const { isLoading, setLoading } = userStore();
@@ -69,7 +68,7 @@ const GlobalLoader = () => {
                {/* Logo */}
                <div className='mb-6 w-24 h-24 rounded-full bg-white/10 p-3 ring-2 ring-[#3298C8]/50'>
                   <img
-                     src={logo}
+                     src={"./church_logo.png"}
                      alt='MUTSDA Logo'
                      className='w-full h-full object-contain'
                   />

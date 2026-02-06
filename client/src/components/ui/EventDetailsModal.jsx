@@ -6,7 +6,7 @@ import {
    faLocationDot,
    faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { formatEventDate, formatEventTime } from "../helpers/dateUtils";
+import { formatEventDate, formatEventTime } from "../../helpers/dateUtils";
 
 const EventDetailsModal = ({ event, isOpen, onClose }) => {
    if (!isOpen || !event) return null;

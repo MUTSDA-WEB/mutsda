@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useCreateEvent } from "../../services/events";
-import GlobalLoader from "../../components/GlobalLoader";
+import GlobalLoader from "../../components/ui/GlobalLoader";
 import { queryClient } from "../../main";
 
 const CreateEvent = () => {

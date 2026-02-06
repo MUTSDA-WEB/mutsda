@@ -13,7 +13,6 @@ import {
    faChurch,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import churchLogo from "../assets/church_logo.png";
 import LogoutConfirmModal from "../components/ui/LogoutConfirmModal";
 import { useLogout } from "../services/logout";
 
@@ -127,7 +126,7 @@ const DashboardHeader = ({ username = "User", onMenuClick }) => {
 
                   <Link to='/dashboard'>
                      <img
-                        src={churchLogo}
+                        src={"./church_logo.png"}
                         alt='Church Logo'
                         className='h-10 w-auto object-contain hover:opacity-80 transition-opacity'
                      />

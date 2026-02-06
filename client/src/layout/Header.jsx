@@ -9,7 +9,6 @@ import {
    faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import churchLogo from "../assets/church_logo.png";
 import HeaderButtonGroup from "../components/ui/HeaderButtonGroup";
 
 const Header = () => {
@@ -49,7 +48,7 @@ const Header = () => {
             {/* LOGO */}
             <Link to='/'>
                <img
-                  src={churchLogo}
+                  src={"./church_logo.png"}
                   alt='Church Logo'
                   className='h-10 w-auto object-contain hover:opacity-80 transition-opacity'
                />

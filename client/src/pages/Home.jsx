@@ -9,7 +9,7 @@ import {
    faBell,
    faMapMarkerAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import EventDetailsModal from "../components/EventDetailsModal";
+import EventDetailsModal from "../components/ui/EventDetailsModal";
 import NoEvents from "../components/empty/NoEvents";
 import userStore from "../hooks/useStore";
 import calendarEvents from "../../utilities/calendarEvents";
