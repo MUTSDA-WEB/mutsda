@@ -33,7 +33,7 @@ const Leadership = () => {
    };
 
    // save visitor message hook
-   const { mutate: saveMessage, isLoading: saveLoading } =
+   const { mutate: saveMessage, isPending: saveLoading } =
       useSaveVisitorMessage();
 
    // load real members from the db

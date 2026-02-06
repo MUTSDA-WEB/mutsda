@@ -47,7 +47,7 @@ const Home = () => {
       setMissionData((prev) => ({ ...prev, [name]: value }));
    };
 
-   const { mutate: saveMessage, isLoading: messageLoading } =
+   const { mutate: saveMessage, isPending: saveLoading } =
       useSaveVisitorMessage();
 
    // save visitor messages
@@ -596,8 +596,9 @@ const Home = () => {
                            rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-sky-200 
                            transition-all active:scale-[0.98]'
                            type='submit'
+                           disabled={saveLoading}
                         >
-                           Send Message
+                           {saveLoading ? "Sending Message..." : "Send Message"}
                         </button>
                      </form>
                   </div>
@@ -676,8 +677,11 @@ const Home = () => {
                              font-black uppercase tracking-widest shadow-lg shadow-orange-900/20 
                              transition-all active:scale-[0.98]'
                               type='submit'
+                              disabled={saveLoading}
                            >
-                              Get Involved Now
+                              {saveLoading
+                                 ? "Submitting your request..."
+                                 : "Get Involved Now"}
                            </button>
                         </div>
                      </form>

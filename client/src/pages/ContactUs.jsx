@@ -43,7 +43,16 @@ const handleSendMessage = () => {
                "Error: ",
                e.message,
             ),
-         onSuccess: () => {},
+         onSuccess: () => {
+            setFormData({
+               email: "",
+               message: "",
+               name: "",
+               phoneNumber: "",
+               topic: "",
+            });
+            console.log("Message sent successfully from contact page");
+         },
       },
    );
 };
