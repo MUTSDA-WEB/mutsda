@@ -16,55 +16,54 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { useSaveVisitorMessage } from "../services/message";
 
-// form state
-const [formData, setFormData] = useState({
-   name: "",
-   topic: "",
-   phoneNumber: "",
-   message: "",
-   email: "",
-});
-
-// send Visitors' messages to the server and save it
-const { mutate: saveMessage, isLoading } = useSaveVisitorMessage();
-
-const handleSendMessage = () => {
-   saveMessage(
-      {
-         name: formData.name,
-         message: formData.message,
-         email: formData.email,
-         topic: formData.topic,
-      },
-      {
-         onError: (e) =>
-            console.log(
-               "Failed to send visitor message from contact page!",
-               "Error: ",
-               e.message,
-            ),
-         onSuccess: () => {
-            setFormData({
-               email: "",
-               message: "",
-               name: "",
-               phoneNumber: "",
-               topic: "",
-            });
-            console.log("Message sent successfully from contact page");
-         },
-      },
-   );
-};
-
-// handle typing in the contact form
-const handleChange = (e) => {
-   const { name, value } = e.target;
-   setFormData((prev) => ({ ...prev, [name]: value }));
-};
-
 const Contact = () => {
    const [showMap, setShowMap] = useState(false);
+   // form state
+   const [formData, setFormData] = useState({
+      name: "",
+      topic: "",
+      phoneNumber: "",
+      message: "",
+      email: "",
+   });
+
+   // send Visitors' messages to the server and save it
+   const { mutate: saveMessage, isLoading } = useSaveVisitorMessage();
+
+   const handleSendMessage = () => {
+      saveMessage(
+         {
+            name: formData.name,
+            message: formData.message,
+            email: formData.email,
+            topic: formData.topic,
+         },
+         {
+            onError: (e) =>
+               console.log(
+                  "Failed to send visitor message from contact page!",
+                  "Error: ",
+                  e.message,
+               ),
+            onSuccess: () => {
+               setFormData({
+                  email: "",
+                  message: "",
+                  name: "",
+                  phoneNumber: "",
+                  topic: "",
+               });
+               console.log("Message sent successfully from contact page");
+            },
+         },
+      );
+   };
+
+   // handle typing in the contact form
+   const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+   };
 
    return (
       <div className='bg-[#F6EBEB] min-h-screen animate-fadeIn'>
