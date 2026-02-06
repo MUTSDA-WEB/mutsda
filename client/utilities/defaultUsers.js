@@ -1,4 +1,4 @@
-export default boardMembers = [
+const boardMembers = [
    {
       name: "Pr. John Doe",
       role: "Church Pastor",
@@ -81,3 +81,5 @@ export default boardMembers = [
       image: "https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=800",
    },
 ];
+
+export default boardMembers;

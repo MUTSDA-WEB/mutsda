@@ -1,4 +1,4 @@
-export default subChoirs = [
+const subChoirs = [
    {
       name: "The Youth Choir",
       description:
@@ -33,3 +33,5 @@ export default subChoirs = [
       },
    },
 ];
+
+export default subChoirs;
