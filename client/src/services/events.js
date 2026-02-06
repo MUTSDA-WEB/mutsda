@@ -11,24 +11,25 @@ function useCreateEvent() {
    });
 }
 
-function useGetEvents() {
+// generic getter
+function useGet(getKey, path) {
    return useQuery({
-      queryKey: ["GET_EVENTS"],
+      queryKey: [getKey],
       queryFn: async () => {
-         const response = await Ax.get("/event/all");
-         return response.data;
+         const data = (await Ax.get(path)).data;
+         return data;
       },
    });
 }
 
-function useGetUpcomingEvents() {
-   return useQuery({
-      queryKey: ["UPCOMING_EVENTS"],
-      queryFn: async () => {
-         const upcoming = await Ax.get("/event/upcoming");
-         return upcoming.data;
-      },
-   });
-}
+const useGetEvents = () => useGet("GET_EVENTS", "/event/all");
+const useGetUpcomingEvents = () => useGet("UPCOMING_EVENTS", "/event/upcoming");
+const useGetAnnouncements = () =>
+   useGet("GET_ANNOUNCEMENTS", "/event/announcement");
 
-export { useCreateEvent, useGetEvents, useGetUpcomingEvents };
+export {
+   useCreateEvent,
+   useGetEvents,
+   useGetUpcomingEvents,
+   useGetAnnouncements,
+};

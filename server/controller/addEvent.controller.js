@@ -5,10 +5,8 @@ export default async function (c) {
       const {
          title,
          description,
-         eventStartTime,
-         eventEndTime,
-         eventStartDate,
-         eventEndDate,
+         startDateTime,
+         endDateTime,
          category,
          eventLocation,
          imageURL,
@@ -22,12 +20,10 @@ export default async function (c) {
          data: {
             title,
             description,
-            imageURL, // store the URL only
-            eventStartTime,
-            eventEndTime,
-            eventStartDate,
-            eventEndDate,
-            category,
+            imageURL: imageURL || "eventPlaceholder.png", // store the URL only (optional)
+            startDateTime: new Date(startDateTime),
+            endDateTime: endDateTime ? new Date(endDateTime) : null,
+            category: category,
             eventLocation,
             // maxAttendees: maxAttendees ? parseInt(maxAttendees) : null,
             userId: userID,

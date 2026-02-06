@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
    faClock,
@@ -6,160 +6,36 @@ import {
    faPhone,
    faChevronDown,
    faCalendarAlt,
+   faBell,
 } from "@fortawesome/free-solid-svg-icons";
 import EventDetailsModal from "../components/EventDetailsModal";
-import NoEvents from "../components/NoEvents";
+import NoEvents from "../components/empty/NoEvents";
 import userStore from "../hooks/useStore";
+import calendarEvents from "../../utilities/calendarEvents";
+import { useGetAnnouncements, useGetUpcomingEvents } from "../services/events";
+import NoAnnouncement from "../components/empty/NoAnnouncement";
+import AnnouncementLoader from "../components/loaders/announcementLoader";
 
 const Home = () => {
-   const { upcomingEvents } = userStore();
+   const {
+      upcomingEvents,
+      announcements,
+      setAnnouncements,
+      setUpcomingEvents,
+   } = userStore();
    const [selectedEvent, setSelectedEvent] = useState(null);
 
-   // Calendar of Events data
-   const calendarEvents = [
-      {
-         date: "Jan 10",
-         event: "Thanksgiving Sabbath",
-         description:
-            "A special Sabbath dedicated to gratitude and acknowledging God's blessings",
-         color: "bg-[#3298C8]/10 text-[#3298C8]",
-      },
-      {
-         date: "Jan 17",
-         event: "Holy Communion Sabbath",
-         description:
-            "A sacred service focusing on the Lord's Supper and spiritual renewal",
-         color: "bg-purple-100 text-purple-700",
-      },
-      {
-         date: "Jan 18",
-         event: "Joint Board Meeting",
-         description:
-            "Combined meeting of church leadership to review plans and ministries",
-         color: "bg-gray-100 text-gray-700",
-      },
-      {
-         date: "Jan 21-30",
-         event: "The 10 Days of Prayer",
-         description: "A period of intensive prayer and spiritual revival",
-         color: "bg-amber-100 text-amber-700",
-      },
-      {
-         date: "Jan 24",
-         event: "SOP and VOP Sabbath",
-         description:
-            "Highlighting Spirit of Prophecy and Voice of Prophecy ministries",
-         color: "bg-green-100 text-green-700",
-      },
-      {
-         date: "Jan 25-31",
-         event: "Week of Spiritual Emphasis",
-         description:
-            "Week-long spiritual revival with sermons and devotionals",
-         color: "bg-rose-100 text-rose-700",
-      },
-      {
-         date: "Jan 31",
-         event: "Prayer and Leadership Sabbath",
-         description: "Dedicated to prayer and empowerment of church leaders",
-         color: "bg-indigo-100 text-indigo-700",
-      },
-      {
-         date: "Feb 1",
-         event: "Church Board Meeting",
-         description: "Regular leadership meeting for church administration",
-         color: "bg-gray-100 text-gray-700",
-      },
-      {
-         date: "Feb 7",
-         event: "Internal Music Sabbath",
-         description:
-            "Worship service led by internal church choirs and music groups",
-         color: "bg-cyan-100 text-cyan-700",
-      },
-      {
-         date: "Feb 8",
-         event: "AMM and ALO Sunday",
-         description:
-            "Adventist Men's Ministry and Adventist Ladies Organization activities",
-         color: "bg-pink-100 text-pink-700",
-      },
-      {
-         date: "Feb 14",
-         event: "Mini-Harambee & Communication Sabbath",
-         description: "Fundraising and communication-focused Sabbath",
-         color: "bg-orange-100 text-orange-700",
-      },
-      {
-         date: "Feb 21",
-         event: "Finalist Sabbath",
-         description: "Recognizing and praying for completing students",
-         color: "bg-teal-100 text-teal-700",
-      },
-      {
-         date: "Feb 22",
-         event: "Hike",
-         description: "Outdoor fellowship promoting health and bonding",
-         color: "bg-lime-100 text-lime-700",
-      },
-      {
-         date: "Feb 28",
-         event: "Family Life & Appreciation Sabbath",
-         description:
-            "Emphasizing family values and appreciation of church workers",
-         color: "bg-violet-100 text-violet-700",
-      },
-      {
-         date: "Mar 1",
-         event: "Church Board Meeting",
-         description: "Leadership meeting for planning and coordination",
-         color: "bg-gray-100 text-gray-700",
-      },
-      {
-         date: "Mar 7",
-         event: "External Music Sabbath / Music Night",
-         description: "Worship event with guest musicians for evangelism",
-         color: "bg-[#3298C8]/10 text-[#3298C8]",
-      },
-      {
-         date: "Mar 14",
-         event: "Mega Harambee & Associate Sabbath",
-         description: "Major fundraising Sabbath with associate members",
-         color: "bg-amber-100 text-amber-700",
-      },
-      {
-         date: "Mar 21",
-         event: "GYD and GCD Sabbath",
-         description:
-            "Global Youth Day and Global Children's Day service and outreach",
-         color: "bg-green-100 text-green-700",
-      },
-      {
-         date: "Mar 22-28",
-         event: "Youth Week of Prayer",
-         description: "Week dedicated to youth spiritual growth and leadership",
-         color: "bg-rose-100 text-rose-700",
-      },
-      {
-         date: "Mar 28",
-         event: "Marching Out Sabbath",
-         description: "Ceremonial Sabbath for outgoing leaders commissioning",
-         color: "bg-indigo-100 text-indigo-700",
-      },
-      {
-         date: "Apr 4",
-         event: "Holy Communion Sabbath",
-         description:
-            "Communion service emphasizing humility and reconciliation",
-         color: "bg-purple-100 text-purple-700",
-      },
-      {
-         date: "Apr 11",
-         event: "Sabbath School Sabbath",
-         description: "Celebrating Sabbath School ministries and Bible study",
-         color: "bg-cyan-100 text-cyan-700",
-      },
-   ];
+   const { data, isLoading, isSuccess } = useGetAnnouncements();
+   const {
+      data: events,
+      isLoading: eventLoading,
+      isSuccess: eventSuccess,
+   } = useGetUpcomingEvents();
+
+   useEffect(() => {
+      if (isSuccess && data) setAnnouncements(data.announcements);
+      if (eventSuccess && events) setUpcomingEvents(events.events);
+   }, [isSuccess, events, data, eventSuccess]);
 
    return (
       <div className='flex flex-col animate-fadeIn'>
@@ -257,7 +133,9 @@ const Home = () => {
                   <div className='absolute -bottom-2 left-0 w-full h-1 bg-[#3298C8] rounded-full'></div>
                </div>
 
-               {upcomingEvents && upcomingEvents.length > 0 ? (
+               {eventLoading ? (
+                  <AnnouncementLoader info={"Checking for upcoming events"} />
+               ) : upcomingEvents && upcomingEvents.length > 0 ? (
                   <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
                      {upcomingEvents.map((event) => (
                         <div
@@ -396,43 +274,77 @@ const Home = () => {
                      </div>
                   </div>
 
-                  {/* Calendar Image */}
+                  {/* Announcements Section */}
                   <div className='bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 flex flex-col h-135'>
-                     <div className='bg-linear-to-r from-gray-700 to-gray-900 p-6 text-white shrink-0'>
-                        <h3 className='text-xl font-bold'>Events Summary</h3>
-                        <p className='text-gray-300 text-sm mt-1'>
-                           Visual overview of our calendar
+                     <div className='bg-linear-to-r from-amber-500 to-orange-500 p-6 text-white shrink-0'>
+                        <h3 className='text-xl font-bold flex items-center gap-2'>
+                           <FontAwesomeIcon icon={faBell} />
+                           Announcements
+                        </h3>
+                        <p className='text-amber-100 text-sm mt-1'>
+                           Stay updated with latest news
                         </p>
                      </div>
-                     <div className='p-4 flex-1 overflow-hidden'>
-                        <img
-                           src='/MUTSDAEvents.jpeg'
-                           alt='MUTSDA Events Calendar'
-                           className='w-full h-full rounded-2xl object-cover shadow-md hover:shadow-xl transition-shadow duration-300'
-                        />
-                     </div>
-                     <div className='px-6 pb-6 shrink-0'>
-                        <a
-                           href='/MUTSDAEvents.jpeg'
-                           download='MUTSDA-Calendar-of-Events.jpeg'
-                           className='flex items-center justify-center gap-2 w-full bg-[#3298C8] hover:bg-sky-600 text-white py-3 rounded-xl font-bold transition-all'
-                        >
-                           <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              className='h-5 w-5'
-                              fill='none'
-                              viewBox='0 0 24 24'
-                              stroke='currentColor'
-                           >
-                              <path
-                                 strokeLinecap='round'
-                                 strokeLinejoin='round'
-                                 strokeWidth={2}
-                                 d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'
+                     <div className='p-6 flex-1 overflow-y-auto space-y-4'>
+                        <div className='space-y-4'>
+                           {isLoading ? (
+                              <AnnouncementLoader
+                                 info={"Checking for announcements"}
                               />
-                           </svg>
-                           Download Calendar
-                        </a>
+                           ) : announcements && announcements.length > 0 ? (
+                              announcements.map((item, index) => {
+                                 const colors = [
+                                    {
+                                       bg: "bg-amber-50",
+                                       border: "border-amber-400",
+                                    },
+                                    {
+                                       bg: "bg-sky-50",
+                                       border: "border-[#3298C8]",
+                                    },
+                                    {
+                                       bg: "bg-emerald-50",
+                                       border: "border-emerald-400",
+                                    },
+                                    {
+                                       bg: "bg-purple-50",
+                                       border: "border-purple-400",
+                                    },
+                                    {
+                                       bg: "bg-rose-50",
+                                       border: "border-rose-400",
+                                    },
+                                 ];
+                                 const color = colors[index % colors.length];
+                                 return (
+                                    <div
+                                       key={item.eventID}
+                                       className={`p-4 ${color.bg} border-l-4 ${color.border} rounded-r-xl`}
+                                    >
+                                       <h4 className='font-semibold text-gray-800 text-sm'>
+                                          {item.title}
+                                       </h4>
+                                       <p className='text-xs text-gray-600 mt-1'>
+                                          {item.description}
+                                       </p>
+                                       {item.eventLocation && (
+                                          <p className='text-xs text-gray-500 mt-1 flex items-center gap-1'>
+                                             <FontAwesomeIcon
+                                                icon={faMapMarkerAlt}
+                                                className='text-[10px]'
+                                             />
+                                             {item.eventLocation}
+                                          </p>
+                                       )}
+                                    </div>
+                                 );
+                              })
+                           ) : (
+                              <NoAnnouncement
+                                 info={"Check later for updates"}
+                              />
+                           )}
+                        </div>
                      </div>
                   </div>
                </div>
@@ -623,7 +535,12 @@ const Home = () => {
                               className='w-full p-4 rounded-2xl bg-gray-50 border-none h-32 focus:ring-2 focus:ring-sky-400 outline-none transition-all resize-none placeholder:text-gray-300'
                            ></textarea>
                         </div>
-                        <button className='w-full bg-[#3298C8] hover:bg-sky-700 text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-sky-200 transition-all active:scale-[0.98]'>
+                        <button
+                           className='w-full bg-[#3298C8] hover:bg-sky-700 text-white py-4 
+                           rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-sky-200 
+                           transition-all active:scale-[0.98]'
+                           onClick={handleSaveVisitorMessage}
+                        >
                            Send Message
                         </button>
                      </div>
@@ -685,7 +602,13 @@ const Home = () => {
                               By clicking the button below, you agree to be
                               contacted by the mission coordinator.
                            </p>
-                           <button className='w-full bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-orange-900/20 transition-all active:scale-[0.98]'>
+                           <button
+                              className='w-full bg-linear-to-r from-amber-500 to-orange-500
+                            hover:from-amber-600 hover:to-orange-600 text-white py-4 rounded-2xl
+                             font-black uppercase tracking-widest shadow-lg shadow-orange-900/20 
+                             transition-all active:scale-[0.98]'
+                              onClick={handleSaveMissionMessage}
+                           >
                               Get Involved Now
                            </button>
                         </div>

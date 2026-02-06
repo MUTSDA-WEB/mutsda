@@ -39,7 +39,7 @@ export function logout(c) {
 
 export async function updatePassword(c) {
    const { oldPassword, newPassword } = await c.req.json();
-   const id = c.req.param("id");
+   const { userID } = c.get("jwtPayload");
 
    try {
       let userDetails = c.get("userInfo") || (await getUserByID(id));
@@ -50,7 +50,7 @@ export async function updatePassword(c) {
       // update db with new hashed password
       const newHashedPass = await hashP(newPassword);
       const updatedUser = client.user.update({
-         where: { userName },
+         where: { userID },
          data: { password: newHashedPass },
       });
 
@@ -69,10 +69,10 @@ export async function updatePassword(c) {
 
 export async function updateProfileInfo(c) {
    const { username, email, phoneNumber } = await c.req.json();
-   const id = c.req.param("id");
+   const { userID } = c.get("jwtPayload");
    try {
       const updatedUser = await client.user.update({
-         where: { userID: id },
+         where: { userID },
          data: { email, userName: username, phoneNumber },
       });
       return c.json(

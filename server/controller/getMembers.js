@@ -5,7 +5,7 @@ export default async function getLeaders(c) {
    try {
       const leaders = await client.user.findMany({
          where: { role: { not: "user" } },
-         omit: { password: true, email: true },
+         omit: { password: true },
       });
       return c.json({ message: "Fetch leaders successful", leaders }, 200);
    } catch (error) {

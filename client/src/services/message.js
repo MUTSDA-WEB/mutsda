@@ -3,56 +3,48 @@ import Ax from "../helpers/axios";
 
 // here I query db to get all messages of each category
 
-function useGetGroupMessages(groupId) {
+// rewrite the code to use a generic getter
+function useGetMessage(path, ...getKey) {
    return useQuery({
-      queryKey: ["GET_GROUP_MESSAGES", groupId],
+      queryKey: [...getKey],
       queryFn: async () => {
-         const groupMessages = await Ax.get(`/message/look/group/${groupId}`);
-         return groupMessages.data;
-      },
-      enabled: !!groupId, // Only fetch when groupId is provided
-   });
-}
-
-function useGetCommunityMessages(groupId) {
-   return useQuery({
-      queryKey: ["GET_COMMUNITY_MESSAGES"],
-      queryFn: async () => {
-         const cMessages = await Ax.get("/message/look/community");
-         return cMessages.data;
+         const messages = (await Ax.get(path)).data;
+         return messages;
       },
    });
 }
 
-function useGetUserDirectMsg() {
-   return useQuery({
-      queryKey: ["GET_USER_DMs"],
-      queryFn: async () => {
-         const DMs = await Ax.get("/message/look/DMs");
-         return DMs.data;
-      },
-   });
-}
+const useGetGroupMessages = (groupId) =>
+   useGetMessage(`/message/look/group/${groupId}`, [
+      "GET_GROUP_MESSAGES",
+      groupId,
+   ]);
+const useGetCommunityMessages = () =>
+   useGetMessage("/message/look/community", ["GET_COMMUNITY_MESSAGES"]);
+const useGetUserDirectMsg = () =>
+   useGetMessage("/message/look/DMs", ["GET_USER_DMs"]);
+const useGetVisitorMessages = () =>
+   useGetMessage("/message/look/visitor"["GET_VISITOR_MESSAGES"]);
 
-function useGetVisitorMessages() {
-   return useQuery({
-      queryKey: ["GET_VISITOR_MESSAGES"],
-      queryFn: async () => {
-         const visitorMsg = await Ax.get("/message/look/visitor");
-         return visitorMsg.data;
-      },
-   });
-}
+// function useUpdateMessageStatus() {
+//    return useMutation({
+//       mutationKey: ["UPDATE_MSG_STATUS"],
+//       mutationFn: async (data) => {
+//          const updatedMessage = await Ax.patch(
+//             `/message/edit/${message}`,
+//             data,
+//          );
+//          return updatedMessage.data;
+//       },
+//    });
+// }
 
-function useUpdateMessageStatus() {
+function useSaveVisitorMessage() {
    return useMutation({
-      mutationKey: ["UPDATE_MSG_STATUS"],
+      mutationKey: ["SAVE_VISITOR_MSG"],
       mutationFn: async (data) => {
-         const updatedMessage = await Ax.patch(
-            `/message/edit/${message}`,
-            data,
-         );
-         return updatedMessage.data;
+         const msg = (await Ax.post("/message/save/visitor", data)).data;
+         return msg;
       },
    });
 }
@@ -60,7 +52,7 @@ function useUpdateMessageStatus() {
 export {
    useGetCommunityMessages,
    useGetGroupMessages,
-   useUpdateMessageStatus,
    useGetUserDirectMsg,
    useGetVisitorMessages,
+   useSaveVisitorMessage,
 };

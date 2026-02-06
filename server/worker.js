@@ -26,7 +26,13 @@ async function startWorker() {
             if (result) {
                const [, messageStr] = result;
                const chatMsg = JSON.parse(messageStr);
-               console.log(chatMsg);
+               console.log(
+                  chatMsg.id,
+                  "message of type",
+                  chatMsg?.room,
+                  "created and saved at",
+                  chatMsg.time,
+               );
 
                // Map frontend message type to enum
                const messageTypeMap = {
@@ -38,6 +44,7 @@ async function startWorker() {
 
                await prisma.conversation.create({
                   data: {
+                     messageId: chatMsg?.id,
                      messageType: messageTypeMap[chatMsg.type] || "direct",
                      content: chatMsg.text || chatMsg.content || "",
                      userId: chatMsg.userId || chatMsg.senderId,

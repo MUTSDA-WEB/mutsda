@@ -23,10 +23,8 @@ const CreateEvent = () => {
    const [formData, setFormData] = useState({
       title: "",
       description: "",
-      eventStartDate: "",
-      eventEndDate: "",
-      eventStartTime: "",
-      eventEndTime: "",
+      startDateTime: "",
+      endDateTime: "",
       eventLocation: "",
       category: "",
       maxAttendees: "",
@@ -113,9 +111,8 @@ const CreateEvent = () => {
       if (!formData.title.trim()) newErrors.title = "Event title is required";
       if (!formData.description.trim())
          newErrors.description = "Description is required";
-      if (!formData.eventStartDate) newErrors.date = "Date is required";
-      if (!formData.eventStartTime)
-         newErrors.startTime = "Start time is required";
+      if (!formData.startDateTime)
+         newErrors.startDateTime = "Start date and time is required";
       if (!formData.eventLocation.trim()) {
          console.log(formData.eventLocation);
          newErrors.location = "Location is required";
@@ -132,27 +129,21 @@ const CreateEvent = () => {
 
       setIsSubmitting(true);
 
-      // Combine date and time into ISO-8601 DateTime format
-      const eventStartDateTime = formData.eventStartDate
-         ? new Date(
-              `${formData.eventStartDate}T${formData.eventStartTime || "00:00"}:00`,
-           ).toISOString()
+      // Convert datetime-local to ISO-8601 format
+      const startDateTime = formData.startDateTime
+         ? new Date(formData.startDateTime).toISOString()
          : null;
 
-      const eventEndDateTime = formData.eventEndDate
-         ? new Date(
-              `${formData.eventEndDate}T${formData.eventEndTime || "23:59"}:59`,
-           ).toISOString()
+      const endDateTime = formData.endDateTime
+         ? new Date(formData.endDateTime).toISOString()
          : null;
 
       // Send only JSON with imageURL (no file, no base64)
       const submitData = {
          title: formData.title,
          description: formData.description,
-         eventStartTime: eventStartDateTime,
-         eventEndTime: eventEndDateTime,
-         eventStartDate: eventStartDateTime,
-         eventEndDate: eventEndDateTime,
+         startDateTime: startDateTime,
+         endDateTime: endDateTime,
          eventLocation: formData.eventLocation,
          category: formData.category,
          imageURL: formData.imageURL, // only send the URL string
@@ -169,10 +160,8 @@ const CreateEvent = () => {
             setFormData({
                title: "",
                description: "",
-               eventStartDate: "",
-               eventEndDate: "",
-               eventStartTime: "",
-               eventEndTime: "",
+               startDateTime: "",
+               endDateTime: "",
                eventLocation: "",
                category: "",
                maxAttendees: "",
@@ -321,102 +310,55 @@ const CreateEvent = () => {
                      )}
                   </div>
 
-                  {/* Date Row */}
+                  {/* DateTime Row */}
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                     {/* Start Date */}
+                     {/* Start DateTime */}
                      <div>
                         <label className='block text-sm font-semibold text-gray-700 mb-2'>
                            <FontAwesomeIcon
                               icon={faCalendarPlus}
                               className='mr-2 text-[#3298C8]'
                            />
-                           Start Date <span className='text-red-500'>*</span>
+                           Start Date & Time{" "}
+                           <span className='text-red-500'>*</span>
                         </label>
                         <input
-                           type='date'
-                           name='eventStartDate'
-                           value={formData.eventStartDate}
+                           type='datetime-local'
+                           name='startDateTime'
+                           value={formData.startDateTime}
                            onChange={handleChange}
-                           min={new Date().toISOString().split("T")[0]}
+                           min={new Date().toISOString().slice(0, 16)}
                            className={`w-full p-4 border rounded-xl outline-none transition-all ${
-                              errors.date
+                              errors.startDateTime
                                  ? "border-red-300 focus:ring-2 focus:ring-red-200"
                                  : "border-gray-200 focus:ring-2 focus:ring-[#3298C8]/30 focus:border-[#3298C8]"
                            }`}
                         />
-                        {errors.date && (
+                        {errors.startDateTime && (
                            <p className='mt-1 text-sm text-red-500'>
-                              {errors.date}
+                              {errors.startDateTime}
                            </p>
                         )}
                      </div>
 
-                     {/* End Date */}
+                     {/* End DateTime */}
                      <div>
                         <label className='block text-sm font-semibold text-gray-700 mb-2'>
                            <FontAwesomeIcon
-                              icon={faCalendarPlus}
+                              icon={faClock}
                               className='mr-2 text-gray-400'
                            />
-                           End Date
+                           End Date & Time
                         </label>
                         <input
-                           type='date'
-                           name='eventEndDate'
-                           value={formData.eventEndDate}
+                           type='datetime-local'
+                           name='endDateTime'
+                           value={formData.endDateTime}
                            onChange={handleChange}
                            min={
-                              formData.eventStartDate ||
-                              new Date().toISOString().split("T")[0]
+                              formData.startDateTime ||
+                              new Date().toISOString().slice(0, 16)
                            }
-                           className='w-full p-4 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#3298C8]/30 focus:border-[#3298C8] transition-all'
-                        />
-                     </div>
-                  </div>
-
-                  {/* Time Row */}
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                     {/* Start Time */}
-                     <div>
-                        <label className='block text-sm font-semibold text-gray-700 mb-2'>
-                           <FontAwesomeIcon
-                              icon={faClock}
-                              className='mr-2 text-[#3298C8]'
-                           />
-                           Start Time <span className='text-red-500'>*</span>
-                        </label>
-                        <input
-                           type='time'
-                           name='eventStartTime'
-                           value={formData.eventStartTime}
-                           onChange={handleChange}
-                           className={`w-full p-4 border rounded-xl outline-none transition-all ${
-                              errors.startTime
-                                 ? "border-red-300 focus:ring-2 focus:ring-red-200"
-                                 : "border-gray-200 focus:ring-2 focus:ring-[#3298C8]/30 focus:border-[#3298C8]"
-                           }`}
-                        />
-                        {errors.startTime && (
-                           <p className='mt-1 text-sm text-red-500'>
-                              {errors.startTime}
-                           </p>
-                        )}
-                     </div>
-
-                     {/* End Time */}
-                     <div>
-                        <label className='block text-sm font-semibold text-gray-700 mb-2'>
-                           <FontAwesomeIcon
-                              icon={faClock}
-                              className='mr-2 text-gray-400'
-                           />
-                           End Time
-                        </label>
-                        <input
-                           type='time'
-                           name='eventEndTime'
-                           value={formData.eventEndTime}
-                           onChange={handleChange}
                            className='w-full p-4 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#3298C8]/30 focus:border-[#3298C8] transition-all'
                         />
                      </div>

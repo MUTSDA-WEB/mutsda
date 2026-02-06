@@ -10,6 +10,7 @@ import getUnoccupiedRoles from "./helpers/getAvailableRoles";
 import createEvent from "./controller/addEvent.controller";
 import {
    getAllEvents,
+   getAnnouncements,
    getPastEvents,
    getUpcomingEvents,
 } from "./controller/getEvents.controller";
@@ -41,7 +42,11 @@ App.use("*", logger());
 App.use(
    "*",
    cors({
-      origin: ["http://localhost:5173", "https://mutsda.vercel.app"],
+      origin: [
+         "http://localhost:5173",
+         "http://localhost:5174",
+         "https://mutsda.vercel.app",
+      ],
       allowMethods: ["POST", "PATCH", "GET", "DELETE"],
       credentials: true,
       allowHeaders: ["Content-Type", "Authorization", "X-Custom-Header"],
@@ -69,6 +74,9 @@ App.get("/event/past", getPastEvents);
 // fetch all events
 App.get("/event/all", getAllEvents);
 
+// fetch all valid announcements
+App.get("/event/announcement", getAnnouncements);
+
 // Create event route
 App.post("/event/create", verifyToken, createEvent);
 
@@ -94,17 +102,17 @@ App.post("/auth/logout", verifyToken, logout);
 App.get("/auth/check/login", verifyToken, checkLogin);
 
 // update user info route
-App.patch("/auth/updateProfile/:id", verifyToken, updateProfileInfo);
+App.patch("/auth/update/profile", verifyToken, updateProfileInfo);
 
 // update password route
-App.patch("/auth/updatePass/:id", verifyToken, updatePassword);
+App.patch("/auth/update/password", verifyToken, updatePassword);
 
 // ? MESSAGE ROUTES
 //save Leader Message route
 App.post("/message/save/leader", verifyToken, saveLeaderMessage);
 
 // save visitor Message route
-App.post("/message/save/visitor/:id", saveMemberMessage);
+App.post("/message/save/visitor", saveMemberMessage);
 
 // get Leader DMs route
 App.get("/message/look/DMs", verifyToken, getDirectMessages);
@@ -131,5 +139,6 @@ App.post("/group/create", verifyToken, createGroup);
 // ? user routes
 // get all users
 App.get("/user/look", verifyToken, getLeaders);
+App.get("/user/look/common", getLeaders);
 
 export default App;

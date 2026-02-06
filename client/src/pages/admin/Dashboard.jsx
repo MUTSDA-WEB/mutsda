@@ -9,23 +9,51 @@ import {
    faClock,
    faHeart,
    faChevronDown,
+   faPlus,
+   faTimes,
+   faMapMarkerAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import userStore from "../../hooks/useStore";
-import { useGetUpcomingEvents } from "../../services/events";
+import {
+   useCreateEvent,
+   useGetAnnouncements,
+   useGetUpcomingEvents,
+} from "../../services/events";
 import { useEffect, useState } from "react";
+import NoAnnouncement from "../../components/empty/NoAnnouncement";
+import AnnouncementLoader from "../../components/loaders/announcementLoader";
 
 const Dashboard = () => {
    const [expandedEventId, setExpandedEventId] = useState(null);
    const [showAllEvents, setShowAllEvents] = useState(false);
+   const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
+   const [announcementData, setAnnouncementData] = useState({
+      title: "",
+      description: "",
+      dateTime: "",
+      venue: "",
+   });
    // Sample data - replace with actual data from API
-   const { upcomingEvents, setUpcomingEvents } = userStore();
+   const {
+      upcomingEvents,
+      setUpcomingEvents,
+      announcements,
+      setAnnouncements,
+   } = userStore();
 
    const { data: UEvents, isSuccess } = useGetUpcomingEvents();
+   const { mutate: announce, isLoading } = useCreateEvent();
+   const {
+      data: aInfo,
+      isSuccess: aSuccess,
+      isLoading: aLoading,
+   } = useGetAnnouncements();
 
    useEffect(() => {
       if (isSuccess && UEvents) setUpcomingEvents(UEvents.events);
-   }, [isSuccess, UEvents]);
+      if (aSuccess && aInfo) setAnnouncements(aInfo.announcements);
+   }, [isSuccess, UEvents, aSuccess, aInfo]);
 
    // Helper function to format ISO-8601 DateTime
    const formatEventDate = (isoDateTime) => {
@@ -48,6 +76,33 @@ const Dashboard = () => {
          minute: "2-digit",
          hour12: true,
       });
+   };
+
+   // add an announcement
+   const handleAddAnnouncement = () => {
+      announce(
+         {
+            title: announcementData.title,
+            description: announcementData.description,
+            startDateTime: announcementData.dateTime,
+            category: "Announcement",
+            eventLocation: announcementData.venue,
+         },
+         {
+            onSuccess: () => {
+               setAnnouncementData({
+                  title: "",
+                  description: "",
+                  dateTime: "",
+                  venue: "",
+               });
+               setShowAnnouncementForm(false);
+            },
+            onError: (e) => {
+               console.log("Error happened:", e.message);
+            },
+         },
+      );
    };
 
    const quickLinks = [
@@ -161,9 +216,9 @@ const Dashboard = () => {
                            : upcomingEvents.slice(0, 3)
                         ).map((event) => {
                            const { month, day } = formatEventDate(
-                              event.eventStartTime,
+                              event.startDateTime,
                            );
-                           const time = formatEventTime(event.eventStartTime);
+                           const time = formatEventTime(event.startDateTime);
                            const isExpanded = expandedEventId === event.eventID;
                            return (
                               <div
@@ -302,44 +357,183 @@ const Dashboard = () => {
                {/* Notifications / Announcements */}
                <section>
                   <div className='bg-white rounded-2xl shadow-md p-6'>
-                     <h2 className='text-xl font-bold text-gray-800 flex items-center gap-2 mb-6'>
-                        <FontAwesomeIcon
-                           icon={faBell}
-                           className='text-amber-500'
-                        />
-                        Announcements
-                     </h2>
-
-                     <div className='space-y-4'>
-                        <div className='p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-xl'>
-                           <h4 className='font-semibold text-gray-800 text-sm'>
-                              Sabbath Service
-                           </h4>
-                           <p className='text-xs text-gray-600 mt-1'>
-                              Join us every Saturday at 9:00 AM for worship
-                              service.
-                           </p>
-                        </div>
-
-                        <div className='p-4 bg-sky-50 border-l-4 border-[#3298C8] rounded-r-xl'>
-                           <h4 className='font-semibold text-gray-800 text-sm'>
-                              Prayer Meeting
-                           </h4>
-                           <p className='text-xs text-gray-600 mt-1'>
-                              Wednesday and Friday evenings at 6:00 PM.
-                           </p>
-                        </div>
-
-                        <div className='p-4 bg-emerald-50 border-l-4 border-emerald-400 rounded-r-xl'>
-                           <h4 className='font-semibold text-gray-800 text-sm'>
-                              New Members
-                           </h4>
-                           <p className='text-xs text-gray-600 mt-1'>
-                              Welcome! Visit our About page to learn more about
-                              us.
-                           </p>
-                        </div>
+                     <div className='flex items-center justify-between mb-6'>
+                        <h2 className='text-xl font-bold text-gray-800 flex items-center gap-2'>
+                           <FontAwesomeIcon
+                              icon={faBell}
+                              className='text-amber-500'
+                           />
+                           Announcements
+                        </h2>
+                        <button
+                           onClick={() =>
+                              setShowAnnouncementForm(!showAnnouncementForm)
+                           }
+                           className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                              showAnnouncementForm
+                                 ? "bg-red-100 text-red-500 hover:bg-red-200"
+                                 : "bg-amber-100 text-amber-600 hover:bg-amber-200"
+                           }`}
+                        >
+                           <FontAwesomeIcon
+                              icon={showAnnouncementForm ? faTimes : faPlus}
+                              className='text-sm'
+                           />
+                        </button>
                      </div>
+
+                     {showAnnouncementForm ? (
+                        /* Announcement Form */
+                        <div className='space-y-4 animate-scaleIn'>
+                           <div>
+                              <label className='block text-xs font-semibold text-gray-500 uppercase mb-1'>
+                                 Title
+                              </label>
+                              <input
+                                 type='text'
+                                 value={announcementData.title}
+                                 onChange={(e) =>
+                                    setAnnouncementData((prev) => ({
+                                       ...prev,
+                                       title: e.target.value,
+                                    }))
+                                 }
+                                 placeholder='Announcement title...'
+                                 className='w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 transition-all text-sm'
+                              />
+                           </div>
+                           <div>
+                              <label className='block text-xs font-semibold text-gray-500 uppercase mb-1'>
+                                 Description
+                              </label>
+                              <textarea
+                                 value={announcementData.description}
+                                 onChange={(e) =>
+                                    setAnnouncementData((prev) => ({
+                                       ...prev,
+                                       description: e.target.value,
+                                    }))
+                                 }
+                                 placeholder='Describe the announcement...'
+                                 rows={3}
+                                 className='w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 transition-all text-sm resize-none'
+                              />
+                           </div>
+                           <div className='grid grid-cols-2 gap-3'>
+                              <div>
+                                 <label className='block text-xs font-semibold text-gray-500 uppercase mb-1'>
+                                    <FontAwesomeIcon
+                                       icon={faClock}
+                                       className='mr-1 text-amber-500'
+                                    />
+                                    Date & Time
+                                 </label>
+                                 <input
+                                    type='datetime-local'
+                                    value={announcementData.dateTime}
+                                    onChange={(e) =>
+                                       setAnnouncementData((prev) => ({
+                                          ...prev,
+                                          dateTime: e.target.value,
+                                       }))
+                                    }
+                                    className='w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 transition-all text-sm'
+                                 />
+                              </div>
+                              <div>
+                                 <label className='block text-xs font-semibold text-gray-500 uppercase mb-1'>
+                                    <FontAwesomeIcon
+                                       icon={faMapMarkerAlt}
+                                       className='mr-1 text-amber-500'
+                                    />
+                                    Venue
+                                 </label>
+                                 <input
+                                    type='text'
+                                    value={announcementData.venue}
+                                    onChange={(e) =>
+                                       setAnnouncementData((prev) => ({
+                                          ...prev,
+                                          venue: e.target.value,
+                                       }))
+                                    }
+                                    placeholder='Location...'
+                                    className='w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 transition-all text-sm'
+                                 />
+                              </div>
+                           </div>
+                           <button
+                              onClick={handleAddAnnouncement}
+                              disabled={isLoading}
+                              className='w-full bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-xl font-semibold transition-all'
+                           >
+                              {isLoading
+                                 ? "Adding Announcement..."
+                                 : "Post Announcement"}
+                           </button>
+                        </div>
+                     ) : aLoading ? (
+                        <AnnouncementLoader
+                           info={"Checking for announcements"}
+                        />
+                     ) : (
+                        /* Announcements List */
+                        <div className='space-y-4'>
+                           {announcements && announcements.length > 0 ? (
+                              announcements.map((item, index) => {
+                                 const colors = [
+                                    {
+                                       bg: "bg-amber-50",
+                                       border: "border-amber-400",
+                                    },
+                                    {
+                                       bg: "bg-sky-50",
+                                       border: "border-[#3298C8]",
+                                    },
+                                    {
+                                       bg: "bg-emerald-50",
+                                       border: "border-emerald-400",
+                                    },
+                                    {
+                                       bg: "bg-purple-50",
+                                       border: "border-purple-400",
+                                    },
+                                    {
+                                       bg: "bg-rose-50",
+                                       border: "border-rose-400",
+                                    },
+                                 ];
+                                 const color = colors[index % colors.length];
+                                 return (
+                                    <div
+                                       key={item.eventID}
+                                       className={`p-4 ${color.bg} border-l-4 ${color.border} rounded-r-xl`}
+                                    >
+                                       <h4 className='font-semibold text-gray-800 text-sm'>
+                                          {item.title}
+                                       </h4>
+                                       <p className='text-xs text-gray-600 mt-1'>
+                                          {item.description}
+                                       </p>
+                                       {item.eventLocation && (
+                                          <p className='text-xs text-gray-500 mt-1 flex items-center gap-1'>
+                                             <FontAwesomeIcon
+                                                icon={faMapMarkerAlt}
+                                                className='text-[10px]'
+                                             />
+                                             {item.eventLocation}
+                                          </p>
+                                       )}
+                                    </div>
+                                 );
+                              })
+                           ) : (
+                              <NoAnnouncement
+                                 info={"Click the + button to add one"}
+                              />
+                           )}
+                        </div>
+                     )}
                   </div>
                </section>
             </div>
