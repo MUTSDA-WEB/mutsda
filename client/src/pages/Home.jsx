@@ -186,7 +186,7 @@ const Home = () => {
                         );
                         return (
                            <div
-                              key={event?.id}
+                              key={event?.eventID}
                               className='group relative bg-white rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500'
                            >
                               {/* Image Container */}

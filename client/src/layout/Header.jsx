@@ -207,7 +207,7 @@ const Header = () => {
             <div className='flex justify-center mb-6'>
                <Link to='/' onClick={() => setIsMobileMenuOpen(false)}>
                   <img
-                     src={churchLogo}
+                     src={"./church_logo.png"}
                      alt='Church Logo'
                      className='h-8 w-auto object-contain hover:opacity-80 transition-opacity'
                   />
