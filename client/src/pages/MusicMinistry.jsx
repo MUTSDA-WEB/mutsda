@@ -9,7 +9,7 @@ import {
    faEnvelope,
 } from "@fortawesome/free-solid-svg-icons";
 import JoinForm from "../components/JoinForm";
-import subChoirs from "../../utilities/subchoirs";
+import subChoirs from "../utilities/subchoirs";
 
 const MusicMinistry = () => {
    const [showMainChoirForm, setShowMainChoirForm] = useState(false);

@@ -11,7 +11,7 @@ import {
 import EventDetailsModal from "../components/EventDetailsModal";
 import NoEvents from "../components/empty/NoEvents";
 import userStore from "../hooks/useStore";
-import calendarEvents from "../../utilities/calendarEvents";
+import calendarEvents from "../utilities/calendarEvents";
 import { useGetAnnouncements, useGetUpcomingEvents } from "../services/events";
 import NoAnnouncement from "../components/empty/NoAnnouncement";
 import AnnouncementLoader from "../components/loaders/announcementLoader";
