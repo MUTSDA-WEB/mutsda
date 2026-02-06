@@ -38,7 +38,6 @@ const Register = () => {
    const {
       data: newUser,
       isLoading: loadingReg,
-      isSuccess,
       mutate: register,
    } = useRegister();
 

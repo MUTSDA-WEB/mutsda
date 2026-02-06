@@ -1,46 +1,24 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-   faUser,
-   faIdCard,
-   faEnvelope,
-   faPhone,
-   faShieldAlt,
-   faEdit,
-   faSave,
-   faTimes,
-   faLock,
-   faEye,
-   faEyeSlash,
-   faCheckCircle,
-   faExclamationCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import zxcvbn from "zxcvbn";
 import userStore from "../../hooks/useStore";
+import { useUpdatePassword, useUpdateProfile } from "../../services/user";
+import { queryClient } from "../../main";
 
 const Profile = () => {
-   // User data - Replace with actual user data from API/context
-
-   // mock user data
-   // const user =
-   //    userId: "MUTSDA-2024-00145",
-   //    username: "JohnDoe",
-   //    email: "johndoe@example.com",
-   //    phoneNumber: "+254 712 345 678",
-   //    leadershipRole: "Choir Member",
-   //    memberSince: "January 2024",
-   //    department: "Music Ministry",
-   // });
-
    const { user } = userStore();
-   const { userName, email, phoneNumber, role } = user || {};
+   const { userName, email, phoneNumber, role, userID } = user || {};
    const [isEditing, setIsEditing] = useState(false);
    const [editForm, setEditForm] = useState({
-      username: "",
+      userName: "",
       email: "",
       phoneNumber: "",
    });
+   const { mutate: updateProfile, isPending: updatingProfile } =
+      useUpdateProfile();
+   const { mutate: updatePassword, isPending: updatingPassword } =
+      useUpdatePassword();
    const [editErrors, setEditErrors] = useState({});
-   const [isSavingProfile, setIsSavingProfile] = useState(false);
    const [profileSaveSuccess, setProfileSaveSuccess] = useState(false);
 
    // Update editForm when user data is ready
@@ -67,7 +45,6 @@ const Profile = () => {
       confirm: false,
    });
    const [passwordErrors, setPasswordErrors] = useState({});
-   const [isSavingPassword, setIsSavingPassword] = useState(false);
    const [passwordSaveSuccess, setPasswordSaveSuccess] = useState(false);
 
    // Handle profile edit
@@ -81,7 +58,7 @@ const Profile = () => {
 
    const validateEditForm = () => {
       const errors = {};
-      if (!editForm.username.trim()) {
+      if (!editForm.userName.trim()) {
          errors.username = "Username is required";
       } else if (editForm.username.length < 3) {
          errors.username = "Username must be at least 3 characters";
@@ -103,25 +80,31 @@ const Profile = () => {
          setEditErrors(errors);
          return;
       }
-
       setIsSavingProfile(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // eslint-disable-next-line no-undef
-      setUser((prev) => ({
-         ...prev,
-         username: editForm.username,
-         email: editForm.email,
-         phoneNumber: editForm.phoneNumber,
-      }));
-
-      setIsSavingProfile(false);
-      setProfileSaveSuccess(true);
-      setTimeout(() => {
-         setProfileSaveSuccess(false);
-         setIsEditing(false);
-      }, 1500);
+      const { userName, email, phoneNumber } = editForm;
+      updateProfile(
+         { userName, email, phoneNumber },
+         {
+            onSuccess: async () => {
+               setProfileSaveSuccess(true);
+               // ensure fetching of users updated data
+               setUser((prev) => ({
+                  ...prev,
+                  username: editForm.username,
+                  email: editForm.email,
+                  phoneNumber: editForm.phoneNumber,
+               }));
+               await queryClient.invalidateQueries({
+                  queryKey: ["CHECK_LOGIN"],
+               });
+               setIsEditing(false);
+               console.log("Profile update successful");
+            },
+            onError: (e) => {
+               console.log("Failed to ");
+            },
+         },
+      );
    };
 
    const cancelEdit = () => {
@@ -152,7 +135,9 @@ const Profile = () => {
          errors.newPassword = "New password is required";
       } else if (passwordForm.newPassword.length < 8) {
          errors.newPassword = "Password must be at least 8 characters";
-      } else if (!/(?=.*[0-9])(?=.*[a-zA-Z])/.test(passwordForm.newPassword)) {
+      } else if (zxcvbn(passwordForm.newPassword).score < 3)
+         errors.newPassword = "Password is weak choose a stronger one!!";
+      else if (!/(?=.*[0-9])(?=.*[a-zA-Z])/.test(passwordForm.newPassword)) {
          errors.newPassword = "Password must contain letters and numbers";
       }
       if (!passwordForm.confirmPassword) {
@@ -170,21 +155,28 @@ const Profile = () => {
          return;
       }
 
-      setIsSavingPassword(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      updatePassword(
+         {
+            oldPassword: passwordForm.currentPassword,
+            newPassword: passwordForm.newPassword,
+         },
+         {
+            onSuccess: () => {
+               setPasswordSaveSuccess(true);
+               setShowPasswordForm(false);
+               setPasswordForm({
+                  currentPassword: "",
+                  newPassword: "",
+                  confirmPassword: "",
+               });
+               console.log("Password update successful");
+            },
 
-      setIsSavingPassword(false);
-      setPasswordSaveSuccess(true);
-      setTimeout(() => {
-         setPasswordSaveSuccess(false);
-         setShowPasswordForm(false);
-         setPasswordForm({
-            currentPassword: "",
-            newPassword: "",
-            confirmPassword: "",
-         });
-      }, 1500);
+            onError: (e) => {
+               console.log("Failed to update password", "Error: ", e.message);
+            },
+         },
+      );
    };
 
    const cancelPasswordChange = () => {
@@ -321,14 +313,14 @@ const Profile = () => {
                      ) : (
                         <div className='space-y-4'>
                            {/* Non-editable fields */}
-                           {/* <div className='p-4 bg-gray-100 rounded-xl opacity-75'>
+                           <div className='p-4 bg-gray-100 rounded-xl opacity-75'>
                               <p className='text-xs text-gray-500 uppercase tracking-wider mb-1'>
                                  User ID (Cannot be changed)
                               </p>
                               <p className='font-semibold text-gray-600'>
                                  {userID}
                               </p>
-                           </div> */}
+                           </div>
                            <div className='p-4 bg-gray-100 rounded-xl opacity-75'>
                               <p className='text-xs text-gray-500 uppercase tracking-wider mb-1'>
                                  Leadership Role (Contact admin to change)
@@ -345,8 +337,8 @@ const Profile = () => {
                               </label>
                               <input
                                  type='text'
-                                 name='username'
-                                 value={editForm.username}
+                                 name='userName'
+                                 value={editForm.userName}
                                  onChange={handleEditChange}
                                  className={`w-full p-4 border rounded-xl outline-none transition-all ${
                                     editErrors.username
@@ -425,10 +417,10 @@ const Profile = () => {
                               </button>
                               <button
                                  onClick={handleSaveProfile}
-                                 disabled={isSavingProfile}
+                                 disabled={updatingProfile}
                                  className='flex-1 px-4 py-3 bg-linear-to-r from-[#3298C8] to-sky-600 text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-70 flex items-center justify-center gap-2'
                               >
-                                 {isSavingProfile ? (
+                                 {updatingProfile ? (
                                     <>
                                        <span className='w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin'></span>
                                        Saving...
@@ -640,7 +632,7 @@ const Profile = () => {
                                  disabled={isSavingPassword}
                                  className='flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-xl font-medium transition-all disabled:opacity-70 flex items-center justify-center gap-2'
                               >
-                                 {isSavingPassword ? (
+                                 {updatingPassword ? (
                                     <>
                                        <span className='w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin'></span>
                                        Updating...

@@ -20,7 +20,7 @@ const JoinForm = ({
    const [submitted, setSubmitted] = useState(false);
 
    // save the userInfo
-   const { mutate: saveMessage, isLoading } = useSaveVisitorMessage();
+   const { mutate: saveMessage, isPending } = useSaveVisitorMessage();
    const handleSubmit = () => {
       saveMessage(
          {
@@ -32,6 +32,7 @@ const JoinForm = ({
          {
             onSuccess: () => {
                setSubmitted(true);
+               setFormData({ email: "", name: "", phoneNumber: "" });
                console.log("Join message sent successfully");
             },
             onError: (e) =>
@@ -159,10 +160,10 @@ const JoinForm = ({
                </div>
                <button
                   type='submit'
-                  disabled={isLoading}
+                  disabled={isPending}
                   className={buttonClass}
                >
-                  {isLoading ? (
+                  {isPending ? (
                      <span className='flex items-center justify-center gap-2'>
                         <FontAwesomeIcon
                            icon={faSpinner}

@@ -68,12 +68,12 @@ export async function updatePassword(c) {
 }
 
 export async function updateProfileInfo(c) {
-   const { username, email, phoneNumber } = await c.req.json();
+   const { userName, email, phoneNumber } = await c.req.json();
    const { userID } = c.get("jwtPayload");
    try {
       const updatedUser = await client.user.update({
          where: { userID },
-         data: { email, userName: username, phoneNumber },
+         data: { email, userName, phoneNumber },
       });
       return c.json(
          { message: "User profile updated successfully", user: updatedUser },
