@@ -198,102 +198,104 @@ const Leadership = () => {
                                     </p>
                                  </div>
                               ) : (
-                                 <form
-                                    onSubmit={(e) =>
-                                       handleSubmit(e, member?.userID)
-                                    }
-                                    className='space-y-4'
-                                 >
-                                    <div className='space-y-1'>
-                                       <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
-                                          Your Name
-                                       </label>
-                                       <input
-                                          type='text'
-                                          name='name'
-                                          value={formData.name}
-                                          onChange={handleChange}
-                                          placeholder='e.g. John Doe'
-                                          required
-                                          className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
-                                       />
-                                    </div>
-                                    <div className='grid grid-cols-2 gap-4'>
-                                       <div className='space-y-1'>
-                                          <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
-                                             Phone Number
-                                          </label>
-                                          <input
-                                             type='tel'
-                                             name='phoneNumber'
-                                             value={formData.phoneNumber}
-                                             onChange={handleChange}
-                                             placeholder='+254...'
-                                             required
-                                             className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
-                                          />
-                                       </div>
-                                       <div className='space-y-1'>
-                                          <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
-                                             Email
-                                          </label>
-                                          <input
-                                             type='email'
-                                             name='email'
-                                             value={formData.email}
-                                             onChange={handleChange}
-                                             placeholder='email@example.com'
-                                             required
-                                             className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
-                                          />
-                                       </div>
-                                    </div>
-                                    <div className='space-y-1'>
-                                       <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
-                                          Subject
-                                       </label>
-                                       <input
-                                          type='text'
-                                          name='subject'
-                                          value={formData.subject}
-                                          onChange={handleChange}
-                                          placeholder='What is this about?'
-                                          required
-                                          className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
-                                       />
-                                    </div>
-                                    <div className='space-y-1'>
-                                       <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
-                                          Message
-                                       </label>
-                                       <textarea
-                                          name='message'
-                                          value={formData.message}
-                                          onChange={handleChange}
-                                          placeholder='Write your message here...'
-                                          required
-                                          rows={4}
-                                          className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400 resize-none'
-                                       />
-                                    </div>
-                                    <button
-                                       type='submit'
-                                       disabled={isSubmitting}
-                                       className='w-full bg-[#3298C8] hover:bg-sky-700 text-white py-4 rounded-2xl font-bold transition-all disabled:opacity-50'
+                                 !isAuthenticated && (
+                                    <form
+                                       onSubmit={(e) =>
+                                          handleSubmit(e, member?.userID)
+                                       }
+                                       className='space-y-4'
                                     >
-                                       {isSubmitting || isLoading ? (
-                                          <span className='flex items-center justify-center gap-2'>
-                                             <FontAwesomeIcon
-                                                icon={faSpinner}
-                                                className='animate-spin'
+                                       <div className='space-y-1'>
+                                          <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
+                                             Your Name
+                                          </label>
+                                          <input
+                                             type='text'
+                                             name='name'
+                                             value={formData.name}
+                                             onChange={handleChange}
+                                             placeholder='e.g. John Doe'
+                                             required
+                                             className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
+                                          />
+                                       </div>
+                                       <div className='grid grid-cols-2 gap-4'>
+                                          <div className='space-y-1'>
+                                             <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
+                                                Phone Number
+                                             </label>
+                                             <input
+                                                type='tel'
+                                                name='phoneNumber'
+                                                value={formData.phoneNumber}
+                                                onChange={handleChange}
+                                                placeholder='+254...'
+                                                required
+                                                className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
                                              />
-                                             Sending...
-                                          </span>
-                                       ) : (
-                                          "Send Message"
-                                       )}
-                                    </button>
-                                 </form>
+                                          </div>
+                                          <div className='space-y-1'>
+                                             <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
+                                                Email
+                                             </label>
+                                             <input
+                                                type='email'
+                                                name='email'
+                                                value={formData.email}
+                                                onChange={handleChange}
+                                                placeholder='email@example.com'
+                                                required
+                                                className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
+                                             />
+                                          </div>
+                                       </div>
+                                       <div className='space-y-1'>
+                                          <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
+                                             Subject
+                                          </label>
+                                          <input
+                                             type='text'
+                                             name='subject'
+                                             value={formData.subject}
+                                             onChange={handleChange}
+                                             placeholder='What is this about?'
+                                             required
+                                             className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
+                                          />
+                                       </div>
+                                       <div className='space-y-1'>
+                                          <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
+                                             Message
+                                          </label>
+                                          <textarea
+                                             name='message'
+                                             value={formData.message}
+                                             onChange={handleChange}
+                                             placeholder='Write your message here...'
+                                             required
+                                             rows={4}
+                                             className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400 resize-none'
+                                          />
+                                       </div>
+                                       <button
+                                          type='submit'
+                                          disabled={isSubmitting}
+                                          className='w-full bg-[#3298C8] hover:bg-sky-700 text-white py-4 rounded-2xl font-bold transition-all disabled:opacity-50'
+                                       >
+                                          {isSubmitting || isLoading ? (
+                                             <span className='flex items-center justify-center gap-2'>
+                                                <FontAwesomeIcon
+                                                   icon={faSpinner}
+                                                   className='animate-spin'
+                                                />
+                                                Sending...
+                                             </span>
+                                          ) : (
+                                             "Send Message"
+                                          )}
+                                       </button>
+                                    </form>
+                                 )
                               )}
                            </div>
                         ) : (
