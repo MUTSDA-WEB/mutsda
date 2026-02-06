@@ -15,6 +15,7 @@ import calendarEvents from "../../utilities/calendarEvents";
 import { useGetAnnouncements, useGetUpcomingEvents } from "../services/events";
 import NoAnnouncement from "../components/empty/NoAnnouncement";
 import AnnouncementLoader from "../components/loaders/announcementLoader";
+import { useSaveVisitorMessage } from "../services/message";
 
 const Home = () => {
    const {
@@ -24,7 +25,47 @@ const Home = () => {
       setUpcomingEvents,
    } = userStore();
    const [selectedEvent, setSelectedEvent] = useState(null);
+   // form states
+   const [messageData, setMessageData] = useState({
+      name: "",
+      email: "",
+      phoneNumber: "",
+      message: "",
+   });
+   const [missionData, setMissionData] = useState({
+      name: "",
+      email: "",
+      phoneNumber: "",
+   });
 
+   const handleMsgChange = (e) => {
+      const { name, value } = e.target;
+      setMessageData((prev) => ({ ...prev, [name]: value }));
+   };
+   const handleMissionChange = (e) => {
+      const { name, value } = e.target;
+      setMissionData((prev) => ({ ...prev, [name]: value }));
+   };
+
+   const { mutate: saveMessage, isLoading: messageLoading } =
+      useSaveVisitorMessage();
+
+   // save visitor messages
+   function handleSaveMessage(name, phoneNumber, email, message) {
+      saveMessage(
+         { message, name, phoneNumber, email },
+         {
+            onSuccess: () => console.log("Message sent"),
+            onError: (e) =>
+               console.log("Error saving the visitor Message", e.message),
+         },
+      );
+   }
+
+   const handleSaveVisitorMessage = () => handleSaveMessage();
+   const handleSaveMissionMessage = () => handleSaveMessage();
+
+   // load announcements from db
    const { data, isLoading, isSuccess } = useGetAnnouncements();
    const {
       data: events,
@@ -493,13 +534,19 @@ const Home = () => {
                         </p>
                      </div>
 
-                     <div className='p-8 space-y-4 grow'>
+                     <form
+                        onSubmit={handleSaveVisitorMessage}
+                        className='p-8 space-y-4 grow'
+                     >
                         <div className='space-y-1'>
                            <label className='text-xs font-bold text-gray-400 uppercase ml-1'>
                               Full Name
                            </label>
                            <input
                               type='text'
+                              name='name'
+                              onChange={handleMsgChange}
+                              value={messageData.name}
                               placeholder='e.g. John Doe'
                               className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-sky-400 outline-none transition-all placeholder:text-gray-300'
                            />
@@ -511,6 +558,9 @@ const Home = () => {
                               </label>
                               <input
                                  type='tel'
+                                 name='phoneNumber'
+                                 onChange={handleMsgChange}
+                                 value={messageData.phoneNumber}
                                  placeholder='+254...'
                                  className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-sky-400 outline-none transition-all placeholder:text-gray-300'
                               />
@@ -521,6 +571,9 @@ const Home = () => {
                               </label>
                               <input
                                  type='email'
+                                 name='email'
+                                 onChange={handleMsgChange}
+                                 value={messageData.email}
                                  placeholder='email@example.com'
                                  className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-sky-400 outline-none transition-all placeholder:text-gray-300'
                               />
@@ -531,6 +584,9 @@ const Home = () => {
                               Your Message
                            </label>
                            <textarea
+                              name='message'
+                              onChange={handleMsgChange}
+                              value={messageData.message}
                               placeholder='How can we help you today?'
                               className='w-full p-4 rounded-2xl bg-gray-50 border-none h-32 focus:ring-2 focus:ring-sky-400 outline-none transition-all resize-none placeholder:text-gray-300'
                            ></textarea>
@@ -539,11 +595,11 @@ const Home = () => {
                            className='w-full bg-[#3298C8] hover:bg-sky-700 text-white py-4 
                            rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-sky-200 
                            transition-all active:scale-[0.98]'
-                           onClick={handleSaveVisitorMessage}
+                           type='submit'
                         >
                            Send Message
                         </button>
-                     </div>
+                     </form>
                   </div>
 
                   {/* Register For Mission Panel */}
@@ -566,14 +622,20 @@ const Home = () => {
                         </p>
                      </div>
 
-                     <div className='p-8 space-y-4 grow'>
+                     <form
+                        onSubmit={handleSaveMissionMessage}
+                        className='p-8 space-y-4 grow'
+                     >
                         <div className='space-y-1 text-gray-400'>
                            <label className='text-xs font-bold uppercase ml-1'>
                               Volunteer Name
                            </label>
                            <input
                               type='text'
+                              name='name'
+                              onChange={handleMissionChange}
                               placeholder='Enter your name'
+                              value={missionData.name}
                               className='w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-amber-500 outline-none transition-all placeholder:text-gray-600'
                            />
                         </div>
@@ -583,6 +645,9 @@ const Home = () => {
                            </label>
                            <input
                               type='tel'
+                              name='phoneNumber'
+                              onChange={handleMissionChange}
+                              value={missionData.phoneNumber}
                               placeholder='+254...'
                               className='w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-amber-500 outline-none transition-all placeholder:text-gray-600'
                            />
@@ -593,6 +658,9 @@ const Home = () => {
                            </label>
                            <input
                               type='email'
+                              name='email'
+                              onChange={handleMissionChange}
+                              value={missionData.email}
                               placeholder='email@example.com'
                               className='w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-amber-500 outline-none transition-all placeholder:text-gray-600'
                            />
@@ -607,12 +675,12 @@ const Home = () => {
                             hover:from-amber-600 hover:to-orange-600 text-white py-4 rounded-2xl
                              font-black uppercase tracking-widest shadow-lg shadow-orange-900/20 
                              transition-all active:scale-[0.98]'
-                              onClick={handleSaveMissionMessage}
+                              type='submit'
                            >
                               Get Involved Now
                            </button>
                         </div>
-                     </div>
+                     </form>
                   </div>
                </div>
             </section>

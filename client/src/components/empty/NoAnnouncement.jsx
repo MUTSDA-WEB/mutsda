@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 const NoAnnouncement = ({ info }) => {
    return (
       <div className='text-center py-8'>
