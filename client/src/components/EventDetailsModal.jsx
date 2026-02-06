@@ -6,9 +6,14 @@ import {
    faLocationDot,
    faUsers,
 } from "@fortawesome/free-solid-svg-icons";
+import { formatEventDate, formatEventTime } from "../helpers/dateUtils";
 
 const EventDetailsModal = ({ event, isOpen, onClose }) => {
    if (!isOpen || !event) return null;
+
+   // Format dates from ISO DateTime
+   const { month, day, fullDate } = formatEventDate(event.startDateTime);
+   const time = formatEventTime(event.startDateTime);
 
    return (
       <div className='fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn'>
@@ -23,7 +28,7 @@ const EventDetailsModal = ({ event, isOpen, onClose }) => {
             {/* Event Image */}
             <div className='relative h-56 overflow-hidden'>
                <img
-                  src={event.img}
+                  src={event.imageURL}
                   alt={event.title}
                   className='w-full h-full object-cover'
                />
@@ -32,10 +37,10 @@ const EventDetailsModal = ({ event, isOpen, onClose }) => {
                {/* Date Badge */}
                <div className='absolute top-4 left-4 bg-white rounded-2xl p-3 px-5 shadow-lg text-center'>
                   <span className='block text-[#3298C8] font-black text-2xl leading-none'>
-                     {event.date.split(" ")[1]}
+                     {day}
                   </span>
                   <span className='block text-gray-400 text-xs font-bold uppercase'>
-                     {event.date.split(" ")[0]}
+                     {month}
                   </span>
                </div>
 
@@ -69,9 +74,7 @@ const EventDetailsModal = ({ event, isOpen, onClose }) => {
                            Date
                         </span>
                      </div>
-                     <p className='font-bold text-gray-800'>
-                        {event.date}, 2026
-                     </p>
+                     <p className='font-bold text-gray-800'>{fullDate}</p>
                   </div>
 
                   <div className='bg-sky-50 p-4 rounded-2xl'>
@@ -81,9 +84,7 @@ const EventDetailsModal = ({ event, isOpen, onClose }) => {
                            Time
                         </span>
                      </div>
-                     <p className='font-bold text-gray-800'>
-                        {event.time || "9:00 AM"}
-                     </p>
+                     <p className='font-bold text-gray-800'>{time || "TBA"}</p>
                   </div>
 
                   <div className='bg-sky-50 p-4 rounded-2xl'>
@@ -94,7 +95,7 @@ const EventDetailsModal = ({ event, isOpen, onClose }) => {
                         </span>
                      </div>
                      <p className='font-bold text-gray-800'>
-                        {event.location || "MUT Campus"}
+                        {event.eventLocation || "MUT Campus"}
                      </p>
                   </div>
 

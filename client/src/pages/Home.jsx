@@ -7,6 +7,7 @@ import {
    faChevronDown,
    faCalendarAlt,
    faBell,
+   faMapMarkerAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import EventDetailsModal from "../components/EventDetailsModal";
 import NoEvents from "../components/empty/NoEvents";
@@ -16,6 +17,7 @@ import { useGetAnnouncements, useGetUpcomingEvents } from "../services/events";
 import NoAnnouncement from "../components/empty/NoAnnouncement";
 import AnnouncementLoader from "../components/loaders/announcementLoader";
 import { useSaveVisitorMessage } from "../services/message";
+import { formatEventDate } from "../helpers/dateUtils";
 
 const Home = () => {
    const {
@@ -178,61 +180,66 @@ const Home = () => {
                   <AnnouncementLoader info={"Checking for upcoming events"} />
                ) : upcomingEvents && upcomingEvents.length > 0 ? (
                   <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-                     {upcomingEvents.map((event) => (
-                        <div
-                           key={event.id}
-                           className='group relative bg-white rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500'
-                        >
-                           {/* Image Container */}
-                           <div className='h-72 overflow-hidden relative'>
-                              <img
-                                 src={event.img}
-                                 alt={event.title}
-                                 className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
-                              />
-                              {/* Date Badge */}
-                              <div className='absolute top-4 left-4 bg-white rounded-2xl p-2 px-4 shadow-md text-center'>
-                                 <span className='block text-[#3298C8] font-black text-lg leading-none'>
-                                    {event.date.split(" ")[1]}
-                                 </span>
-                                 <span className='block text-gray-400 text-[10px] font-bold uppercase'>
-                                    {event.date.split(" ")[0]}
-                                 </span>
+                     {upcomingEvents.map((event) => {
+                        const { month, day } = formatEventDate(
+                           event?.startDateTime,
+                        );
+                        return (
+                           <div
+                              key={event?.id}
+                              className='group relative bg-white rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500'
+                           >
+                              {/* Image Container */}
+                              <div className='h-72 overflow-hidden relative'>
+                                 <img
+                                    src={event?.imageURL}
+                                    alt={event?.title}
+                                    className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
+                                 />
+                                 {/* Date Badge */}
+                                 <div className='absolute top-4 left-4 bg-white rounded-2xl p-2 px-4 shadow-md text-center'>
+                                    <span className='block text-[#3298C8] font-black text-lg leading-none'>
+                                       {day}
+                                    </span>
+                                    <span className='block text-gray-400 text-[10px] font-bold uppercase'>
+                                       {month}
+                                    </span>
+                                 </div>
                               </div>
-                           </div>
 
-                           {/* Content Area */}
-                           <div className='p-6 text-left space-y-2'>
-                              <h3 className='text-xl font-bold text-gray-800 group-hover:text-[#3298C8] transition-colors'>
-                                 {event.title}
-                              </h3>
-                              <p className='text-sm text-gray-500 line-clamp-2'>
-                                 {event.desc}
-                              </p>
-                              <div className='pt-4 flex items-center justify-between'>
-                                 <button
-                                    onClick={() => setSelectedEvent(event)}
-                                    className='text-[#3298C8] font-bold text-sm hover:underline'
-                                 >
-                                    Event Details →
-                                 </button>
-                                 <div className='flex -space-x-2'>
-                                    {[1, 2, 3].map((i) => (
-                                       <img
-                                          key={i}
-                                          className='w-6 h-6 rounded-full border-2 border-white'
-                                          src={`https://i.pravatar.cc/100?u=${event.id + i}`}
-                                          alt='Attendee'
-                                       />
-                                    ))}
-                                    <div className='w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[8px] font-bold text-gray-400'>
-                                       +{event.attendees}
+                              {/* Content Area */}
+                              <div className='p-6 text-left space-y-2'>
+                                 <h3 className='text-xl font-bold text-gray-800 group-hover:text-[#3298C8] transition-colors'>
+                                    {event.title}
+                                 </h3>
+                                 <p className='text-sm text-gray-500 line-clamp-2'>
+                                    {event.description}
+                                 </p>
+                                 <div className='pt-4 flex items-center justify-between'>
+                                    <button
+                                       onClick={() => setSelectedEvent(event)}
+                                       className='text-[#3298C8] font-bold text-sm hover:underline'
+                                    >
+                                       Event Details →
+                                    </button>
+                                    <div className='flex -space-x-2'>
+                                       {[1, 2, 3].map((i) => (
+                                          <img
+                                             key={i}
+                                             className='w-6 h-6 rounded-full border-2 border-white'
+                                             src={`https://i.pravatar.cc/100?u=${event.id + i}`}
+                                             alt='Attendee'
+                                          />
+                                       ))}
+                                       <div className='w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[8px] font-bold text-gray-400'>
+                                          +{event.attendees}
+                                       </div>
                                     </div>
                                  </div>
                               </div>
                            </div>
-                        </div>
-                     ))}
+                        );
+                     })}
                   </div>
                ) : (
                   <NoEvents />

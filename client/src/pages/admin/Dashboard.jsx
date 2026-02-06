@@ -23,6 +23,7 @@ import {
 import { useEffect, useState } from "react";
 import NoAnnouncement from "../../components/empty/NoAnnouncement";
 import AnnouncementLoader from "../../components/loaders/announcementLoader";
+import { formatEventDate, formatEventTime } from "../../helpers/dateUtils";
 
 const Dashboard = () => {
    const [expandedEventId, setExpandedEventId] = useState(null);
@@ -54,29 +55,6 @@ const Dashboard = () => {
       if (isSuccess && UEvents) setUpcomingEvents(UEvents.events);
       if (aSuccess && aInfo) setAnnouncements(aInfo.announcements);
    }, [isSuccess, UEvents, aSuccess, aInfo]);
-
-   // Helper function to format ISO-8601 DateTime
-   const formatEventDate = (isoDateTime) => {
-      if (!isoDateTime) return { month: "", day: "" };
-      const date = new Date(isoDateTime);
-      return {
-         month: date
-            .toLocaleString("default", { month: "short" })
-            .toUpperCase(),
-         day: date.getDate(),
-      };
-   };
-
-   // Helper function to format time from ISO-8601 DateTime
-   const formatEventTime = (isoDateTime) => {
-      if (!isoDateTime) return "";
-      const date = new Date(isoDateTime);
-      return date.toLocaleString("en-US", {
-         hour: "2-digit",
-         minute: "2-digit",
-         hour12: true,
-      });
-   };
 
    // add an announcement
    const handleAddAnnouncement = () => {

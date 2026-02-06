@@ -4,9 +4,9 @@ const now = new Date();
 export async function getUpcomingEvents(c) {
    try {
       const upcomingEvents = await client.event.findMany({
-         where: { eventStartDate: { gt: now } },
+         where: { startDateTime: { gt: now } },
          orderBy: {
-            eventStartDate: "asc",
+            startDateTime: "asc",
          },
          include: { user: true },
          omit: { updatedAt: true },
@@ -30,7 +30,7 @@ export async function getUpcomingEvents(c) {
 export async function getPastEvents(c) {
    try {
       const pastEvents = await client.event.findMany({
-         where: { eventStartDate: { lte: now } },
+         where: { startDateTime: { lte: now } },
          omit: { updatedAt: true },
       });
       return (

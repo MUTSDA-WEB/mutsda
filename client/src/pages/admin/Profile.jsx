@@ -4,6 +4,18 @@ import zxcvbn from "zxcvbn";
 import userStore from "../../hooks/useStore";
 import { useUpdatePassword, useUpdateProfile } from "../../services/user";
 import { queryClient } from "../../main";
+import {
+   faEdit,
+   faEnvelope,
+   faExclamationCircle,
+   faEye,
+   faEyeSlash,
+   faIdCard,
+   faLock,
+   faPhone,
+   faShieldAlt,
+   faUser,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Profile = () => {
    const { user } = userStore();
@@ -264,12 +276,12 @@ const Profile = () => {
                   <div className='p-6'>
                      {!isEditing ? (
                         <div className='space-y-4'>
-                           {/* <InfoItem
+                           <InfoItem
                               icon={faIdCard}
                               label='User ID'
                               value={userID}
                               isHighlighted
-                           /> */}
+                           />
                            <InfoItem
                               icon={faUser}
                               label='Username'

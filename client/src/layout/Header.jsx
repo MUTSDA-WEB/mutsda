@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import churchLogo from "../assets/church_logo.png";
+import HeaderButtonGroup from "../components/ui/HeaderButtonGroup";
 
 const Header = () => {
    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -165,25 +166,28 @@ const Header = () => {
             </nav>
 
             {/* RIGHT ICONS & HAMBURGER */}
-            <div className='flex items-center gap-5 text-xl'>
-               <Link to='/donate' title='Donate to MUTSDA'>
-                  <FontAwesomeIcon
-                     icon={faHeart}
-                     className='hidden sm:block cursor-pointer text-pink-500 hover:text-pink-600 transition-colors animate-pulse'
-                  />
-               </Link>
-               <Link to='/contactUs' title='Contact Us'>
-                  <FontAwesomeIcon
-                     icon={faAddressBook}
-                     className='hidden sm:block cursor-pointer hover:text-[#3298C8] transition-colors'
-                  />
-               </Link>
-               <Link to='/login' title='Login'>
-                  <FontAwesomeIcon
-                     icon={faSignInAlt}
-                     className='hidden sm:block cursor-pointer hover:text-[#3298C8] transition-colors'
-                  />
-               </Link>
+            <div className='flex items-center gap-4 text-xl'>
+               <HeaderButtonGroup
+                  buttons={[
+                     {
+                        icon: faHeart,
+                        to: "/donate",
+                        title: "Donate to MUTSDA",
+                        color: "text-pink-500 hover:text-pink-600 hover:bg-pink-50",
+                        animate: true,
+                     },
+                     {
+                        icon: faAddressBook,
+                        to: "/contactUs",
+                        title: "Contact Us",
+                     },
+                     {
+                        icon: faSignInAlt,
+                        to: "/login",
+                        title: "Login",
+                     },
+                  ]}
+               />
                <button
                   className='lg:hidden p-2 hover:bg-sky-100 rounded-lg transition-colors'
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
