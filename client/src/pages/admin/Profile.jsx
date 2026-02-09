@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import zxcvbn from "zxcvbn";
 import userStore from "../../hooks/useStore";
 import { useUpdatePassword, useUpdateProfile } from "../../services/user";
+import { uploadAvatar } from "../../services/upload";
 import { queryClient } from "../../main";
 import {
    faEdit,
@@ -18,11 +19,13 @@ import {
    faTimes,
    faSave,
    faCheckCircle,
+   faCamera,
+   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Profile = () => {
    const { user, setUser } = userStore();
-   const { userName, email, phoneNumber, role, userID } = user || {};
+   const { userName, email, phoneNumber, role, userID, imageURL } = user || {};
    const [isEditing, setIsEditing] = useState(false);
    const [editForm, setEditForm] = useState({
       userName: "",
@@ -64,6 +67,68 @@ const Profile = () => {
    });
    const [passwordErrors, setPasswordErrors] = useState({});
    const [passwordSaveSuccess, setPasswordSaveSuccess] = useState(false);
+
+   // Avatar upload state
+   const fileInputRef = useRef(null);
+   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+   const [avatarError, setAvatarError] = useState("");
+
+   // Handle avatar upload
+   const handleAvatarClick = () => {
+      fileInputRef.current?.click();
+   };
+
+   const handleAvatarChange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+         setAvatarError("Please select an image file");
+         return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+         setAvatarError("Image must be less than 5MB");
+         return;
+      }
+
+      setAvatarError("");
+      setUploadingAvatar(true);
+
+      try {
+         // Upload to Cloudinary
+         const imageInfo = await uploadAvatar(file);
+         
+         // Update profile with new avatar URL
+         updateProfile(
+            { imageURL: imageInfo.optimzedUrl },
+            {
+               onSuccess: () => {
+                  setUser({
+                     ...user,
+                     imageURL: imageInfo.optimzedUrl,
+                  });
+                  queryClient.invalidateQueries({ queryKey: ["CHECK_LOGIN"] });
+                  setUploadingAvatar(false);
+               },
+               onError: (err) => {
+                  setAvatarError("Failed to update profile picture");
+                  setUploadingAvatar(false);
+                  console.error("Avatar update error:", err);
+               },
+            }
+         );
+      } catch (err) {
+         setAvatarError("Failed to upload image");
+         setUploadingAvatar(false);
+         console.error("Avatar upload error:", err);
+      }
+
+      // Reset file input
+      e.target.value = "";
+   };
 
    // Handle profile edit
    const handleEditChange = (e) => {
@@ -238,13 +303,44 @@ const Profile = () => {
    return (
       <div className='min-h-screen bg-gray-50 py-8 px-4'>
          <div className='max-w-4xl mx-auto'>
-            {/* Header */}
+            {/* Header with Avatar */}
             <div className='mb-8'>
                <div className='flex items-center gap-4 mb-2'>
-                  <div className='w-16 h-16 bg-linear-to-br from-[#3298C8] to-sky-600 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-200'>
-                     <FontAwesomeIcon
-                        icon={faUser}
-                        className='text-white text-2xl'
+                  {/* Avatar with upload */}
+                  <div className='relative'>
+                     <div 
+                        onClick={handleAvatarClick}
+                        className='w-20 h-20 rounded-2xl overflow-hidden shadow-lg shadow-sky-200 cursor-pointer group relative'
+                     >
+                        {imageURL && !imageURL.endsWith('.png') ? (
+                           <img
+                              src={imageURL}
+                              alt={userName}
+                              className='w-full h-full object-cover'
+                           />
+                        ) : (
+                           <div className='w-full h-full bg-linear-to-br from-[#3298C8] to-sky-600 flex items-center justify-center'>
+                              <span className='text-white text-2xl font-bold'>
+                                 {userName?.substring(0, 2).toUpperCase() || 'U'}
+                              </span>
+                           </div>
+                        )}
+                        {/* Hover overlay */}
+                        <div className='absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center'>
+                           {uploadingAvatar ? (
+                              <FontAwesomeIcon icon={faSpinner} className='text-white text-xl animate-spin' />
+                           ) : (
+                              <FontAwesomeIcon icon={faCamera} className='text-white text-xl' />
+                           )}
+                        </div>
+                     </div>
+                     {/* Hidden file input */}
+                     <input
+                        ref={fileInputRef}
+                        type='file'
+                        accept='image/*'
+                        onChange={handleAvatarChange}
+                        className='hidden'
                      />
                   </div>
                   <div>
@@ -254,6 +350,9 @@ const Profile = () => {
                      <p className='text-gray-500'>
                         View and manage your account information
                      </p>
+                     {avatarError && (
+                        <p className='text-red-500 text-sm mt-1'>{avatarError}</p>
+                     )}
                   </div>
                </div>
             </div>

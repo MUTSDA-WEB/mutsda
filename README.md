@@ -36,8 +36,12 @@ The application includes a real-time chat system supporting:
 ### Architecture
 
 ```
-React Client ◄──► Socket.IO Server ──► Redis Queue ──► Worker ──► PostgreSQL
+React Client ◄──► Socket.IO Server ──► Redis Queue ──► Worker (Batch) ──► PostgreSQL
 ```
+
+### Message Batching
+
+Messages are buffered and saved to the database in batches every **2 minutes** using `createMany` for improved performance. This reduces database load while maintaining instant message delivery via Socket.IO.
 
 ### Running the Chat System
 
@@ -73,6 +77,30 @@ CLIENT_URL=http://localhost:5173
 ```
 
 > 📖 For detailed documentation, see [chat.md](./chat.md)
+
+---
+
+## RATE LIMITING
+
+The API includes Redis-based rate limiting to prevent abuse and protect against DDoS attacks.
+
+### Rate Limit Configurations
+
+| Route Type     | Limit             | Window     | Purpose                  |
+| -------------- | ----------------- | ---------- | ------------------------ |
+| Auth routes    | 10 requests       | 15 minutes | Prevent brute force      |
+| Message routes | 60 requests       | 1 minute   | Prevent spam             |
+| File uploads   | 10 requests       | 1 minute   | Prevent storage abuse    |
+| API (default)  | 100 requests      | 1 minute   | General protection       |
+
+### Response Headers
+
+All responses include rate limit headers:
+- `X-RateLimit-Limit` - Maximum requests allowed
+- `X-RateLimit-Remaining` - Requests remaining in window
+- `X-RateLimit-Reset` - Timestamp when limit resets
+
+When rate limited, returns HTTP 429 with `Retry-After` header.
 
 ---
 

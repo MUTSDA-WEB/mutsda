@@ -33,6 +33,7 @@ export async function checkLogin(c) {
          email: true,
          phoneNumber: true,
          role: true,
+         imageURL: true,
          // memberSince: true,
          // department: true,
       },
@@ -81,12 +82,27 @@ export async function updatePassword(c) {
 }
 
 export async function updateProfileInfo(c) {
-   const { userName, email, phoneNumber } = await c.req.json();
+   const { userName, email, phoneNumber, imageURL } = await c.req.json();
    const { userID } = c.get("jwtPayload");
    try {
+      // Build update data object (only include fields that are provided)
+      const updateData = {};
+      if (userName !== undefined) updateData.userName = userName;
+      if (email !== undefined) updateData.email = email;
+      if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
+      if (imageURL !== undefined) updateData.imageURL = imageURL;
+
       const updatedUser = await client.user.update({
          where: { userID },
-         data: { email, userName, phoneNumber },
+         data: updateData,
+         select: {
+            userID: true,
+            userName: true,
+            email: true,
+            phoneNumber: true,
+            role: true,
+            imageURL: true,
+         },
       });
       return c.json(
          { message: "User profile updated successfully", user: updatedUser },

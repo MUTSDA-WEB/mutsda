@@ -30,7 +30,8 @@ const Contact = () => {
    // send Visitors' messages to the server and save it
    const { mutate: saveMessage, isLoading } = useSaveVisitorMessage();
 
-   const handleSendMessage = () => {
+   const handleSendMessage = (e) => {
+      e.preventDefault();
       saveMessage(
          {
             name: formData.name,
@@ -326,10 +327,12 @@ const Contact = () => {
                            Message
                         </label>
                         <textarea
+                           name="message"
                            value={formData.message}
+                           onChange={handleChange}
+                           placeholder='How can we help?'
                            className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2
                            focus:ring-[#3298C8] transition-all outline-none h-40 resize-none'
-                           placeholder='How can we help?'
                         ></textarea>
                      </div>
 

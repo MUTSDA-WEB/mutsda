@@ -53,9 +53,44 @@ The MUTSDA chat system provides real-time messaging capabilities for the church 
 | ---------------- | ------------------- | ---------------------------------------------- |
 | Real-time Server | Socket.IO           | WebSocket connections & message broadcasting   |
 | Message Queue    | Redis               | Temporary message storage for async processing |
-| Worker           | Node.js/Bun         | Consumes queue & persists messages to DB       |
+| Worker           | Node.js/Bun         | Consumes queue & batch persists messages to DB |
 | Database         | PostgreSQL + Prisma | Permanent message storage                      |
 | Client           | React + Zustand     | UI state management & socket handling          |
+| Rate Limiting    | Redis               | Request throttling & abuse prevention          |
+
+---
+
+## Rate Limiting
+
+The chat API uses Redis-based rate limiting to prevent abuse.
+
+### Message Rate Limits
+
+| Action          | Limit        | Window   |
+| --------------- | ------------ | -------- |
+| Send message    | 60 requests  | 1 minute |
+| Auth attempts   | 10 requests  | 15 min   |
+
+### Implementation
+
+Rate limiting uses Redis `INCR` with `EXPIRE` to track requests per user/IP:
+
+```javascript
+// middleware/rateLimit.middleware.js
+const current = await redis.incr(key);
+if (current === 1) {
+   await redis.expire(key, windowSec);
+}
+if (current > max) {
+   return c.json({ error: "Too many requests" }, 429);
+}
+```
+
+### Response Headers
+
+- `X-RateLimit-Limit` - Maximum requests allowed
+- `X-RateLimit-Remaining` - Requests remaining
+- `X-RateLimit-Reset` - Timestamp when limit resets
 
 ---
 
@@ -148,43 +183,86 @@ The worker runs as a separate process, consuming messages from Redis and saving 
 - Provides fault tolerance (messages queued if DB is temporarily down)
 - Enables horizontal scaling
 
+**Batch Processing (Every 2 Minutes)**
+
+Instead of saving each message immediately, the worker now buffers messages and performs a batch `createMany` operation every 2 minutes:
+
+```
+Messages arrive → Buffer in memory → Every 2 min → createMany([...all]) → Clear buffer
+```
+
+This significantly reduces database load under high message volumes.
+
 **Code Overview:**
 
 ```javascript
 import Redis from "ioredis";
 import prisma from "./helpers/prismaClient.js";
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL;
+const BATCH_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+const REDIS_POLL_TIMEOUT = 5; // 5 seconds
+
+let messageBuffer = [];
+
+const messageTypeMap = {
+   direct: "direct",
+   group: "group",
+   community: "community",
+   visitor: "visitor",
+};
+
+function transformMessage(chatMsg) {
+   return {
+      messageId: chatMsg?.id,
+      messageType: messageTypeMap[chatMsg.type] || "direct",
+      content: chatMsg.text || chatMsg.content || "",
+      userId: chatMsg.userId || chatMsg.senderId,
+      receiverId: chatMsg.receiverId || null,
+      groupId: chatMsg.groupId || null,
+      msgStatus: "sent",
+   };
+}
+
+async function flushMessageBuffer() {
+   if (messageBuffer.length === 0) return;
+
+   const messagesToSave = [...messageBuffer];
+   messageBuffer = [];
+
+   const result = await prisma.conversation.createMany({
+      data: messagesToSave,
+      skipDuplicates: true,
+   });
+
+   console.log(`Batch saved: ${result.count} messages`);
+}
 
 async function startWorker() {
    const redis = new Redis(REDIS_URL);
    console.log("Worker started, waiting for messages...");
 
-   // Continuously process messages
+   // Start batch save timer
+   setInterval(flushMessageBuffer, BATCH_INTERVAL_MS);
+
    while (true) {
-      // BRPOP blocks until a message is available
-      const result = await redis.brpop("chat:messages", 0);
+      // BRPOP with timeout to allow periodic batch saves
+      const result = await redis.brpop("chat:messages", REDIS_POLL_TIMEOUT);
 
       if (result) {
          const [, messageStr] = result;
          const chatMsg = JSON.parse(messageStr);
-
-         // Save to database
-         await prisma.conversation.create({
-            data: {
-               messageType: chatMsg.type,
-               content: chatMsg.text,
-               userId: chatMsg.userId || chatMsg.senderId,
-               receiverId: chatMsg.receiverId || null,
-               groupId: chatMsg.groupId || null,
-               msgStatus: "sent",
-            },
-         });
-
-         console.log(`Message saved: ${chatMsg.type}`);
+         messageBuffer.push(transformMessage(chatMsg));
       }
    }
 }
+
+// Graceful shutdown - save remaining messages
+process.on("SIGTERM", async () => {
+   await flushMessageBuffer();
+   await prisma.$disconnect();
+   process.exit(0);
+});
 
 startWorker();
 ```
@@ -192,7 +270,9 @@ startWorker();
 **Redis Commands Used:**
 
 - `LPUSH chat:messages <message>` - Add message to queue (realtime.js)
-- `BRPOP chat:messages 0` - Block and pop message from queue (worker.js)
+- `BRPOP chat:messages 5` - Pop message from queue with 5s timeout (worker.js)
+- `INCR ratelimit:* ` - Increment rate limit counter (rate limiting)
+- `EXPIRE ratelimit:* <ttl>` - Set TTL on rate limit keys
 
 ---
 

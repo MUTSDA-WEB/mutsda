@@ -10,15 +10,18 @@ import {
    faTimes,
    faCheck,
    faUpload,
+   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useCreateEvent } from "../../services/events";
+import { uploadEventImage } from "../../services/upload";
 import GlobalLoader from "../../components/ui/GlobalLoader";
 import { queryClient } from "../../main";
 
 const CreateEvent = () => {
    const navigate = useNavigate();
    const [isSubmitting, setIsSubmitting] = useState(false);
+   const [isUploadingImage, setIsUploadingImage] = useState(false);
    const [showSuccess, setShowSuccess] = useState(false);
    const [formData, setFormData] = useState({
       title: "",
@@ -64,7 +67,7 @@ const CreateEvent = () => {
       }
    };
 
-   const handleImageChange = (e) => {
+   const handleImageChange = async (e) => {
       const file = e.target.files[0];
       if (file) {
          if (file.size > 5 * 1024 * 1024) {
@@ -75,28 +78,36 @@ const CreateEvent = () => {
             return;
          }
 
-         // Read file as base64 and save to localStorage
-         const reader = new FileReader();
-         reader.onload = (event) => {
-            const base64String = event.target.result;
+         // Show preview immediately
+         setFormData((prev) => ({
+            ...prev,
+            imagePreview: URL.createObjectURL(file),
+         }));
+         setErrors((prev) => ({ ...prev, image: "" }));
 
-            // Generate filename
-            const fileExtension = file.name.split(".").pop();
-            const generatedFilename = `${Date.now()}.${fileExtension}`;
-            const imageURL = `/uploads/${generatedFilename}`;
-
-            // Save base64 image to localStorage with filename as key
-            localStorage.setItem(`image_${generatedFilename}`, base64String);
-            console.log(`Image saved locally: image_${generatedFilename}`);
-
+         // Upload to Cloudinary
+         setIsUploadingImage(true);
+         try {
+            const imageInfo = await uploadEventImage(file);
             setFormData((prev) => ({
                ...prev,
-               imageURL: imageURL, // only store the URL
-               imagePreview: URL.createObjectURL(file), // for preview only
+               imageURL: imageInfo.optimzedUrl,
             }));
-         };
-         reader.readAsDataURL(file);
-         setErrors((prev) => ({ ...prev, image: "" }));
+            console.log("Image uploaded to Cloudinary:", imageInfo.optimzedUrl);
+         } catch (err) {
+            console.error("Image upload failed:", err);
+            setErrors((prev) => ({
+               ...prev,
+               image: "Failed to upload image. Please try again.",
+            }));
+            setFormData((prev) => ({
+               ...prev,
+               imagePreview: null,
+               imageURL: null,
+            }));
+         } finally {
+            setIsUploadingImage(false);
+         }
       }
    };
 
@@ -238,21 +249,34 @@ const CreateEvent = () => {
                            className='mr-2 text-[#3298C8]'
                         />
                         Event Image
+                        {isUploadingImage && (
+                           <span className='ml-2 text-gray-500 text-xs font-normal'>
+                              <FontAwesomeIcon icon={faSpinner} className='animate-spin mr-1' />
+                              Uploading...
+                           </span>
+                        )}
                      </label>
                      {formData.imagePreview ? (
                         <div className='relative rounded-xl overflow-hidden'>
                            <img
-                              src={formData.imageURL}
+                              src={formData.imagePreview}
                               alt='Event preview'
-                              className='w-full h-48 object-cover'
+                              className={`w-full h-48 object-cover ${isUploadingImage ? 'opacity-50' : ''}`}
                            />
-                           <button
-                              type='button'
-                              onClick={removeImage}
-                              className='absolute top-3 right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors'
-                           >
-                              <FontAwesomeIcon icon={faTimes} />
-                           </button>
+                           {isUploadingImage && (
+                              <div className='absolute inset-0 flex items-center justify-center bg-black/30'>
+                                 <FontAwesomeIcon icon={faSpinner} className='text-white text-3xl animate-spin' />
+                              </div>
+                           )}
+                           {!isUploadingImage && (
+                              <button
+                                 type='button'
+                                 onClick={removeImage}
+                                 className='absolute top-3 right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors'
+                              >
+                                 <FontAwesomeIcon icon={faTimes} />
+                              </button>
+                           )}
                         </div>
                      ) : (
                         <label className='flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#3298C8] hover:bg-sky-50/50 transition-all'>
@@ -460,13 +484,18 @@ const CreateEvent = () => {
                   </button>
                   <button
                      type='submit'
-                     disabled={isSubmitting}
+                     disabled={isSubmitting || isUploadingImage}
                      className='px-8 py-3 bg-linear-to-r from-[#3298C8] to-sky-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-sky-300/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2'
                   >
                      {isSubmitting ? (
                         <>
                            <span className='w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin'></span>
                            Creating...
+                        </>
+                     ) : isUploadingImage ? (
+                        <>
+                           <FontAwesomeIcon icon={faSpinner} className='animate-spin' />
+                           Uploading Image...
                         </>
                      ) : (
                         <>
