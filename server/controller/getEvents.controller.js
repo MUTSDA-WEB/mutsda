@@ -4,7 +4,12 @@ const now = new Date();
 export async function getUpcomingEvents(c) {
    try {
       const upcomingEvents = await client.event.findMany({
-         where: { startDateTime: { gt: now } },
+         where: {
+            AND: [
+               { startDateTime: { gt: now } },
+               { category: { not: "Announcement" } },
+            ],
+         },
          orderBy: {
             startDateTime: "asc",
          },
