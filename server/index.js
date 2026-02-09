@@ -5,6 +5,12 @@ import { cors } from "hono/cors";
 import checkSignupInfo from "./middleware/checkSignupInfo.middleware";
 import verifyUsernameMiddleware from "./middleware/verifyUsername.middleware";
 import verifyPasswordMiddleware from "./middleware/verifyPassword.middleware";
+import {
+   authRateLimit,
+   apiRateLimit,
+   messageRateLimit,
+   uploadRateLimit,
+} from "./middleware/rateLimit.middleware";
 import registerUser from "./controller/registerUser.controller";
 import getUnoccupiedRoles from "./helpers/getAvailableRoles";
 import createEvent from "./controller/addEvent.controller";
@@ -96,11 +102,12 @@ App.post("/event/create", verifyToken, createEvent);
 App.get("/auth/roles", getUnoccupiedRoles);
 
 // register new User
-App.post("/auth/register", checkSignupInfo, registerUser);
+App.post("/auth/register", authRateLimit, checkSignupInfo, registerUser);
 
 // login user route
 App.post(
    "/auth/login",
+   authRateLimit,
    verifyUsernameMiddleware,
    verifyPasswordMiddleware,
    login,
@@ -120,10 +127,10 @@ App.patch("/auth/update/password", verifyToken, updatePassword);
 
 // ? MESSAGE ROUTES
 //save Leader Message route
-App.post("/message/save/leader", verifyToken, saveLeaderMessage);
+App.post("/message/save/leader", messageRateLimit, verifyToken, saveLeaderMessage);
 
 // save visitor Message route
-App.post("/message/save/visitor", saveVisitorMessage);
+App.post("/message/save/visitor", messageRateLimit, saveVisitorMessage);
 
 // get Leader DMs route
 App.get("/message/look/DMs", verifyToken, getDirectMessages);
@@ -147,23 +154,24 @@ App.delete("/message/delete/:id", verifyToken, deleteMessage);
 App.patch("/message/delete-for-me/:id", verifyToken, deleteMessageForMe);
 
 // ? Group routes
+App.use("/group/*", verifyToken)
 // get user Groups route
-App.get("/group/look", verifyToken, getUserGroups);
+App.get("/group/look", getUserGroups);
 
 // create group route
-App.post("/group/create", verifyToken, createGroup);
+App.post("/group/create", createGroup);
 
 // get group members
-App.get("/group/:id/members", verifyToken, getGroupMembers);
+App.get("/group/:id/members", getGroupMembers);
 
 // add member to group
-App.post("/group/:id/members", verifyToken, addGroupMember);
+App.post("/group/:id/members", addGroupMember);
 
 // remove member from group
-App.delete("/group/:id/members/:memberId", verifyToken, removeGroupMember);
+App.delete("/group/:id/members/:memberId", removeGroupMember);
 
 // update member role (promote/demote)
-App.patch("/group/:id/members/:memberId", verifyToken, updateMemberRole);
+App.patch("/group/:id/members/:memberId", updateMemberRole);
 
 // ? user routes
 // get all users
@@ -171,6 +179,6 @@ App.get("/user/look", verifyToken, getLeaders);
 App.get("/user/look/common", getLeaders);
 
 // ? image upload route 
-App.post("/image/upload", verifyToken, upload.single("image"), uploadToCloud)
+App.post("/image/upload", uploadRateLimit, verifyToken, upload.single("image"), uploadToCloud)
 
 export default App;

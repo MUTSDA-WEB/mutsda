@@ -3,72 +3,155 @@ import prisma from "./helpers/prismaClient.js";
 
 const REDIS_URL = process.env.REDIS_URL;
 
+// Configuration
+const BATCH_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+const REDIS_POLL_TIMEOUT = 5; // 5 seconds timeout for BRPOP (non-blocking to allow batch saves)
+
+// Message buffer for batch processing
+let messageBuffer = [];
+
+// Map frontend message type to enum
+const messageTypeMap = {
+   direct: "direct",
+   group: "group",
+   community: "community",
+   visitor: "visitor",
+};
+
+/**
+ * Transform a raw chat message to Prisma-compatible format
+ */
+function transformMessage(chatMsg) {
+   return {
+      messageId: chatMsg?.id,
+      messageType: messageTypeMap[chatMsg.type] || "direct",
+      content: chatMsg.text || chatMsg.content || "",
+      userId: chatMsg.userId || chatMsg.senderId,
+      receiverId: chatMsg.receiverId || null,
+      groupId: chatMsg.groupId || null,
+      msgStatus: "sent",
+   };
+}
+
+/**
+ * Batch save all buffered messages to database
+ */
+async function flushMessageBuffer() {
+   if (messageBuffer.length === 0) {
+      return;
+   }
+
+   const messagesToSave = [...messageBuffer];
+   messageBuffer = []; // Clear buffer immediately to avoid duplicates
+
+   try {
+      const result = await prisma.conversation.createMany({
+         data: messagesToSave,
+         skipDuplicates: true, // Skip if messageId already exists
+      });
+
+      console.log(
+         `[Batch Save] ${result.count} messages saved to database at ${new Date().toISOString()}`,
+      );
+   } catch (err) {
+      console.error("[Batch Save] Error saving messages:", err.message);
+      // Put messages back in buffer to retry next interval
+      messageBuffer = [...messagesToSave, ...messageBuffer];
+   }
+}
+
+/**
+ * Start the batch save interval timer
+ */
+function startBatchSaveTimer() {
+   console.log(
+      `[Worker] Batch save interval set to ${BATCH_INTERVAL_MS / 1000} seconds`,
+   );
+
+   setInterval(async () => {
+      console.log(
+         `[Worker] Running batch save... (${messageBuffer.length} messages in buffer)`,
+      );
+      await flushMessageBuffer();
+   }, BATCH_INTERVAL_MS);
+}
+
+/**
+ * Main worker function
+ */
 async function startWorker() {
    try {
       const redis = new Redis(REDIS_URL);
 
       redis.on("connect", () => {
-         console.log("Worker connected to Redis");
+         console.log("[Worker] Connected to Redis");
       });
 
       redis.on("error", (err) => {
-         console.error("Redis error:", err.message);
+         console.error("[Worker] Redis error:", err.message);
       });
 
-      console.log("Worker started, waiting for messages...");
+      console.log("[Worker] Started, waiting for messages...");
 
-      // Continuously process messages from Redis list
+      // Start the batch save timer
+      startBatchSaveTimer();
+
+      // Continuously poll messages from Redis list
       while (true) {
          try {
-            // BRPOP blocks until a message is available (timeout 0 = wait forever)
-            const result = await redis.brpop("chat:messages", 0);
+            // BRPOP with timeout to allow periodic batch saves
+            // Returns null if timeout expires with no messages
+            const result = await redis.brpop("chat:messages", REDIS_POLL_TIMEOUT);
 
             if (result) {
                const [, messageStr] = result;
                const chatMsg = JSON.parse(messageStr);
+
                console.log(
-                  chatMsg.id,
-                  "message of type",
-                  chatMsg?.room,
-                  "created and saved at",
-                  chatMsg.time,
+                  `[Worker] Message received: ${chatMsg.id} (${chatMsg.type}) at ${chatMsg.time}`,
                );
 
-               // Map frontend message type to enum
-               const messageTypeMap = {
-                  direct: "direct",
-                  group: "group",
-                  community: "community",
-                  visitor: "visitor",
-               };
-
-               await prisma.conversation.create({
-                  data: {
-                     messageId: chatMsg?.id,
-                     messageType: messageTypeMap[chatMsg.type] || "direct",
-                     content: chatMsg.text || chatMsg.content || "",
-                     userId: chatMsg.userId || chatMsg.senderId,
-                     receiverId: chatMsg.receiverId || null,
-                     groupId: chatMsg.groupId || null,
-                     msgStatus: "sent",
-                  },
-               });
+               // Add transformed message to buffer
+               const transformedMsg = transformMessage(chatMsg);
+               messageBuffer.push(transformedMsg);
 
                console.log(
-                  `Message saved: ${chatMsg.type} from ${chatMsg.userId || chatMsg.senderId}`,
+                  `[Worker] Buffered message from ${chatMsg.userId || chatMsg.senderId} (buffer size: ${messageBuffer.length})`,
                );
             }
          } catch (err) {
-            console.error("Error processing message:", err.message);
+            console.error("[Worker] Error processing message:", err.message);
             // Small delay before retrying on error
             await new Promise((resolve) => setTimeout(resolve, 1000));
          }
       }
    } catch (err) {
-      console.error("Worker failed to start:", err.message);
+      console.error("[Worker] Failed to start:", err.message);
       // Retry connection after 5 seconds
       setTimeout(startWorker, 5000);
    }
 }
+
+/**
+ * Graceful shutdown handler - save remaining messages before exit
+ */
+async function gracefulShutdown(signal) {
+   console.log(`\n[Worker] Received ${signal}. Shutting down gracefully...`);
+
+   if (messageBuffer.length > 0) {
+      console.log(
+         `[Worker] Flushing ${messageBuffer.length} remaining messages...`,
+      );
+      await flushMessageBuffer();
+   }
+
+   await prisma.$disconnect();
+   console.log("[Worker] Database disconnected. Goodbye!");
+   process.exit(0);
+}
+
+// Register shutdown handlers
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 startWorker();
