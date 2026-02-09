@@ -20,3 +20,46 @@ export function useCreateGroup() {
       },
    });
 }
+
+export function useGetGroupMembers(groupId) {
+   return useQuery({
+      queryKey: ["GET_GROUP_MEMBERS", groupId],
+      queryFn: async () => {
+         const res = await Ax.get(`/group/${groupId}/members`);
+         return res.data;
+      },
+      enabled: !!groupId,
+   });
+}
+
+export function useAddGroupMember() {
+   return useMutation({
+      mutationKey: ["ADD_GROUP_MEMBER"],
+      mutationFn: async ({ groupId, userId }) => {
+         const res = await Ax.post(`/group/${groupId}/members`, { userId });
+         return res.data;
+      },
+   });
+}
+
+export function useRemoveGroupMember() {
+   return useMutation({
+      mutationKey: ["REMOVE_GROUP_MEMBER"],
+      mutationFn: async ({ groupId, memberId }) => {
+         const res = await Ax.delete(`/group/${groupId}/members/${memberId}`);
+         return res.data;
+      },
+   });
+}
+
+export function useUpdateMemberRole() {
+   return useMutation({
+      mutationKey: ["UPDATE_MEMBER_ROLE"],
+      mutationFn: async ({ groupId, memberId, role }) => {
+         const res = await Ax.patch(`/group/${groupId}/members/${memberId}`, {
+            role,
+         });
+         return res.data;
+      },
+   });
+}
