@@ -12,6 +12,7 @@ import {
    CreateGroupModal,
    EmptyState,
    VisitorMessages,
+   GroupMembersModal,
 } from "../../components/chat/index";
 import userStore from "../../hooks/useStore";
 import { useCreateGroup, useGetUserGroups } from "../../services/groups";
@@ -20,6 +21,8 @@ import {
    useGetGroupMessages,
    useGetUserDirectMsg,
    useGetVisitorMessages,
+   useDeleteMessage,
+   useDeleteMessageForMe,
 } from "../../services/message";
 import useChatSocket from "../../hooks/useChatSocket";
 import { queryClient } from "../../main";
@@ -33,9 +36,15 @@ const Notifications = () => {
    const [showCreateGroup, setShowCreateGroup] = useState(false);
    const [newGroupName, setNewGroupName] = useState("");
    const [selectedMembers, setSelectedMembers] = useState([]);
+   const [showGroupMembers, setShowGroupMembers] = useState(null);
+   const [replyingTo, setReplyingTo] = useState(null);
 
    // Integrate chat socket - moved up to be available for handleSendMessage
    const { sendMessage } = useChatSocket({ activeTab, selectedChat });
+
+   // Delete mutations
+   const { mutate: deleteMessage } = useDeleteMessage();
+   const { mutate: deleteMessageForMe } = useDeleteMessageForMe();
 
    // * run the create group service
    const {
@@ -145,11 +154,53 @@ const Notifications = () => {
             }),
             avatar:
                msg.convoUser?.userName?.substring(0, 2).toUpperCase() || "??",
+            senderId: msg.userId,
+            replyTo: msg.replyTo
+               ? {
+                    messageId: msg.replyTo.messageId,
+                    text: msg.replyTo.content,
+                    sender: msg.replyTo.convoUser?.userName || "Unknown",
+                 }
+               : null,
          }));
          setComMsg(transformedComMsg);
       }
-      if (visitorMsg?.visitorMsg && visitorSuccess)
-         setVisitorMsg(visitorMsg.visitorMsg);
+      // Transform visitor messages from DB format to component format
+      if (visitorMsg?.visitorMsg && visitorSuccess) {
+         const transformedVisitorMsg = visitorMsg.visitorMsg.map((msg) => {
+            // Parse the content string: "name_X phonenumber_Y email_Z topic_T message_M"
+            const content = msg.content || "";
+            const parseField = (fieldName) => {
+               const regex = new RegExp(
+                  `${fieldName}_([^ ]+(?:\\s+(?!phonenumber_|email_|topic_|message_)[^ ]+)*)`,
+               );
+               const match = content.match(regex);
+               return match ? match[1] : "";
+            };
+            // Extract message content (everything after "message_")
+            const messageMatch = content.match(/message_(.+)$/);
+            const messageText = messageMatch ? messageMatch[1] : content;
+
+            return {
+               id: msg.messageId,
+               name: parseField("name").replace(/_/g, " "),
+               phone: parseField("phonenumber"),
+               email: parseField("email"),
+               topic:
+                  parseField("topic").replace(/_/g, " ") || "Visitor Message",
+               message: messageText,
+               time: new Date(msg.createdAt).toLocaleString([], {
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+               }),
+               isRead: msg.messageType === "read",
+               receiverId: msg.receiverId,
+            };
+         });
+         setVisitorMsg(transformedVisitorMsg);
+      }
 
       // Transform raw DM data into grouped chat list format
       if (userDMs?.DMs && DMSuccess && users?.leaders) {
@@ -240,6 +291,7 @@ const Notifications = () => {
       ) {
          const transformedMessages = groupMsg.messages.map((msg) => ({
             id: msg.messageId,
+            senderId: msg.userId,
             sender:
                msg.userId === user?.userID
                   ? "me"
@@ -251,6 +303,14 @@ const Notifications = () => {
             }),
             avatar:
                msg.convoUser?.userName?.substring(0, 2).toUpperCase() || "??",
+            // Include reply info if this message is a reply
+            replyTo: msg.replyTo
+               ? {
+                    messageId: msg.replyTo.messageId,
+                    text: msg.replyTo.content,
+                    sender: msg.replyTo.convoUser?.userName || "Unknown",
+                 }
+               : null,
          }));
          setSelectedChat((prev) => ({
             ...prev,
@@ -270,13 +330,23 @@ const Notifications = () => {
 
       const newMessage = {
          id: Date.now(),
-         sender: activeTab === "community" ? user?.username || "You" : "me",
+         sender: activeTab === "community" ? user?.userName || "You" : "me",
+         senderId: user?.userID,
          text: message,
          time: new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
          }),
-         avatar: user?.username?.substring(0, 2).toUpperCase() || "YO",
+         avatar: user?.userName?.substring(0, 2).toUpperCase() || "YO",
+         // Include reply info if replying
+         replyTo: replyingTo
+            ? {
+                 sender: replyingTo.sender,
+                 text: replyingTo.text,
+                 messageId: replyingTo.id,
+              }
+            : null,
+         replyToId: replyingTo?.id || null,
          // Add type and routing info for socket
          type:
             activeTab === "messages"
@@ -338,6 +408,7 @@ const Notifications = () => {
       }
 
       setMessage("");
+      setReplyingTo(null); // Clear reply state after sending
    };
 
    const handleCreateGroup = () => {
@@ -360,6 +431,58 @@ const Notifications = () => {
             },
          },
       );
+   };
+
+   // Handle message deletion for everyone (sender only)
+   const handleDeleteMessage = (messageId) => {
+      deleteMessage(messageId, {
+         onSuccess: () => {
+            // Remove message from local state
+            if (activeTab === "groups" && selectedChat) {
+               setSelectedChat((prev) => ({
+                  ...prev,
+                  messages: prev.messages?.filter((m) => m.id !== messageId),
+               }));
+               queryClient.invalidateQueries({
+                  queryKey: ["GET_GROUP_MESSAGES", selectedChat.id],
+               });
+            } else if (activeTab === "community") {
+               setComMsg(communityMessages.filter((m) => m.id !== messageId));
+               queryClient.invalidateQueries({
+                  queryKey: ["GET_COMMUNITY_MESSAGES"],
+               });
+            } else if (activeTab === "messages" && selectedChat) {
+               setSelectedChat((prev) => ({
+                  ...prev,
+                  messages: prev.messages?.filter((m) => m.id !== messageId),
+               }));
+            }
+         },
+         onError: (e) => console.error("Failed to delete message:", e.message),
+      });
+   };
+
+   // Handle message deletion for current user only
+   const handleDeleteForMe = (messageId) => {
+      deleteMessageForMe(messageId, {
+         onSuccess: () => {
+            // Remove message from local state (soft delete - only for this user)
+            if (activeTab === "groups" && selectedChat) {
+               setSelectedChat((prev) => ({
+                  ...prev,
+                  messages: prev.messages?.filter((m) => m.id !== messageId),
+               }));
+            } else if (activeTab === "community") {
+               setComMsg(communityMessages.filter((m) => m.id !== messageId));
+            } else if (activeTab === "messages" && selectedChat) {
+               setSelectedChat((prev) => ({
+                  ...prev,
+                  messages: prev.messages?.filter((m) => m.id !== messageId),
+               }));
+            }
+         },
+         onError: (e) => console.error("Failed to delete message:", e.message),
+      });
    };
 
    const tabs = [
@@ -478,6 +601,11 @@ const Notifications = () => {
                               message={message}
                               setMessage={setMessage}
                               onSendMessage={handleSendMessage}
+                              onDeleteMessage={handleDeleteMessage}
+                              onDeleteForMe={handleDeleteForMe}
+                              replyingTo={replyingTo}
+                              setReplyingTo={setReplyingTo}
+                              currentUserId={user?.userID}
                               isLoadingMessages={comLoading}
                            />
                         ) : selectedChat ? (
@@ -489,6 +617,14 @@ const Notifications = () => {
                               message={message}
                               setMessage={setMessage}
                               onSendMessage={handleSendMessage}
+                              onViewMembers={(group) =>
+                                 setShowGroupMembers(group)
+                              }
+                              onDeleteMessage={handleDeleteMessage}
+                              onDeleteForMe={handleDeleteForMe}
+                              replyingTo={replyingTo}
+                              setReplyingTo={setReplyingTo}
+                              currentUserId={user?.userID}
                               isLoadingMessages={
                                  activeTab === "groups" ? gLoading : false
                               }
@@ -514,6 +650,14 @@ const Notifications = () => {
             isLoading={createGLoad}
             onCreateGroup={handleCreateGroup}
          />
+
+         {/* Group Members Modal */}
+         {showGroupMembers && (
+            <GroupMembersModal
+               group={showGroupMembers}
+               onClose={() => setShowGroupMembers(null)}
+            />
+         )}
       </div>
    );
 };

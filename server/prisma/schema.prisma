@@ -52,6 +52,12 @@ model Conversation {
   createdAt DateTime @default(now()) @map("created_at")
   receiverId String?  
   groupId String? 
+  replyToId String? @map("reply_to_id")
+  deletedFor String[] @default([]) @map("deleted_for") // Array of userIDs who deleted this message
+  
+  // Self-relation for replies
+  replyTo Conversation? @relation("MessageReplies", fields: [replyToId], references: [messageId])
+  replies Conversation[] @relation("MessageReplies")
   
   // one to many relationship between user and messages 
   convoUser User @relation("UserMessages", fields: [userId], references: [userID])

@@ -4,8 +4,15 @@ import client from "../helpers/prismaClient";
 
 // ? Add register users messages
 export async function saveLeaderMessage(c) {
-   const { message, senderId, receiverId, messageType, messageStatus, ...d } =
-      await c.req.json();
+   const {
+      message,
+      senderId,
+      receiverId,
+      messageType,
+      messageStatus,
+      replyToId,
+      ...d
+   } = await c.req.json();
    try {
       const savedMessage = await client.conversation.create({
          data: {
@@ -15,10 +22,21 @@ export async function saveLeaderMessage(c) {
             userId: senderId,
             receiverId,
             groupId: d?.groupId,
+            replyToId: replyToId || null,
+         },
+         include: {
+            convoUser: { select: { userName: true } },
+            replyTo: {
+               select: {
+                  messageId: true,
+                  content: true,
+                  convoUser: { select: { userName: true } },
+               },
+            },
          },
       });
       if (savedMessage) {
-         return c.text("saved Leader message");
+         return c.json({ message: "Message saved", savedMessage }, 201);
       }
    } catch (error) {
       console.log(error);
@@ -29,10 +47,10 @@ export async function saveLeaderMessage(c) {
    }
 }
 
-// ? Add normal members message
-export async function saveMemberMessage(c) {
+// ? Add normal members/visitor message
+export async function saveVisitorMessage(c) {
    // * all Visitor message will register with the "USER" role
-   const userID = "ce15934d-0de4-47a4-a38c-c901c65d7087";
+   const userID = "f676b5d3-4b38-4000-a14b-5e2e79b7ea0f";
 
    const { name, phoneNumber, email, message, ...m } = await c.req.json();
    const msg = `name_${name} phonenumber_${phoneNumber} email_${email} topic_${m.topic ? m.topic : "Visitor Message"} message_${message}`;
@@ -51,7 +69,7 @@ export async function saveMemberMessage(c) {
    } catch (error) {
       console.log(error);
       return c.json(
-         { error: `Failed to save MemberMessage of type ${messageType} to DB` },
+         { error: `Failed to save MemberMessage of type 'visitor' to DB` },
          500,
       );
    }

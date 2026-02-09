@@ -24,7 +24,7 @@ const useGetCommunityMessages = () =>
 const useGetUserDirectMsg = () =>
    useGetMessage("/message/look/DMs", ["GET_USER_DMs"]);
 const useGetVisitorMessages = () =>
-   useGetMessage("/message/look/visitor"["GET_VISITOR_MESSAGES"]);
+   useGetMessage("/message/look/visitor", ["GET_VISITOR_MESSAGES"]);
 
 // function useUpdateMessageStatus() {
 //    return useMutation({
@@ -49,10 +49,33 @@ function useSaveVisitorMessage() {
    });
 }
 
+function useDeleteMessage() {
+   return useMutation({
+      mutationKey: ["DELETE_MESSAGE"],
+      mutationFn: async (messageId) => {
+         const res = (await Ax.delete(`/message/delete/${messageId}`)).data;
+         return res;
+      },
+   });
+}
+
+function useDeleteMessageForMe() {
+   return useMutation({
+      mutationKey: ["DELETE_MESSAGE_FOR_ME"],
+      mutationFn: async (messageId) => {
+         const res = (await Ax.patch(`/message/delete-for-me/${messageId}`))
+            .data;
+         return res;
+      },
+   });
+}
+
 export {
    useGetCommunityMessages,
    useGetGroupMessages,
    useGetUserDirectMsg,
    useGetVisitorMessages,
    useSaveVisitorMessage,
+   useDeleteMessage,
+   useDeleteMessageForMe,
 };
