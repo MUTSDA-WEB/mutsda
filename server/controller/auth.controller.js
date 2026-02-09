@@ -8,14 +8,7 @@ import { deleteCookie, setCookie } from "hono/cookie";
 export async function login(c) {
    const token = await sign(c.get("userInfo"), process.env.JWT_SECRET, "HS384");
 
-   // // * Remove 'Secure' flag for localhost development (no HTTPS)
-   // // TODO: Add it back for production
-   // c.header(
-   //    "Set-Cookie",
-   //    `auth=${token}; HttpOnly; SameSite=; Path=/; Max-Age=86400`,
-   // );
-
-   setCookie(c, auth, token, {
+   setCookie(c, "auth", token, {
       httpOnly: true,
       secure: true,
       sameSite: "None",
