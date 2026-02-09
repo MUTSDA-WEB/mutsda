@@ -7,7 +7,6 @@ import verifyUsernameMiddleware from "./middleware/verifyUsername.middleware";
 import verifyPasswordMiddleware from "./middleware/verifyPassword.middleware";
 import {
    authRateLimit,
-   apiRateLimit,
    messageRateLimit,
    uploadRateLimit,
 } from "./middleware/rateLimit.middleware";
@@ -126,7 +125,12 @@ App.patch("/auth/update/password", verifyToken, updatePassword);
 
 // ? MESSAGE ROUTES
 //save Leader Message route
-App.post("/message/save/leader", messageRateLimit, verifyToken, saveLeaderMessage);
+App.post(
+   "/message/save/leader",
+   messageRateLimit,
+   verifyToken,
+   saveLeaderMessage,
+);
 
 // save visitor Message route
 App.post("/message/save/visitor", messageRateLimit, saveVisitorMessage);
@@ -153,7 +157,7 @@ App.delete("/message/delete/:id", verifyToken, deleteMessage);
 App.patch("/message/delete-for-me/:id", verifyToken, deleteMessageForMe);
 
 // ? Group routes
-App.use("/group/*", verifyToken)
+App.use("/group/*", verifyToken);
 // get user Groups route
 App.get("/group/look", getUserGroups);
 
@@ -178,6 +182,6 @@ App.get("/user/look", verifyToken, getLeaders);
 App.get("/user/look/common", getLeaders);
 
 // ? image upload route (Hono handles file parsing natively via c.req.parseBody())
-App.post("/image/upload", uploadRateLimit, verifyToken, uploadToCloud)
+App.post("/image/upload", uploadRateLimit, verifyToken, uploadToCloud);
 
 export default App;
