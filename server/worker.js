@@ -81,7 +81,22 @@ function startBatchSaveTimer() {
  */
 async function startWorker() {
    try {
-      const redis = new Redis(REDIS_URL);
+      if (!REDIS_URL) {
+         console.warn("[Worker] No Redis URL configured, worker disabled");
+         return;
+      }
+
+      const redis = new Redis(REDIS_URL, {
+         maxRetriesPerRequest: 3,
+         lazyConnect: true,
+         retryStrategy: (times) => {
+            if (times > 3) {
+               console.warn("[Worker] Max retries reached, stopping");
+               return null;
+            }
+            return Math.min(times * 100, 3000);
+         },
+      });
 
       redis.on("connect", () => {
          console.log("[Worker] Connected to Redis");
@@ -90,6 +105,14 @@ async function startWorker() {
       redis.on("error", (err) => {
          console.error("[Worker] Redis error:", err.message);
       });
+
+      // Try to connect
+      try {
+         await redis.connect();
+      } catch (err) {
+         console.warn("[Worker] Could not connect to Redis, worker disabled");
+         return;
+      }
 
       console.log("[Worker] Started, waiting for messages...");
 
@@ -101,7 +124,10 @@ async function startWorker() {
          try {
             // BRPOP with timeout to allow periodic batch saves
             // Returns null if timeout expires with no messages
-            const result = await redis.brpop("chat:messages", REDIS_POLL_TIMEOUT);
+            const result = await redis.brpop(
+               "chat:messages",
+               REDIS_POLL_TIMEOUT,
+            );
 
             if (result) {
                const [, messageStr] = result;

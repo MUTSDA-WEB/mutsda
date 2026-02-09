@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const path = "https://mutsdaserver.onrender.com";
+// const path = "http://localhost:5173"
+
 const Ax = axios.create({
-   baseURL: "http://localhost:4554" || "https://mutsdaserver.onrender.com",
+   baseURL: path,
    withCredentials: true,
 });
 

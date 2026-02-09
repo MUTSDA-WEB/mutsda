@@ -15,9 +15,27 @@ const REDIS_URL = process.env.REDIS_URL;
 let redis = null;
 
 try {
-   redis = new Redis(REDIS_URL);
-   redis.on("connect", () => console.log("Redis connected"));
-   redis.on("error", (err) => console.warn("Redis error:", err.message));
+   if (REDIS_URL) {
+      redis = new Redis(REDIS_URL, {
+         maxRetriesPerRequest: 3,
+         lazyConnect: true,
+         retryStrategy: (times) => {
+            if (times > 3) {
+               console.warn("Redis realtime: max retries reached, disabling");
+               return null;
+            }
+            return Math.min(times * 100, 3000);
+         },
+      });
+      redis.on("connect", () => console.log("Redis connected"));
+      redis.on("error", (err) => {
+         console.warn("Redis error:", err.message);
+      });
+      // Attempt connection
+      redis.connect().catch(() => {
+         redis = null;
+      });
+   }
 } catch (err) {
    console.warn(
       "Redis not available, messages will not be persisted:",
