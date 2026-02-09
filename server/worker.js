@@ -4,7 +4,7 @@ import prisma from "./helpers/prismaClient.js";
 const REDIS_URL = process.env.REDIS_URL;
 
 // Configuration
-const BATCH_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+const BATCH_INTERVAL_MS = 10 * 1000; // 2 minutes
 const REDIS_POLL_TIMEOUT = 5; // 5 seconds timeout for BRPOP (non-blocking to allow batch saves)
 
 // Message buffer for batch processing
