@@ -15,7 +15,7 @@
       "pmigrate": "bun x prisma migrate dev",
       "pgen": "bun x prisma generate",
       "pweb": "bun x prisma studio",
-      "pdeploy": "bun x prisma migrate deploy"
+      "pdeploy": "bun x  --bun prisma migrate deploy"
    },
    "type": "module",
    "dependencies": {
