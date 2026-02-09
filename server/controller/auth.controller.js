@@ -23,7 +23,20 @@ export async function login(c) {
 }
 
 export async function checkLogin(c) {
-   const user = c.get("jwtPayload");
+   const { userID } = c.get("jwtPayload");
+   // Fetch fresh user data from database instead of using stale JWT data
+   const user = await client.user.findUnique({
+      where: { userID },
+      select: {
+         userID: true,
+         userName: true,
+         email: true,
+         phoneNumber: true,
+         role: true,
+         // memberSince: true,
+         // department: true,
+      },
+   });
    return c.json({ message: "user is logged in", user }, 200);
 }
 

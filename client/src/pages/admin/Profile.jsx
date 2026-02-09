@@ -15,10 +15,13 @@ import {
    faPhone,
    faShieldAlt,
    faUser,
+   faTimes,
+   faSave,
+   faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Profile = () => {
-   const { user } = userStore();
+   const { user, setUser } = userStore();
    const { userName, email, phoneNumber, role, userID } = user || {};
    const [isEditing, setIsEditing] = useState(false);
    const [editForm, setEditForm] = useState({
@@ -26,8 +29,11 @@ const Profile = () => {
       email: "",
       phoneNumber: "",
    });
-   const { mutate: updateProfile, isPending: updatingProfile } =
-      useUpdateProfile();
+   const {
+      mutate: updateProfile,
+      isPending: updatingProfile,
+      isSuccess,
+   } = useUpdateProfile();
    const { mutate: updatePassword, isPending: updatingPassword } =
       useUpdatePassword();
    const [editErrors, setEditErrors] = useState({});
@@ -37,7 +43,7 @@ const Profile = () => {
    useEffect(() => {
       if (user) {
          setEditForm({
-            username: userName || "",
+            userName: userName || "",
             email: email || "",
             phoneNumber: phoneNumber || "",
          });
@@ -71,16 +77,16 @@ const Profile = () => {
    const validateEditForm = () => {
       const errors = {};
       if (!editForm.userName.trim()) {
-         errors.username = "Username is required";
-      } else if (editForm.username.length < 3) {
-         errors.username = "Username must be at least 3 characters";
+         errors.userName = "Username is required";
+      } else if (editForm.userName.length < 3) {
+         errors.userName = "Username must be at least 3 characters";
       }
       if (!editForm.email.trim()) {
          errors.email = "Email is required";
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editForm.email)) {
          errors.email = "Please enter a valid email";
       }
-      if (!editForm.phoneNumber.trim()) {
+      if (!editForm.phoneNumber.toString().trim()) {
          errors.phoneNumber = "Phone number is required";
       }
       return errors;
@@ -92,28 +98,28 @@ const Profile = () => {
          setEditErrors(errors);
          return;
       }
-      setIsSavingProfile(true);
       const { userName, email, phoneNumber } = editForm;
       updateProfile(
          { userName, email, phoneNumber },
          {
-            onSuccess: async () => {
+            onSuccess: () => {
                setProfileSaveSuccess(true);
-               // ensure fetching of users updated data
-               setUser((prev) => ({
-                  ...prev,
-                  username: editForm.username,
+               // Update local state immediately with new data
+               setUser({
+                  ...user,
+                  userName: editForm.userName,
                   email: editForm.email,
                   phoneNumber: editForm.phoneNumber,
-               }));
-               await queryClient.invalidateQueries({
+               });
+               // Also refetch from server to ensure consistency
+               queryClient.invalidateQueries({
                   queryKey: ["CHECK_LOGIN"],
                });
                setIsEditing(false);
                console.log("Profile update successful");
             },
             onError: (e) => {
-               console.log("Failed to ");
+               console.log("Failed to update profile. Error", e.message);
             },
          },
       );
@@ -353,12 +359,12 @@ const Profile = () => {
                                  value={editForm.userName}
                                  onChange={handleEditChange}
                                  className={`w-full p-4 border rounded-xl outline-none transition-all ${
-                                    editErrors.username
+                                    editErrors.userName
                                        ? "border-red-300 focus:ring-red-200 focus:border-red-400"
                                        : "border-gray-200 focus:ring-[#3298C8]/20 focus:border-[#3298C8]"
                                  } focus:ring-2`}
                               />
-                              {editErrors.username && (
+                              {editErrors.userName && (
                                  <p className='mt-1 text-sm text-red-500 flex items-center gap-1'>
                                     <FontAwesomeIcon
                                        icon={faExclamationCircle}
@@ -641,7 +647,7 @@ const Profile = () => {
                               </button>
                               <button
                                  onClick={handleSavePassword}
-                                 disabled={isSavingPassword}
+                                 disabled={updatingPassword}
                                  className='flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-xl font-medium transition-all disabled:opacity-70 flex items-center justify-center gap-2'
                               >
                                  {updatingPassword ? (
