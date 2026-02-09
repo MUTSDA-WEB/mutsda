@@ -62,7 +62,7 @@ App.use(
          "http://localhost:5174",
          "https://mutsda.vercel.app",
       ],
-      allowMethods: ["POST", "PATCH", "GET", "DELETE"],
+      allowMethods: ["POST", "PATCH", "GET", "DELETE", "OPTIONS"],
       credentials: true,
       allowHeaders: ["Content-Type", "Authorization", "X-Custom-Header"],
    }),
