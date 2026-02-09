@@ -122,7 +122,7 @@ export async function deleteMessage(c) {
          return c.json({ error: "Message not found" }, 404);
       }
 
-      if (message.userId !== userID) {
+      if (message.userId !== userID && message.messageType !== "visitor") {
          return c.json({ error: "You can only delete your own messages" }, 403);
       }
 

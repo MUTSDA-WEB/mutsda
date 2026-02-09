@@ -44,6 +44,8 @@ import {
    updateMemberRole,
 } from "./controller/group.contoller";
 import getLeaders from "./controller/getMembers";
+import upload from "./middleware/upload";
+import uploadToCloud from "./controller/uploadToCloud";
 
 const App = new Hono();
 
@@ -167,5 +169,8 @@ App.patch("/group/:id/members/:memberId", verifyToken, updateMemberRole);
 // get all users
 App.get("/user/look", verifyToken, getLeaders);
 App.get("/user/look/common", getLeaders);
+
+// ? image upload route 
+App.post("/image/upload", verifyToken, upload.single("image"), uploadToCloud)
 
 export default App;
