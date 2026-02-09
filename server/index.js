@@ -24,7 +24,7 @@ import {
 import verifyToken from "./middleware/verifyToken.middleware";
 import {
    saveLeaderMessage,
-   saveMemberMessage,
+   saveVisitorMessage,
    updateMessageStatus,
 } from "./controller/addMessage.controller";
 import {
@@ -32,8 +32,17 @@ import {
    getDirectMessages,
    getGroupMessages,
    getVisitorMessages,
+   deleteMessage,
+   deleteMessageForMe,
 } from "./controller/getMessage";
-import { createGroup, getUserGroups } from "./controller/group.contoller";
+import {
+   createGroup,
+   getUserGroups,
+   getGroupMembers,
+   addGroupMember,
+   removeGroupMember,
+   updateMemberRole,
+} from "./controller/group.contoller";
 import getLeaders from "./controller/getMembers";
 
 const App = new Hono();
@@ -112,7 +121,7 @@ App.patch("/auth/update/password", verifyToken, updatePassword);
 App.post("/message/save/leader", verifyToken, saveLeaderMessage);
 
 // save visitor Message route
-App.post("/message/save/visitor", saveMemberMessage);
+App.post("/message/save/visitor", saveVisitorMessage);
 
 // get Leader DMs route
 App.get("/message/look/DMs", verifyToken, getDirectMessages);
@@ -129,12 +138,30 @@ App.get("/message/look/visitor", verifyToken, getVisitorMessages);
 // update message status route
 App.patch("/message/edit/:id", verifyToken, updateMessageStatus);
 
+// delete message route (for everyone - sender only)
+App.delete("/message/delete/:id", verifyToken, deleteMessage);
+
+// delete message for me only (soft delete)
+App.patch("/message/delete-for-me/:id", verifyToken, deleteMessageForMe);
+
 // ? Group routes
 // get user Groups route
 App.get("/group/look", verifyToken, getUserGroups);
 
 // create group route
 App.post("/group/create", verifyToken, createGroup);
+
+// get group members
+App.get("/group/:id/members", verifyToken, getGroupMembers);
+
+// add member to group
+App.post("/group/:id/members", verifyToken, addGroupMember);
+
+// remove member from group
+App.delete("/group/:id/members/:memberId", verifyToken, removeGroupMember);
+
+// update member role (promote/demote)
+App.patch("/group/:id/members/:memberId", verifyToken, updateMemberRole);
 
 // ? user routes
 // get all users
