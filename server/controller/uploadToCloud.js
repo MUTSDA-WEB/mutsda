@@ -19,7 +19,7 @@ const uploadToCloud = async (c) => {
                 optimzedUrl
             } 
         }, 201)
-
+     
     }catch(e) {
         console.log(e);
         c.json({error: "Image upload failed"}, 500)
