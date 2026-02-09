@@ -21,7 +21,8 @@ const JoinForm = ({
 
    // save the userInfo
    const { mutate: saveMessage, isPending } = useSaveVisitorMessage();
-   const handleSubmit = () => {
+   const handleSubmit = (e) => {
+      e.preventDefault();
       saveMessage(
          {
             message,

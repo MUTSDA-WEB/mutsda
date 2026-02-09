@@ -6,38 +6,70 @@ import {
    faPhone,
    faUser,
    faCalendarAlt,
-   faEye,
    faReply,
    faTrash,
    faCheck,
    faSearch,
-   faFilter,
+   faPaperPlane,
+   faTimes,
+   faCheckDouble,
+   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import userStore from "../../hooks/useStore";
+import { useDeleteMessage } from "../../services/message";
+import { queryClient } from "../../main";
 
 const VisitorMessages = () => {
    const [selectedMessage, setSelectedMessage] = useState(null);
    const [searchQuery, setSearchQuery] = useState("");
-   const [filterStatus, setFilterStatus] = useState("all"); // all, unread, read
+   const [filterStatus, setFilterStatus] = useState("all");
+   const [showReplyModal, setShowReplyModal] = useState(false);
+   const [replyText, setReplyText] = useState("");
+   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
 
    // Get visitor messages from store
    const { visitorMessages, setVisitorMsg } = userStore();
+
+   // Delete mutation
+   const { mutate: deleteMsg, isPending: deleting } = useDeleteMessage();
 
    const handleMarkAsRead = (id) => {
       const updated = visitorMessages.map((msg) =>
          msg.id === id ? { ...msg, isRead: true } : msg,
       );
       setVisitorMsg(updated);
-      // TODO: Update read status via backend API
    };
 
    const handleDeleteMessage = (id) => {
-      const updated = visitorMessages.filter((msg) => msg.id !== id);
-      setVisitorMsg(updated);
-      if (selectedMessage?.id === id) {
-         setSelectedMessage(null);
-      }
-      // TODO: Delete message via backend API
+      deleteMsg(id, {
+         onSuccess: () => {
+            const updated = visitorMessages.filter((msg) => msg.id !== id);
+            setVisitorMsg(updated);
+            if (selectedMessage?.id === id) {
+               setSelectedMessage(null);
+            }
+            setShowDeleteConfirm(null);
+            queryClient.invalidateQueries({
+               queryKey: ["GET_VISITOR_MESSAGES"],
+            });
+         },
+         onError: (e) => {
+            console.error("Failed to delete message:", e.message);
+            setShowDeleteConfirm(null);
+         },
+      });
+   };
+
+   const handleSendReply = () => {
+      if (!replyText.trim()) return;
+      // Open email client with pre-filled content
+      const subject = encodeURIComponent(
+         `Re: ${selectedMessage?.topic || "Your inquiry to MUTSDA"}`,
+      );
+      const body = encodeURIComponent(replyText);
+      window.location.href = `mailto:${selectedMessage?.email}?subject=${subject}&body=${body}`;
+      setReplyText("");
+      setShowReplyModal(false);
    };
 
    // Ensure visitorMessages is an array
@@ -221,8 +253,15 @@ const VisitorMessages = () => {
                      </div>
                      <div className='flex items-center gap-2'>
                         <button
+                           onClick={() => setShowReplyModal(true)}
+                           className='p-2 hover:bg-sky-50 text-[#3298C8] rounded-lg transition-colors'
+                           title='Reply'
+                        >
+                           <FontAwesomeIcon icon={faReply} />
+                        </button>
+                        <button
                            onClick={() =>
-                              handleDeleteMessage(selectedMessage.id)
+                              setShowDeleteConfirm(selectedMessage.id)
                            }
                            className='p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors'
                            title='Delete'
@@ -306,13 +345,13 @@ const VisitorMessages = () => {
 
                         {/* Action Buttons */}
                         <div className='flex flex-wrap gap-3'>
-                           <a
-                              href={`mailto:${selectedMessage.email}?subject=Re: Your inquiry to MUTSDA`}
+                           <button
+                              onClick={() => setShowReplyModal(true)}
                               className='flex items-center gap-2 px-6 py-3 bg-[#3298C8] text-white rounded-xl hover:bg-sky-600 transition-colors font-medium'
                            >
                               <FontAwesomeIcon icon={faReply} />
-                              Reply via Email
-                           </a>
+                              Reply
+                           </button>
                            {selectedMessage.phone && (
                               <a
                                  href={`tel:${selectedMessage.phone}`}
@@ -333,6 +372,15 @@ const VisitorMessages = () => {
                                  Mark as Read
                               </button>
                            )}
+                           <button
+                              onClick={() =>
+                                 setShowDeleteConfirm(selectedMessage.id)
+                              }
+                              className='flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium'
+                           >
+                              <FontAwesomeIcon icon={faTrash} />
+                              Delete
+                           </button>
                         </div>
                      </div>
                   </div>
@@ -356,6 +404,145 @@ const VisitorMessages = () => {
                </div>
             )}
          </div>
+
+         {/* WhatsApp-style Reply Modal */}
+         {showReplyModal && selectedMessage && (
+            <div className='fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4'>
+               <div className='bg-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl overflow-hidden animate-slide-up'>
+                  {/* Modal Header - WhatsApp style */}
+                  <div className='bg-[#075E54] p-4 flex items-center gap-3'>
+                     <button
+                        onClick={() => {
+                           setShowReplyModal(false);
+                           setReplyText("");
+                        }}
+                        className='p-2 hover:bg-white/10 rounded-full transition-colors'
+                     >
+                        <FontAwesomeIcon
+                           icon={faArrowLeft}
+                           className='text-white'
+                        />
+                     </button>
+                     <div className='w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white font-semibold'>
+                        {selectedMessage.name
+                           ?.split(" ")
+                           .map((n) => n[0])
+                           .join("")
+                           .substring(0, 2)}
+                     </div>
+                     <div className='flex-1'>
+                        <h3 className='font-semibold text-white'>
+                           {selectedMessage.name}
+                        </h3>
+                        <p className='text-xs text-white/70'>
+                           {selectedMessage.email}
+                        </p>
+                     </div>
+                  </div>
+
+                  {/* Chat area - shows original message */}
+                  <div className='bg-[#ECE5DD] p-4 min-h-50 max-h-75 overflow-y-auto'>
+                     {/* Original message bubble (received) */}
+                     <div className='flex justify-start mb-3'>
+                        <div className='bg-white rounded-lg rounded-tl-none p-3 max-w-[80%] shadow-sm'>
+                           <p className='text-sm text-gray-800 whitespace-pre-wrap'>
+                              {selectedMessage.message}
+                           </p>
+                           <div className='flex items-center justify-end gap-1 mt-1'>
+                              <span className='text-[10px] text-gray-400'>
+                                 {selectedMessage.time}
+                              </span>
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* Preview of reply if typing */}
+                     {replyText && (
+                        <div className='flex justify-end'>
+                           <div className='bg-[#DCF8C6] rounded-lg rounded-tr-none p-3 max-w-[80%] shadow-sm'>
+                              <p className='text-sm text-gray-800 whitespace-pre-wrap'>
+                                 {replyText}
+                              </p>
+                              <div className='flex items-center justify-end gap-1 mt-1'>
+                                 <span className='text-[10px] text-gray-400'>
+                                    Draft
+                                 </span>
+                                 <FontAwesomeIcon
+                                    icon={faCheckDouble}
+                                    className='text-[10px] text-gray-400'
+                                 />
+                              </div>
+                           </div>
+                        </div>
+                     )}
+                  </div>
+
+                  {/* Input area - WhatsApp style */}
+                  <div className='bg-[#F0F0F0] p-3 flex items-end gap-2'>
+                     <textarea
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        placeholder='Type a message...'
+                        rows={1}
+                        className='flex-1 p-3 bg-white rounded-3xl outline-none resize-none max-h-32 text-sm'
+                        onKeyDown={(e) => {
+                           if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+                              handleSendReply();
+                           }
+                        }}
+                     />
+                     <button
+                        onClick={handleSendReply}
+                        disabled={!replyText.trim()}
+                        className='w-12 h-12 bg-[#075E54] rounded-full flex items-center justify-center text-white disabled:opacity-50 hover:bg-[#128C7E] transition-colors'
+                     >
+                        <FontAwesomeIcon icon={faPaperPlane} />
+                     </button>
+                  </div>
+               </div>
+            </div>
+         )}
+
+         {/* Delete Confirmation Modal */}
+         {showDeleteConfirm && (
+            <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
+               <div className='bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl'>
+                  <div className='text-center'>
+                     <div className='w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                        <FontAwesomeIcon
+                           icon={faTrash}
+                           className='text-2xl text-red-500'
+                        />
+                     </div>
+                     <h3 className='text-xl font-bold text-gray-800 mb-2'>
+                        Delete Message?
+                     </h3>
+                     <p className='text-gray-500 mb-6'>
+                        This action cannot be undone. The message will be
+                        permanently deleted.
+                     </p>
+                     <div className='flex gap-3'>
+                        <button
+                           onClick={() => setShowDeleteConfirm(null)}
+                           className='flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors'
+                        >
+                           Cancel
+                        </button>
+                        <button
+                           onClick={() =>
+                              handleDeleteMessage(showDeleteConfirm)
+                           }
+                           disabled={deleting}
+                           className='flex-1 px-4 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors disabled:opacity-50'
+                        >
+                           {deleting ? "Deleting..." : "Delete"}
+                        </button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         )}
       </div>
    );
 };

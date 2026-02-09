@@ -322,7 +322,7 @@ const Leadership = () => {
                                        icon={faPhone}
                                        className='text-[#3298C8]'
                                     />
-                                    <span>{member?.phone}</span>
+                                    <span>0{member?.phoneNumber}</span>
                                  </div>
                                  <div className='flex items-center gap-3 text-gray-600'>
                                     <FontAwesomeIcon
@@ -352,7 +352,7 @@ const Leadership = () => {
                                        className='inline-flex items-center gap-3 bg-[#3298C8] text-white px-8 py-3.5 rounded-xl font-bold hover:bg-sky-700 transition-all shadow-lg hover:shadow-sky-200/50 active:scale-95'
                                     >
                                        <FontAwesomeIcon icon={faEnvelope} />
-                                       Message {member?.name.split(" ")[0]}
+                                       Message {member?.userName.split(" ")[0]}
                                     </button>
                                  </div>
                               )}

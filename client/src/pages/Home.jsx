@@ -52,20 +52,56 @@ const Home = () => {
    const { mutate: saveMessage, isPending: saveLoading } =
       useSaveVisitorMessage();
 
-   // save visitor messages
-   function handleSaveMessage(name, phoneNumber, email, message) {
+   // save visitor message
+   const handleSaveVisitorMessage = (e) => {
+      e.preventDefault();
       saveMessage(
-         { message, name, phoneNumber, email },
          {
-            onSuccess: () => console.log("Message sent"),
+            message: messageData.message,
+            name: messageData.name,
+            phoneNumber: messageData.phoneNumber,
+            email: messageData.email,
+         },
+         {
+            onSuccess: () => {
+               setMessageData({
+                  name: "",
+                  email: "",
+                  phoneNumber: "",
+                  message: "",
+               });
+               console.log("Message sent");
+            },
             onError: (e) =>
                console.log("Error saving the visitor Message", e.message),
          },
       );
-   }
+   };
 
-   const handleSaveVisitorMessage = () => handleSaveMessage();
-   const handleSaveMissionMessage = () => handleSaveMessage();
+   // save mission message
+   const handleSaveMissionMessage = (e) => {
+      e.preventDefault();
+      saveMessage(
+         {
+            message: "I want to register for mission",
+            name: missionData.name,
+            phoneNumber: missionData.phoneNumber,
+            email: missionData.email,
+         },
+         {
+            onSuccess: () => {
+               setMissionData({
+                  name: "",
+                  email: "",
+                  phoneNumber: "",
+               });
+               console.log("Mission registrationessage sent");
+            },
+            onError: (e) =>
+               console.log("Error saving the visitor Message", e.message),
+         },
+      );
+   };
 
    // load announcements from db
    const { data, isLoading, isSuccess } = useGetAnnouncements();
