@@ -197,7 +197,7 @@ function Footer() {
                            icon={faSquareXTwitter}
                            className='text-xl'
                         />
-                     </a>
+                     </a> 
                      <a
                         href='http://www.youtube.com/@Mutsdafamily1'
                         target='_blank'
