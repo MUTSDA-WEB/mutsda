@@ -32,11 +32,8 @@ const Profile = () => {
       email: "",
       phoneNumber: "",
    });
-   const {
-      mutate: updateProfile,
-      isPending: updatingProfile,
-      isSuccess,
-   } = useUpdateProfile();
+   const { mutate: updateProfile, isPending: updatingProfile } =
+      useUpdateProfile();
    const { mutate: updatePassword, isPending: updatingPassword } =
       useUpdatePassword();
    const [editErrors, setEditErrors] = useState({});
@@ -100,7 +97,7 @@ const Profile = () => {
       try {
          // Upload to Cloudinary
          const imageInfo = await uploadAvatar(file);
-         
+
          // Update profile with new avatar URL
          updateProfile(
             { imageURL: imageInfo.optimzedUrl },
@@ -118,7 +115,7 @@ const Profile = () => {
                   setUploadingAvatar(false);
                   console.error("Avatar update error:", err);
                },
-            }
+            },
          );
       } catch (err) {
          setAvatarError("Failed to upload image");
@@ -308,11 +305,11 @@ const Profile = () => {
                <div className='flex items-center gap-4 mb-2'>
                   {/* Avatar with upload */}
                   <div className='relative'>
-                     <div 
+                     <div
                         onClick={handleAvatarClick}
                         className='w-20 h-20 rounded-2xl overflow-hidden shadow-lg shadow-sky-200 cursor-pointer group relative'
                      >
-                        {imageURL && !imageURL.endsWith('.png') ? (
+                        {imageURL && !imageURL.endsWith(".png") ? (
                            <img
                               src={imageURL}
                               alt={userName}
@@ -321,16 +318,23 @@ const Profile = () => {
                         ) : (
                            <div className='w-full h-full bg-linear-to-br from-[#3298C8] to-sky-600 flex items-center justify-center'>
                               <span className='text-white text-2xl font-bold'>
-                                 {userName?.substring(0, 2).toUpperCase() || 'U'}
+                                 {userName?.substring(0, 2).toUpperCase() ||
+                                    "U"}
                               </span>
                            </div>
                         )}
                         {/* Hover overlay */}
                         <div className='absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center'>
                            {uploadingAvatar ? (
-                              <FontAwesomeIcon icon={faSpinner} className='text-white text-xl animate-spin' />
+                              <FontAwesomeIcon
+                                 icon={faSpinner}
+                                 className='text-white text-xl animate-spin'
+                              />
                            ) : (
-                              <FontAwesomeIcon icon={faCamera} className='text-white text-xl' />
+                              <FontAwesomeIcon
+                                 icon={faCamera}
+                                 className='text-white text-xl'
+                              />
                            )}
                         </div>
                      </div>
@@ -351,7 +355,9 @@ const Profile = () => {
                         View and manage your account information
                      </p>
                      {avatarError && (
-                        <p className='text-red-500 text-sm mt-1'>{avatarError}</p>
+                        <p className='text-red-500 text-sm mt-1'>
+                           {avatarError}
+                        </p>
                      )}
                   </div>
                </div>

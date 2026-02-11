@@ -43,165 +43,179 @@ const Header = () => {
    };
 
    return (
-      <header className='bg-sky-900/10 backdrop-blur-2xl text-sky-900 sticky top-0 z-50 shadow-lg shadow-black/5 border-b border-white/20'>
-         <div className='flex items-center justify-between px-6 py-4 max-w-7xl mx-auto'>
-            {/* LOGO */}
-            <Link to='/'>
-               <img
-                  src={"./church_logo.png"}
-                  alt='Church Logo'
-                  className='h-10 w-auto object-contain hover:opacity-80 transition-opacity'
-               />
-            </Link>
+      <>
+         <header
+            className={`bg-sky-900/10 backdrop-blur-2xl text-sky-900 sticky top-0 shadow-lg shadow-black/5 border-b border-white/20 ${isMobileMenuOpen ? "z-20" : "z-50"}`}
+         >
+            <div className='flex items-center justify-between px-6 py-4 max-w-7xl mx-auto'>
+               {/* LOGO */}
+               <Link to='/'>
+                  <img
+                     src={"./church_logo.png"}
+                     alt='Church Logo'
+                     className='h-10 w-auto object-contain hover:opacity-80 transition-opacity'
+                  />
+               </Link>
 
-            {/* DESKTOP NAVIGATION */}
-            <nav className='hidden lg:flex gap-8 text-sm font-medium uppercase tracking-wider items-center'>
-               <NavLink
-                  to='/'
-                  end
-                  className={({ isActive }) =>
-                     `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
-                        isActive
-                           ? "text-[#3298C8] after:w-full"
-                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
-                     }`
-                  }
-               >
-                  Home
-               </NavLink>
-               <NavLink
-                  to='/aboutUs'
-                  className={({ isActive }) =>
-                     `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
-                        isActive
-                           ? "text-[#3298C8] after:w-full"
-                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
-                     }`
-                  }
-               >
-                  About Us
-               </NavLink>
-
-               {/* Dropdown with Hover Buffer */}
-               <div
-                  className='relative py-2' // Added padding to act as a hover bridge
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-               >
-                  <button
-                     className={`relative flex items-center gap-2 transition-all duration-500 uppercase outline-none after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
-                        isMinistryActive
-                           ? "text-[#3298C8] after:w-full"
-                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
-                     }`}
+               {/* DESKTOP NAVIGATION */}
+               <nav className='hidden lg:flex gap-8 text-sm font-medium uppercase tracking-wider items-center'>
+                  <NavLink
+                     to='/'
+                     end
+                     className={({ isActive }) =>
+                        `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                           isActive
+                              ? "text-[#3298C8] after:w-full"
+                              : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                        }`
+                     }
                   >
-                     Ministries
+                     Home
+                  </NavLink>
+                  <NavLink
+                     to='/aboutUs'
+                     className={({ isActive }) =>
+                        `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                           isActive
+                              ? "text-[#3298C8] after:w-full"
+                              : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                        }`
+                     }
+                  >
+                     About Us
+                  </NavLink>
+
+                  {/* Dropdown with Hover Buffer */}
+                  <div
+                     className='relative py-2' // Added padding to act as a hover bridge
+                     onMouseEnter={handleMouseEnter}
+                     onMouseLeave={handleMouseLeave}
+                  >
+                     <button
+                        className={`relative flex items-center gap-2 transition-all duration-500 uppercase outline-none after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                           isMinistryActive
+                              ? "text-[#3298C8] after:w-full"
+                              : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                        }`}
+                     >
+                        Ministries
+                        <FontAwesomeIcon
+                           icon={faChevronDown}
+                           className={`text-xs transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+                        />
+                     </button>
+
+                     {isDropdownOpen && (
+                        <div className='absolute top-full left-0 mt-0 w-48 bg-white/80 backdrop-blur-lg rounded-xl shadow-xl py-2 z-50 border border-sky-100'>
+                           {/* Invisible bridge to prevent mouse-out when moving down */}
+                           <div className='absolute -top-2 left-0 w-full h-2 bg-transparent'></div>
+
+                           {ministriesLinks.map((link) => (
+                              <NavLink
+                                 key={link.name}
+                                 to={link.to}
+                                 className={({ isActive }) =>
+                                    `block px-4 py-2 text-sm transition-colors ${
+                                       isActive
+                                          ? "bg-sky-100 text-[#3298C8] font-semibold"
+                                          : "text-gray-700 hover:bg-sky-100/70 hover:text-[#3298C8]"
+                                    }`
+                                 }
+                              >
+                                 {link.name}
+                              </NavLink>
+                           ))}
+                        </div>
+                     )}
+                  </div>
+
+                  <NavLink
+                     to='/library'
+                     className={({ isActive }) =>
+                        `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                           isActive
+                              ? "text-[#3298C8] after:w-full"
+                              : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                        }`
+                     }
+                  >
+                     Library
+                  </NavLink>
+                  <NavLink
+                     to='/leaders'
+                     className={({ isActive }) =>
+                        `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                           isActive
+                              ? "text-[#3298C8] after:w-full"
+                              : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                        }`
+                     }
+                  >
+                     Leadership
+                  </NavLink>
+                  <NavLink
+                     to='/gallery'
+                     className={({ isActive }) =>
+                        `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
+                           isActive
+                              ? "text-[#3298C8] after:w-full"
+                              : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
+                        }`
+                     }
+                  >
+                     Gallery
+                  </NavLink>
+               </nav>
+
+               {/* RIGHT ICONS & HAMBURGER */}
+               <div className='flex items-center gap-4 text-xl'>
+                  <HeaderButtonGroup
+                     buttons={[
+                        {
+                           icon: faHeart,
+                           to: "/donate",
+                           title: "Donate to MUTSDA",
+                           color: "text-pink-500 hover:text-pink-600 hover:bg-pink-50",
+                           animate: true,
+                        },
+                        {
+                           icon: faAddressBook,
+                           to: "/contactUs",
+                           title: "Contact Us",
+                        },
+                        {
+                           icon: faSignInAlt,
+                           to: "/login",
+                           title: "Login",
+                        },
+                     ]}
+                  />
+                  <button
+                     className='lg:hidden p-2 hover:bg-sky-100 rounded-lg transition-colors'
+                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  >
                      <FontAwesomeIcon
-                        icon={faChevronDown}
-                        className={`text-xs transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+                        icon={isMobileMenuOpen ? faTimes : faBars}
                      />
                   </button>
-
-                  {isDropdownOpen && (
-                     <div className='absolute top-full left-0 mt-0 w-48 bg-white/80 backdrop-blur-lg rounded-xl shadow-xl py-2 z-50 border border-sky-100'>
-                        {/* Invisible bridge to prevent mouse-out when moving down */}
-                        <div className='absolute -top-2 left-0 w-full h-2 bg-transparent'></div>
-
-                        {ministriesLinks.map((link) => (
-                           <NavLink
-                              key={link.name}
-                              to={link.to}
-                              className={({ isActive }) =>
-                                 `block px-4 py-2 text-sm transition-colors ${
-                                    isActive
-                                       ? "bg-sky-100 text-[#3298C8] font-semibold"
-                                       : "text-gray-700 hover:bg-sky-100/70 hover:text-[#3298C8]"
-                                 }`
-                              }
-                           >
-                              {link.name}
-                           </NavLink>
-                        ))}
-                     </div>
-                  )}
                </div>
-
-               <NavLink
-                  to='/library'
-                  className={({ isActive }) =>
-                     `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
-                        isActive
-                           ? "text-[#3298C8] after:w-full"
-                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
-                     }`
-                  }
-               >
-                  Library
-               </NavLink>
-               <NavLink
-                  to='/leaders'
-                  className={({ isActive }) =>
-                     `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
-                        isActive
-                           ? "text-[#3298C8] after:w-full"
-                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
-                     }`
-                  }
-               >
-                  Leadership
-               </NavLink>
-               <NavLink
-                  to='/gallery'
-                  className={({ isActive }) =>
-                     `relative transition-all duration-500 after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:bg-[#3298C8] after:transition-all after:duration-500 ${
-                        isActive
-                           ? "text-[#3298C8] after:w-full"
-                           : "hover:text-[#3298C8] after:w-0 hover:after:w-full"
-                     }`
-                  }
-               >
-                  Gallery
-               </NavLink>
-            </nav>
-
-            {/* RIGHT ICONS & HAMBURGER */}
-            <div className='flex items-center gap-4 text-xl'>
-               <HeaderButtonGroup
-                  buttons={[
-                     {
-                        icon: faHeart,
-                        to: "/donate",
-                        title: "Donate to MUTSDA",
-                        color: "text-pink-500 hover:text-pink-600 hover:bg-pink-50",
-                        animate: true,
-                     },
-                     {
-                        icon: faAddressBook,
-                        to: "/contactUs",
-                        title: "Contact Us",
-                     },
-                     {
-                        icon: faSignInAlt,
-                        to: "/login",
-                        title: "Login",
-                     },
-                  ]}
-               />
-               <button
-                  className='lg:hidden p-2 hover:bg-sky-100 rounded-lg transition-colors'
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-               >
-                  <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} />
-               </button>
             </div>
-         </div>
+         </header>
+
+         {/* MOBILE MENU BACKDROP */}
+         {isMobileMenuOpen && (
+            <div
+               className='fixed inset-0 bg-black/30 lg:hidden z-30'
+               onClick={() => setIsMobileMenuOpen(false)}
+            />
+         )}
 
          {/* MOBILE MENU OVERLAY */}
          <div
             className={`
-        lg:hidden absolute top-full right-0 w-64 bg-white/20 backdrop-blur-2xl border-l border-b border-white/30 transition-all duration-300 ease-in-out shadow-2xl shadow-black/10 rounded-bl-2xl
-        ${isMobileMenuOpen ? "translate-x-0 opacity-100 py-6" : "translate-x-full opacity-0 pointer-events-none"}
-      `}
+     lg:hidden fixed top-16 right-0 w-64 bg-white backdrop-blur-2xl border-l border-b border-white/30 transition-all duration-300 ease-in-out shadow-2xl shadow-black/10 rounded-bl-2xl z-40
+     ${isMobileMenuOpen ? "translate-x-0 opacity-100 py-6" : "translate-x-full opacity-0 pointer-events-none"}
+   `}
          >
             {/* MOBILE LOGO */}
             <div className='flex justify-center mb-6'>
@@ -331,7 +345,7 @@ const Header = () => {
                </div>
             </div>
          </div>
-      </header>
+      </>
    );
 };
 
