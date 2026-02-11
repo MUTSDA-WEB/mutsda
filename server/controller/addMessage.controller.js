@@ -49,17 +49,19 @@ export async function saveLeaderMessage(c) {
 
 // ? Add normal members/visitor message
 export async function saveVisitorMessage(c) {
-   // * all Visitor message will register with the "USER" role
-   const userID = "f676b5d3-4b38-4000-a14b-5e2e79b7ea0f";
-
    const { name, phoneNumber, email, message, ...m } = await c.req.json();
    const msg = `name_${name} phonenumber_${phoneNumber} email_${email} topic_${m.topic ? m.topic : "Visitor Message"} message_${message}`;
    try {
+      // * all Visitor message will register with the "USER" role
+      const user = await client.user.findUnique({
+         where: { role: "user" },
+         select: { userID: true },
+      });
       const savedMessage = await client.conversation.create({
          data: {
             content: msg,
             messageType: "visitor",
-            userId: userID,
+            userId: user.userID,
             msgStatus: "delivered",
             receiverId: m?.receiverId,
          },

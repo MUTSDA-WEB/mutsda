@@ -4,12 +4,12 @@ import prisma from "./helpers/prismaClient.js";
 const REDIS_URL = process.env.REDIS_URL.split(",");
 
 // Configuration
-// I reduced the time to 10 seconds for testing
-const BATCH_INTERVAL_MS = 10 * 1000;
+const BATCH_INTERVAL_MS = 10 * 1000; // 10 seconds
 const REDIS_POLL_TIMEOUT = 5; // 5 seconds timeout for BRPOP (non-blocking to allow batch saves)
 
 // Message buffer for batch processing
 let messageBuffer = [];
+let batchTimer = null;
 
 // Map frontend message type to enum
 const messageTypeMap = {
@@ -44,7 +44,6 @@ async function flushMessageBuffer() {
    }
 
    const messagesToSave = [...messageBuffer];
-   messageBuffer = []; // Clear buffer immediately to avoid duplicates
 
    try {
       // Get unique userIds from batch
@@ -78,13 +77,15 @@ async function flushMessageBuffer() {
          skipDuplicates: true,
       });
 
+      // Only clear buffer on successful save
+      messageBuffer = messageBuffer.slice(messagesToSave.length);
+
       console.log(
          `[Batch Save] ${result.count}/${messagesToSave.length} messages saved at ${new Date().toISOString()}`,
       );
    } catch (err) {
       console.error("[Batch Save] Error saving messages:", err.message);
-      // Put messages back in buffer to retry next interval
-      messageBuffer = [...messagesToSave, ...messageBuffer];
+      // Messages stay in buffer for next attempt
    }
 }
 
@@ -92,11 +93,16 @@ async function flushMessageBuffer() {
  * Start the batch save interval timer
  */
 function startBatchSaveTimer() {
+   // Clear existing timer to prevent memory leaks
+   if (batchTimer) {
+      clearInterval(batchTimer);
+   }
+
    console.log(
       `[Worker] Batch save interval set to ${BATCH_INTERVAL_MS / 1000} seconds`,
    );
 
-   setInterval(async () => {
+   batchTimer = setInterval(async () => {
       console.log(
          `[Worker] Running batch save... (${messageBuffer.length} messages in buffer)`,
       );
@@ -170,7 +176,7 @@ async function startWorker() {
                messageBuffer.push(transformedMsg);
 
                console.log(
-                  `[Worker] Buffered message from ${chatMsg.userId || chatMsg.senderId} (buffer size: ${messageBuffer.length})`,
+                  `[Worker] ✓ Message added to buffer | From: ${chatMsg.userId || chatMsg.senderId} | ID: ${chatMsg.id} | Buffer size: ${messageBuffer.length}`,
                );
             }
          } catch (err) {
@@ -191,6 +197,12 @@ async function startWorker() {
  */
 async function gracefulShutdown(signal) {
    console.log(`\n[Worker] Received ${signal}. Shutting down gracefully...`);
+
+   // Clear the batch timer
+   if (batchTimer) {
+      clearInterval(batchTimer);
+      console.log("[Worker] Batch timer cleared");
+   }
 
    if (messageBuffer.length > 0) {
       console.log(
