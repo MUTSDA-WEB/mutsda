@@ -32,11 +32,8 @@ const Profile = () => {
       email: "",
       phoneNumber: "",
    });
-   const {
-      mutate: updateProfile,
-      isPending: updatingProfile,
-      isSuccess,
-   } = useUpdateProfile();
+   const { mutate: updateProfile, isPending: updatingProfile } =
+      useUpdateProfile();
    const { mutate: updatePassword, isPending: updatingPassword } =
       useUpdatePassword();
    const [editErrors, setEditErrors] = useState({});
