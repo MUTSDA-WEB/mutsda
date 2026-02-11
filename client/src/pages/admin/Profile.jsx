@@ -283,12 +283,6 @@ const Profile = () => {
                      {!isEditing ? (
                         <div className='space-y-4'>
                            <InfoItem
-                              icon={faIdCard}
-                              label='User ID'
-                              value={userID}
-                              isHighlighted
-                           />
-                           <InfoItem
                               icon={faUser}
                               label='Username'
                               value={userName}
