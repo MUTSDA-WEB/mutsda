@@ -3,17 +3,18 @@ import { getUserByID } from "../helpers/getUserInfo";
 import checkPassword from "../helpers/checkPassword";
 import hashP from "../helpers/hashPassword";
 import client from "../helpers/prismaClient";
-import { deleteCookie } from "hono/cookie";
+import { deleteCookie, setCookie } from "hono/cookie";
 
 export async function login(c) {
    const token = await sign(c.get("userInfo"), process.env.JWT_SECRET, "HS384");
 
-   // * Remove 'Secure' flag for localhost development (no HTTPS)
-   // TODO: Add it back for production
-   c.header(
-      "Set-Cookie",
-      `auth=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400`,
-   );
+   setCookie(c, "auth", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      path: "/",
+      maxAge: 86400,
+   });
    return c.json(
       {
          message: "successful login",
@@ -33,6 +34,7 @@ export async function checkLogin(c) {
          email: true,
          phoneNumber: true,
          role: true,
+         imageURL: true,
          // memberSince: true,
          // department: true,
       },
@@ -81,12 +83,27 @@ export async function updatePassword(c) {
 }
 
 export async function updateProfileInfo(c) {
-   const { userName, email, phoneNumber } = await c.req.json();
+   const { userName, email, phoneNumber, imageURL } = await c.req.json();
    const { userID } = c.get("jwtPayload");
    try {
+      // Build update data object (only include fields that are provided)
+      const updateData = {};
+      if (userName !== undefined) updateData.userName = userName;
+      if (email !== undefined) updateData.email = email;
+      if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
+      if (imageURL !== undefined) updateData.imageURL = imageURL;
+
       const updatedUser = await client.user.update({
          where: { userID },
-         data: { email, userName, phoneNumber },
+         data: updateData,
+         select: {
+            userID: true,
+            userName: true,
+            email: true,
+            phoneNumber: true,
+            role: true,
+            imageURL: true,
+         },
       });
       return c.json(
          { message: "User profile updated successfully", user: updatedUser },

@@ -1,15 +1,24 @@
 import { getOptimizedImageUrl, uploadImage } from "../service/cloudinary.service";
 
 const uploadToCloud = async (c) => {
-    try{
-        if (!c.req.file()) {
+    try {
+        // Get file from form data (Hono's way)
+        const body = await c.req.parseBody();
+        const file = body.image;
+        const folder = body.folder || "uploads";
+
+        if (!file || !(file instanceof File)) {
             return c.json({ message: 'No image uploaded' }, 400);
         }
 
-      // upload original image 
-      const result = await uploadImage(c.req.file.buffer, "events");
+        // Convert File to Buffer for cloudinary
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
-      const optimzedUrl = getOptimizedImageUrl(result.public_id)
+        // Upload to cloudinary
+        const result = await uploadImage(buffer, folder);
+
+        const optimzedUrl = getOptimizedImageUrl(result.public_id);
 
         return c.json({
             message: "Successfully uploaded the image", 
@@ -18,11 +27,11 @@ const uploadToCloud = async (c) => {
                 originalUrl: result.secure_url, 
                 optimzedUrl
             } 
-        }, 201)
-
-    }catch(e) {
+        }, 201);
+     
+    } catch(e) {
         console.log(e);
-        c.json({error: "Image upload failed"}, 500)
+        return c.json({ error: "Image upload failed" }, 500);
     }
 }
 

@@ -10,12 +10,12 @@
    "scripts": {
       "spin": "bun --hot server.js",
       "chat": "bun --bun run worker.js && bun --bun run realtime.js",
-      "build": "bun pdeploy && bun spin",
-      "pdev": "bunx prisma dev",
-      "pmigrate": "bunx --bun prisma migrate dev",
-      "pgen": "bunx prisma generate",
-      "pweb": "bunx --bun prisma studio",
-      "pdeploy": "bunx --bun prisma migrate deploy"
+      "build": "bun run pdeploy && bun spin",
+      "pdev": "bun x prisma dev",
+      "pmigrate": "bun x prisma migrate dev",
+      "pgen": "bun x prisma generate",
+      "pweb": "bun x prisma studio",
+      "pdeploy": "bun x  --bun prisma migrate deploy"
    },
    "type": "module",
    "dependencies": {
