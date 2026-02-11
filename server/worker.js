@@ -1,10 +1,11 @@
 import Redis from "ioredis";
 import prisma from "./helpers/prismaClient.js";
 
-const REDIS_URL = process.env.REDIS_URL;
+const REDIS_URL = process.env.REDIS_URL.split(",");
 
 // Configuration
-const BATCH_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+// I reduced the time to 10 seconds for testing
+const BATCH_INTERVAL_MS = 10 * 1000;
 const REDIS_POLL_TIMEOUT = 5; // 5 seconds timeout for BRPOP (non-blocking to allow batch saves)
 
 // Message buffer for batch processing
@@ -23,12 +24,13 @@ const messageTypeMap = {
  */
 function transformMessage(chatMsg) {
    return {
-      messageId: chatMsg?.id,
+      // messageId: `${chatMsg?.id}`,
       messageType: messageTypeMap[chatMsg.type] || "direct",
       content: chatMsg.text || chatMsg.content || "",
       userId: chatMsg.userId || chatMsg.senderId,
       receiverId: chatMsg.receiverId || null,
       groupId: chatMsg.groupId || null,
+      replyToId: chatMsg.replyToId || chatMsg.replyTo?.messageId || null,
       msgStatus: "sent",
    };
 }
@@ -45,13 +47,39 @@ async function flushMessageBuffer() {
    messageBuffer = []; // Clear buffer immediately to avoid duplicates
 
    try {
+      // Get unique userIds from batch
+      const userIds = [...new Set(messagesToSave.map((m) => m.userId))];
+
+      // Validate which users actually exist
+      const existingUsers = await prisma.user.findMany({
+         where: { userID: { in: userIds } },
+         select: { userID: true },
+      });
+      const validUserIds = new Set(existingUsers.map((u) => u.userID));
+
+      // Filter out messages with invalid userIds
+      const validMessages = messagesToSave.filter((m) => {
+         if (!validUserIds.has(m.userId)) {
+            console.warn(
+               `[Batch Save] Skipping message - invalid userId: ${m.userId}`,
+            );
+            return false;
+         }
+         return true;
+      });
+
+      if (validMessages.length === 0) {
+         console.log("[Batch Save] No valid messages to save");
+         return;
+      }
+
       const result = await prisma.conversation.createMany({
-         data: messagesToSave,
-         skipDuplicates: true, // Skip if messageId already exists
+         data: validMessages,
+         skipDuplicates: true,
       });
 
       console.log(
-         `[Batch Save] ${result.count} messages saved to database at ${new Date().toISOString()}`,
+         `[Batch Save] ${result.count}/${messagesToSave.length} messages saved at ${new Date().toISOString()}`,
       );
    } catch (err) {
       console.error("[Batch Save] Error saving messages:", err.message);

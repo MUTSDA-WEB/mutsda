@@ -114,6 +114,11 @@ export default function useChatSocket({ activeTab, selectedChat }) {
                   )
                )
                   return;
+               console.log("[Socket] Community message received:", {
+                  id: msg.id,
+                  text: msg.text,
+                  replyTo: msg.replyTo,
+               });
                setComMsg([...communityMessages, msg]);
             } else if (msg.type === "visitor") {
                // Check if message already exists
@@ -147,16 +152,11 @@ export default function useChatSocket({ activeTab, selectedChat }) {
    useEffect(() => {
       if (!socketRef.current || !isConnected.current) return;
 
-      // Always join user's personal room for DMs
-      if (user?.userID) {
-         socketRef.current.emit("join", `user:${user.userID}`);
-      }
+      // User's personal room is auto-joined on server - no need to join here for DMs
 
       // Join specific rooms based on active context
       if (activeTab === "groups" && selectedChat?.id) {
          socketRef.current.emit("join", `group:${selectedChat.id}`);
-      } else if (activeTab === "messages" && selectedChat?.id) {
-         socketRef.current.emit("join", `dm:${selectedChat.id}`);
       } else if (activeTab === "community") {
          socketRef.current.emit("join", "community");
       }
@@ -176,13 +176,18 @@ export default function useChatSocket({ activeTab, selectedChat }) {
          // Determine the room to send to
          let room = "community";
          if (msg.type === "direct") {
-            room = `dm:${msg.receiverId}`;
+            room = `user:${msg.receiverId}`; // Send to receiver's personal room
          } else if (msg.type === "group") {
             room = `group:${msg.groupId}`;
          }
          message.room = room;
 
          if (socketRef.current && isConnected.current) {
+            console.log("[Socket] Sending message:", {
+               type: message.type,
+               text: message.text,
+               replyTo: message.replyTo,
+            });
             socketRef.current.emit("chat:message", message);
          }
 

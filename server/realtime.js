@@ -4,14 +4,14 @@ import Redis from "ioredis";
 const PORT = process.env.SOCKET_PORT;
 const io = new Server(PORT, {
    cors: {
-      origin: process.env.CLIENT_URL,
+      origin: process.env.CLIENT_URL.split(","),
       methods: ["GET", "POST"],
       credentials: true,
    },
 });
 
 // Redis setup for message queuing
-const REDIS_URL = process.env.REDIS_URL;
+const REDIS_URL = process.env.REDIS_URL.split(",");
 let redis = null;
 
 try {
@@ -21,24 +21,27 @@ try {
          lazyConnect: true,
          retryStrategy: (times) => {
             if (times > 3) {
-               console.warn("Redis realtime: max retries reached, disabling");
+               console.warn("[Realtime] Redis max retries reached, disabling");
                return null;
             }
             return Math.min(times * 100, 3000);
          },
       });
-      redis.on("connect", () => console.log("Redis connected"));
+      redis.on("connect", () => console.log("[Realtime] Redis connected"));
       redis.on("error", (err) => {
-         console.warn("Redis error:", err.message);
+         console.warn("[Realtime] Redis error:", err.message);
       });
       // Attempt connection
-      redis.connect().catch(() => {
+      redis.connect().catch((err) => {
+         console.error("[Realtime] Redis connection failed:", err.message);
          redis = null;
       });
+   } else {
+      console.warn("[Realtime] No REDIS_URL - messages will NOT be persisted");
    }
 } catch (err) {
    console.warn(
-      "Redis not available, messages will not be persisted:",
+      "[Realtime] Redis not available, messages will not be persisted:",
       err.message,
    );
 }
@@ -79,14 +82,33 @@ io.on("connection", (socket) => {
             io.to(msg.room).emit("chat:message", msg);
          }
 
-         // For direct messages, also send to sender's room
-         if (msg.type === "direct" && msg.senderId) {
+         // For direct messages, also send to sender's room (so sender sees it in other tabs/devices)
+         if (
+            msg.type === "direct" &&
+            msg.senderId &&
+            msg.room !== `user:${msg.senderId}`
+         ) {
             io.to(`user:${msg.senderId}`).emit("chat:message", msg);
          }
 
          // Push message to Redis list for persistence (worker will process it)
          if (redis) {
-            await redis.lpush("chat:messages", JSON.stringify(msg));
+            try {
+               await redis.lpush("chat:messages", JSON.stringify(msg));
+               console.log(
+                  `[Redis] Message queued for persistence: ${msg.id || msg.tempId}`,
+               );
+            } catch (pushErr) {
+               console.error(
+                  "[Redis] Failed to queue message:",
+                  pushErr.message,
+               );
+            }
+         } else {
+            console.warn(
+               "[Redis] Not connected - message will NOT be persisted:",
+               msg.id || msg.tempId,
+            );
          }
 
          // Send ack to sender
