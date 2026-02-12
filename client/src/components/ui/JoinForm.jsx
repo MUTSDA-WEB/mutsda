@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faSpinner, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { useSaveVisitorMessage } from "../../services/message";
@@ -118,7 +119,7 @@ const JoinForm = ({
                <p
                   className={`text-sm ${darkMode ? "text-green-300/70" : "text-green-600"}`}
                >
-                  We'll be in touch soon.
+                  We&apos;ll be in touch soon.
                </p>
             </div>
          ) : (
@@ -183,3 +184,13 @@ const JoinForm = ({
 };
 
 export default JoinForm;
+
+JoinForm.propTypes = {
+   isOpen: PropTypes.bool,
+   onClose: PropTypes.func,
+   title: PropTypes.string,
+   description: PropTypes.string,
+   buttonText: PropTypes.string,
+   darkMode: PropTypes.bool,
+   message: PropTypes.string,
+};

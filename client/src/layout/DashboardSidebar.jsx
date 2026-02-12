@@ -9,6 +9,7 @@ import {
    faUser,
    faSignOutAlt,
    faCog,
+   faMusic,
    faChevronLeft,
    faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
@@ -17,6 +18,7 @@ import PropTypes from "prop-types";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLogout } from "../services/logout";
 import LogoutConfirmModal from "../components/ui/LogoutConfirmModal";
+import useStore from "../hooks/useStore";
 
 const DashboardSidebar = ({
    username = "User",
@@ -30,6 +32,7 @@ const DashboardSidebar = ({
    const profileTimeoutRef = useRef(null);
    const navigate = useNavigate();
    const { mutate: logout, isPending: isLoggingOut } = useLogout();
+   const { user } = useStore();
 
    const menuItems = [
       { name: "Dashboard", icon: faHome, to: "/dashboard", end: true },
@@ -46,6 +49,15 @@ const DashboardSidebar = ({
       },
       { name: "Settings", icon: faGear, to: "/dashboard/settings" },
    ];
+
+   // If the logged-in user is a music leader, add quick access to Music Admin
+   if (user && user.role === "music") {
+      menuItems.splice(3, 0, {
+         name: "Music Admin",
+         icon: faMusic,
+         to: "/dashboard/music-admin",
+      });
+   }
 
    const handleProfileEnter = () => {
       if (profileTimeoutRef.current) clearTimeout(profileTimeoutRef.current);

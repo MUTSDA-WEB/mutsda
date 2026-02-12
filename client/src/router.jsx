@@ -25,6 +25,7 @@ import Notifications from "./pages/admin/Notifications";
 import CreateEvent from "./pages/admin/CreateEvent";
 import Settings from "./pages/admin/Settings";
 import Profile from "./pages/admin/Profile";
+import MusicAdmin from "./pages/admin/MusicAdmin";
 import Protected from "./components/protected";
 
 const AppRouter = () => {
@@ -65,6 +66,7 @@ const AppRouter = () => {
             <Route path='create-event' element={<CreateEvent />} />
             <Route path='settings' element={<Settings />} />
             <Route path='profile' element={<Profile />} />
+            <Route path='music-admin' element={<MusicAdmin />} />
             <Route path='library' element={<Library />} />
             <Route path='about' element={<About />} />
             <Route path='leaders' element={<Leadership />} />
