@@ -63,3 +63,23 @@ export function useUpdateMemberRole() {
       },
    });
 }
+
+export function useUpdateGroup() {
+   return useMutation({
+      mutationKey: ["UPDATE_GROUP"],
+      mutationFn: async ({ groupId, data }) => {
+         const res = await Ax.patch(`/group/${groupId}`, data);
+         return res.data;
+      },
+   });
+}
+
+export function useDeleteGroup() {
+   return useMutation({
+      mutationKey: ["DELETE_GROUP"],
+      mutationFn: async (groupId) => {
+         const res = await Ax.delete(`/group/${groupId}`);
+         return res.data;
+      },
+   });
+}
