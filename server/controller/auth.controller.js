@@ -4,14 +4,15 @@ import checkPassword from "../helpers/checkPassword";
 import hashP from "../helpers/hashPassword";
 import client from "../helpers/prismaClient";
 import { deleteCookie, setCookie } from "hono/cookie";
+import { sendPasswordChangeEmail } from "../service/email.service";
 
 export async function login(c) {
    const token = await sign(c.get("userInfo"), process.env.JWT_SECRET, "HS384");
 
    setCookie(c, "auth", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: process.env.NODE_ENV === "production", // Only secure in production
+      sameSite: "Lax",
       path: "/",
       maxAge: 86400,
    });
@@ -24,22 +25,36 @@ export async function login(c) {
 }
 
 export async function checkLogin(c) {
-   const { userID } = c.get("jwtPayload");
-   // Fetch fresh user data from database instead of using stale JWT data
-   const user = await client.user.findUnique({
-      where: { userID },
-      select: {
-         userID: true,
-         userName: true,
-         email: true,
-         phoneNumber: true,
-         role: true,
-         imageURL: true,
-         // memberSince: true,
-         // department: true,
-      },
-   });
-   return c.json({ message: "user is logged in", user }, 200);
+   try {
+      const jwtPayload = c.get("jwtPayload");
+      if (!jwtPayload || !jwtPayload.userID) {
+         return c.json({ error: "Invalid token" }, 401);
+      }
+
+      const { userID } = jwtPayload;
+
+      // Fetch fresh user data from database instead of using stale JWT data
+      const user = await client.user.findUnique({
+         where: { userID },
+         select: {
+            userID: true,
+            userName: true,
+            email: true,
+            phoneNumber: true,
+            role: true,
+            imageURL: true,
+         },
+      });
+
+      if (!user) {
+         return c.json({ error: "User not found" }, 404);
+      }
+
+      return c.json({ message: "user is logged in", user }, 200);
+   } catch (error) {
+      console.error("Error in checkLogin:", error);
+      return c.json({ error: "Failed to verify login" }, 500);
+   }
 }
 
 export function logout(c) {
@@ -57,27 +72,61 @@ export async function updatePassword(c) {
    const { userID } = c.get("jwtPayload");
 
    try {
-      let userDetails = c.get("userInfo") || (await getUserByID(id));
-      if (!(await checkPassword(oldPassword, userDetails?.password))) {
+      // Get user details and verify old password
+      const userDetails = await client.user.findUnique({
+         where: { userID },
+      });
+
+      if (!userDetails) {
+         return c.json({ error: "User not found" }, 404);
+      }
+
+      if (!(await checkPassword(oldPassword, userDetails.password))) {
          return c.json({ error: "Incorrect old password" }, 400);
       }
 
-      // update db with new hashed password
+      // Hash new password and update database
       const newHashedPass = await hashP(newPassword);
-      const updatedUser = client.user.update({
+      const updatedUser = await client.user.update({
          where: { userID },
          data: { password: newHashedPass },
+         select: {
+            userID: true,
+            email: true,
+            userName: true,
+            role: true,
+            name: true,
+         },
       });
+
+      // Send password change confirmation email
+      const emailResult = await sendPasswordChangeEmail(
+         updatedUser.email,
+         updatedUser.name || updatedUser.userName,
+      );
+
+      if (!emailResult.success) {
+         console.warn(
+            "⚠️ Password change email failed for",
+            updatedUser.email,
+            ":",
+            emailResult.error,
+         );
+         // Don't fail the request if email fails, just log it
+      } else {
+         console.log("✅ Password change email sent to", updatedUser.email);
+      }
 
       return c.json(
          {
-            message: "Password update successfully",
+            message: "Password updated successfully",
             user: updatedUser,
+            emailSent: emailResult.success,
          },
          201,
       );
    } catch (error) {
-      console.log(error);
+      console.error("Error updating password:", error);
       return c.json({ error: "Server error: Failed to update password!" }, 500);
    }
 }

@@ -35,3 +35,13 @@ export const useUpdateProfile = () =>
    useMutatePatch("UPDATE_USER_PROFILE", "/auth/update/profile");
 export const useUpdatePassword = () =>
    useMutatePatch("UPDATE_USER_PASSWORD", "/auth/update/password");
+
+export function useAddBoardMember() {
+   return useMutation({
+      mutationFn: async (data) => {
+         const response = await Ax.post("/user/add/board-member", data);
+         return response.data;
+      },
+      mutationKey: ["ADD_BOARD_MEMBER"],
+   });
+}

@@ -25,7 +25,7 @@ import {
 
 const Profile = () => {
    const { user, setUser } = userStore();
-   const { userName, email, phoneNumber, role, userID, imageURL } = user || {};
+   const { userName, email, phoneNumber, role, imageURL } = user || {};
    const [isEditing, setIsEditing] = useState(false);
    const [editForm, setEditForm] = useState({
       userName: "",
@@ -408,36 +408,10 @@ const Profile = () => {
                               value={role}
                               isHighlighted
                            />
-                           <div className='grid grid-cols-2 gap-4'>
-                              <div className='p-4 bg-gray-50 rounded-xl'>
-                                 <p className='text-xs text-gray-500 uppercase tracking-wider'>
-                                    Member Since
-                                 </p>
-                                 <p className='font-semibold text-gray-800'>
-                                    {user?.memberSince}
-                                 </p>
-                              </div>
-                              <div className='p-4 bg-gray-50 rounded-xl'>
-                                 <p className='text-xs text-gray-500 uppercase tracking-wider'>
-                                    Department
-                                 </p>
-                                 <p className='font-semibold text-gray-800'>
-                                    {user?.department}
-                                 </p>
-                              </div>
-                           </div>
                         </div>
                      ) : (
                         <div className='space-y-4'>
                            {/* Non-editable fields */}
-                           <div className='p-4 bg-gray-100 rounded-xl opacity-75'>
-                              <p className='text-xs text-gray-500 uppercase tracking-wider mb-1'>
-                                 User ID (Cannot be changed)
-                              </p>
-                              <p className='font-semibold text-gray-600'>
-                                 {userID}
-                              </p>
-                           </div>
                            <div className='p-4 bg-gray-100 rounded-xl opacity-75'>
                               <p className='text-xs text-gray-500 uppercase tracking-wider mb-1'>
                                  Leadership Role (Contact admin to change)
