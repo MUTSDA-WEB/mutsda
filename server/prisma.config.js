@@ -4,8 +4,9 @@ export default defineConfig({
    // Path to your schema file or a folder for multi-file schemas
    schema: "prisma/schema.prisma",
 
-   // Database connection details (moved from schema.prisma in v7)
+   // Database connection details for migrations
    datasource: {
+      provider: "postgresql",
       url: process.env.DATABASE_URL,
    },
 

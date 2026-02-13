@@ -12,6 +12,7 @@ import {
    faMusic,
    faChevronLeft,
    faChevronRight,
+   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 
 import PropTypes from "prop-types";
@@ -56,6 +57,20 @@ const DashboardSidebar = ({
          name: "Music Admin",
          icon: faMusic,
          to: "/dashboard/music-admin",
+      });
+   }
+
+   // If the logged-in user is an admin, elder, or pastor, add quick access to Board Admin
+   if (
+      user &&
+      (user.role?.startsWith("admin") ||
+         user.role?.startsWith("elder") ||
+         user.role === "pastor")
+   ) {
+      menuItems.splice(4, 0, {
+         name: "Board Members",
+         icon: faUsers,
+         to: "/dashboard/board-admin",
       });
    }
 

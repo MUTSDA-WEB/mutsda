@@ -50,6 +50,7 @@ import {
 } from "./controller/group.contoller";
 import getLeaders from "./controller/getMembers";
 import uploadToCloud from "./controller/uploadToCloud";
+import addBoardMember from "./controller/addBoardMember.controller";
 
 const App = new Hono();
 
@@ -180,6 +181,9 @@ App.patch("/group/:id/members/:memberId", updateMemberRole);
 // get all users
 App.get("/user/look", verifyToken, getLeaders);
 App.get("/user/look/common", getLeaders);
+
+// add board member route (with email)
+App.post("/user/add/board-member", verifyToken, addBoardMember);
 
 // ? image upload route (Hono handles file parsing natively via c.req.parseBody())
 App.post("/image/upload", uploadRateLimit, verifyToken, uploadToCloud);

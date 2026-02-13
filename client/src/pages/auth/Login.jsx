@@ -88,9 +88,9 @@ const Login = () => {
 
       login(formData, {
          onSuccess: (data) => {
-            localStorage.clear();
-            localStorage.setItem("token", data?.message);
             console.log("Login successful:", data);
+            // Token is automatically set in HttpOnly cookie by server
+            // No need to store in localStorage
             // Navigate to dashboard
             navigate("/dashboard", { replace: true });
             return;
