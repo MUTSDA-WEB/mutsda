@@ -1,6 +1,42 @@
-// for the bibleStudy by the SOP leader
+import client from "../helpers/prismaClient.js";
+
+// genericfunction for upSerting data
+const upsertData = async (c) => {
+   const defaultData = {
+      libraryBooks: {},
+      singingGroups: {},
+      bibleStudy: {},
+      eventsCalendar: {},
+      merchandise: {},
+      lessonStudy: {},
+   };
+
+   const dataField = c.req.param("field");
+   const data = await c.req.json();
+   try {
+      const updatedData = await client.churchData.upsert({
+         where: { id: "DataMain" },
+         update: { [dataField]: data },
+         create: {
+            ...defaultData,
+            [dataField]: data,
+         },
+      });
+      return c.json(
+         {
+            message: `Successfully updated the Site Data -> ${dataField}`,
+            updatedData,
+         },
+         201,
+      );
+   } catch (e) {
+      console.log(e);
+      return c.json({ error: `Failed to updated${dataField}` }, 500);
+   }
+};
 
 /* expected data format 
+// for the bibleStudy by the SOP leader
 {
     Topic: "Overall Bible study topic"
     schedule:
