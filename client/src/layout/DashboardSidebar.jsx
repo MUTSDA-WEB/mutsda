@@ -13,6 +13,10 @@ import {
    faChevronLeft,
    faChevronRight,
    faUsers,
+   faBook,
+   faList,
+   faStore,
+   faCalendar,
 } from "@fortawesome/free-solid-svg-icons";
 
 import PropTypes from "prop-types";
@@ -67,11 +71,28 @@ const DashboardSidebar = ({
          user.role?.startsWith("elder") ||
          user.role === "pastor")
    ) {
-      menuItems.splice(4, 0, {
-         name: "Board Members",
-         icon: faUsers,
-         to: "/dashboard/board-admin",
-      });
+      menuItems.push(
+         {
+            name: "Bible Study Admin",
+            icon: faBook,
+            to: "/dashboard/bible-study-admin",
+         },
+         {
+            name: "Events Admin",
+            icon: faCalendar,
+            to: "/dashboard/events-admin",
+         },
+         {
+            name: "Library Admin",
+            icon: faList,
+            to: "/dashboard/library-admin",
+         },
+         {
+            name: "Merchandise Admin",
+            icon: faStore,
+            to: "/dashboard/merchandise-admin",
+         },
+      );
    }
 
    const handleProfileEnter = () => {
@@ -145,7 +166,7 @@ const DashboardSidebar = ({
             </div>
 
             {/* Navigation */}
-            <nav className='flex-1 py-6 px-3 space-y-2 overflow-y-auto'>
+            <nav className='flex-1 py-6  space-y-1 px-3 overflow-y-auto'>
                {menuItems.map((item) => (
                   <NavLink
                      key={item.name}

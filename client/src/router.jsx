@@ -28,6 +28,10 @@ import Profile from "./pages/admin/Profile";
 import MusicAdmin from "./pages/admin/MusicAdmin";
 import BoardAdmin from "./pages/admin/BoardAdmin";
 import Protected from "./components/protected";
+import BibleStudyAdmin from "./pages/admin/BibleStudyAdmin";
+import EventsAdmin from "./pages/admin/EventsAdmin";
+import LibraryAdmin from "./pages/admin/LibraryAdmin";
+import MerchandiseAdmin from "./pages/admin/MerchandiseAdmin";
 
 const AppRouter = () => {
    return (
@@ -69,6 +73,10 @@ const AppRouter = () => {
             <Route path='profile' element={<Profile />} />
             <Route path='music-admin' element={<MusicAdmin />} />
             <Route path='board-admin' element={<BoardAdmin />} />
+            <Route path='bible-study-admin' element={<BibleStudyAdmin />} />
+            <Route path='events-admin' element={<EventsAdmin />} />
+            <Route path='library-admin' element={<LibraryAdmin />} />
+            <Route path='merchandise-admin' element={<MerchandiseAdmin />} />
             <Route path='library' element={<Library />} />
             <Route path='about' element={<About />} />
             <Route path='leaders' element={<Leadership />} />

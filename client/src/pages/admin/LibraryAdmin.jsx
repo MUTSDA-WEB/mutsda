@@ -105,7 +105,7 @@ const LibraryAdmin = () => {
                   key={idx}
                   className='flex items-center bg-blue-50 border border-blue-100 rounded-xl p-4 shadow-sm'
                >
-                  <div className='flex-shrink-0 mr-4'>
+                  <div className='shrink-0 mr-4'>
                      <span className='inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-200 text-blue-700'>
                         <FontAwesomeIcon icon={faBook} size='lg' />
                      </span>
@@ -157,7 +157,7 @@ const LibraryAdmin = () => {
                   key={idx}
                   className='flex items-center bg-blue-50 border border-blue-100 rounded-xl p-4 shadow-sm'
                >
-                  <div className='flex-shrink-0 mr-4'>
+                  <div className='shrink-0 mr-4'>
                      <span className='inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-200 text-blue-700'>
                         <FontAwesomeIcon icon={faBook} size='lg' />
                      </span>

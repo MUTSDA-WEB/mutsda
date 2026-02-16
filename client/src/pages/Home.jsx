@@ -736,10 +736,6 @@ const Home = () => {
                </div>
             </section>
          </div>
-         <BibleStudyAdmin />
-         <LibraryAdmin />
-         <EventsAdmin />
-         <MerchandiseAdmin />
       </div>
    );
 };
