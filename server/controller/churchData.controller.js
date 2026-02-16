@@ -1,7 +1,7 @@
 import client from "../helpers/prismaClient.js";
 
 // genericfunction for upSerting data
-const upsertData = async (c) => {
+export const upsertData = async (c) => {
    const defaultData = {
       libraryBooks: {},
       singingGroups: {},
@@ -34,6 +34,22 @@ const upsertData = async (c) => {
       return c.json({ error: `Failed to updated${dataField}` }, 500);
    }
 };
+
+// get All church data
+export async function getAllChurchData() {
+   try {
+      const churchData = await client.churchData.findMany();
+      return churchData.length < 1
+         ? c.json({ message: "No data found!!" }, 404)
+         : c.json(
+              { message: "Fetch all church data successful", churchData },
+              200,
+           );
+   } catch (e) {
+      console.log(e);
+      return c.json({ message: "Failed to fetch churchData" }, 500);
+   }
+}
 
 /* expected data format 
 // for the bibleStudy by the SOP leader
