@@ -12,20 +12,9 @@ import NoData from "../components/empty/NoData";
 
 const SabbathSchool = () => {
    const siteData = userStore((state) => state.siteData);
-   const weeklySchedule = siteData?.sabbathSchool?.weeklySchedule || [
-      {
-         time: "08:30 AM",
-         activity: "Song Service & Prayer",
-         lead: "Choristers",
-      },
-      { time: "09:00 AM", activity: "Missionary Report", lead: "SS Secretary" },
-      {
-         time: "09:15 AM",
-         activity: "Lesson Study (Classes)",
-         lead: "Assigned Teachers",
-      },
-      { time: "10:15 AM", activity: "General Review", lead: "Superintendent" },
-   ];
+   const weeklySchedule = Array.isArray(siteData?.sabbathSchool?.weeklySchedule)
+      ? siteData.sabbathSchool.weeklySchedule
+      : [];
 
    return (
       <div className='bg-[#F6EBEB] min-h-screen'>

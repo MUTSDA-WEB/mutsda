@@ -17,33 +17,18 @@ const BibleStudy = () => {
    const siteData = userStore((state) => state.siteData);
    const bibleStudy = siteData?.bibleStudy || {};
    const currentSeries = {
-      title: bibleStudy.Topic || "Bible Study Series",
+      title: bibleStudy.Topic || "",
       speaker: bibleStudy.speaker || "",
-      status: bibleStudy.status || "Active Series",
-      img:
-         bibleStudy.img ||
-         "https://images.unsplash.com/photo-1507434965515-61970f2bd7c6?q=80&w=1200&auto=format&fit=crop",
+      status: bibleStudy.status || "",
+      img: bibleStudy.img || "",
    };
-   const upcomingTopics =
-      Array.isArray(bibleStudy.schedule) && bibleStudy.schedule.length > 0
-         ? bibleStudy.schedule.map((s) => ({
-              title: s.subtopic || "Bible Study",
-              date: s.day || "",
-              time: s.time || "",
-           }))
-         : [
-              {
-                 title: "The Seven Seals",
-                 date: "Next Wednesday",
-                 time: "6:00 PM",
-              },
-              {
-                 title: "The Three Angels' Messages",
-                 date: "Jan 28",
-                 time: "6:00 PM",
-              },
-              { title: "The New Earth", date: "Feb 04", time: "6:00 PM" },
-           ];
+   const upcomingTopics = Array.isArray(bibleStudy.schedule)
+      ? bibleStudy.schedule.map((s) => ({
+           title: s.subtopic || "",
+           date: s.day || "",
+           time: s.time || "",
+        }))
+      : [];
 
    return (
       <div className='bg-[#F6EBEB] min-h-screen'>
