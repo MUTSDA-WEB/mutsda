@@ -1,6 +1,9 @@
 import { create } from "zustand";
 
 const userStore = create((set) => ({
+   // Church site data (library, events, bibleStudy, merchandise, choirs, etc)
+   siteData: null,
+   setSiteData: (siteData) => set({ siteData }),
    // User state
    user: null,
    isAuthenticated: false,

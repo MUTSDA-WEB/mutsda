@@ -9,11 +9,14 @@ import {
    faEnvelope,
 } from "@fortawesome/free-solid-svg-icons";
 import JoinForm from "../components/ui/JoinForm";
-import subChoirs from "../../utilities/subchoirs";
+import userStore from "../hooks/useStore";
+import NoData from "../components/empty/NoData";
 
 const MusicMinistry = () => {
    const [showMainChoirForm, setShowMainChoirForm] = useState(false);
    const [activeGroupForm, setActiveGroupForm] = useState(null);
+   const siteData = userStore((state) => state.siteData);
+   const subChoirs = siteData?.choirs || [];
 
    return (
       <div className='bg-[#F6EBEB] min-h-screen'>
@@ -115,72 +118,74 @@ const MusicMinistry = () => {
                </div>
 
                <div className='grid md:grid-cols-3 gap-8'>
-                  {subChoirs.map((choir, index) => (
-                     <div
-                        key={index}
-                        className='bg-white p-8 rounded-3xl shadow-sm border border-transparent hover:border-sky-200 transition-all group'
-                     >
-                        {activeGroupForm !== index ? (
-                           <div>
-                              <div className='w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center text-[#3298C8] mb-6 group-hover:bg-[#3298C8] group-hover:text-white transition-colors'>
-                                 <FontAwesomeIcon icon={faMusic} size='lg' />
-                              </div>
-                              <h3 className='text-xl font-black text-gray-800 mb-3'>
-                                 {choir.name}
-                              </h3>
-                              <p className='text-gray-500 text-sm leading-relaxed mb-4'>
-                                 {choir.description}
-                              </p>
-
-                              {/* Contact Information */}
-                              <div className='bg-sky-50 p-4 rounded-2xl mb-4 space-y-2'>
-                                 <h4 className='text-xs font-bold text-[#3298C8] uppercase tracking-wider mb-2'>
-                                    Contact Information
-                                 </h4>
-                                 <div className='flex items-center gap-2 text-sm text-gray-600'>
-                                    <FontAwesomeIcon
-                                       icon={faPhone}
-                                       className='text-[#3298C8] text-xs'
-                                    />
-                                    <span>{choir.contact.phone}</span>
-                                 </div>
-
-                                 <div className='flex items-center gap-2 text-sm text-gray-600'>
-                                    <FontAwesomeIcon
-                                       icon={faEnvelope}
-                                       className='text-[#3298C8] text-xs'
-                                    />
-                                    <span>{choir.contact.email}</span>
-                                 </div>
-                              </div>
-
-                              <div className='space-y-2 border-t pt-4 text-xs font-bold text-[#3298C8] uppercase tracking-wider'>
-                                 <p>{choir.members}</p>
-                                 <p>{choir.practiceDay}</p>
-                              </div>
-
-                              {/* Join Button & Form */}
-                              <button
-                                 onClick={() => setActiveGroupForm(index)}
-                                 className='w-full mt-4 bg-[#3298C8] text-white py-3 rounded-xl font-bold hover:bg-sky-700 transition-all'
-                              >
-                                 Join {choir.name.split(" ")[0]}{" "}
-                                 {choir.name.split(" ")[1]}
-                              </button>
-                           </div>
-                        ) : (
-                           <JoinForm
-                              isOpen={activeGroupForm === index}
-                              onClose={() => setActiveGroupForm(null)}
-                              title={`Join ${choir.name}`}
-                              description='Fill in your details to join'
-                              buttonText='Submit Application'
-                              darkMode={false}
-                              message={`I would like to join the ${choir.name}`}
-                           />
-                        )}
+                  {subChoirs.length === 0 ? (
+                     <div className='col-span-3'>
+                        <NoData info='No choirs or singing groups available yet.' />
                      </div>
-                  ))}
+                  ) : (
+                     subChoirs.map((choir, index) => (
+                        <div
+                           key={index}
+                           className='bg-white p-8 rounded-3xl shadow-sm border border-transparent hover:border-sky-200 transition-all group'
+                        >
+                           {activeGroupForm !== index ? (
+                              <div>
+                                 <div className='w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center text-[#3298C8] mb-6 group-hover:bg-[#3298C8] group-hover:text-white transition-colors'>
+                                    <FontAwesomeIcon icon={faMusic} size='lg' />
+                                 </div>
+                                 <h3 className='text-xl font-black text-gray-800 mb-3'>
+                                    {choir.name}
+                                 </h3>
+                                 <p className='text-gray-500 text-sm leading-relaxed mb-4'>
+                                    {choir.description}
+                                 </p>
+                                 {/* Contact Information */}
+                                 <div className='bg-sky-50 p-4 rounded-2xl mb-4 space-y-2'>
+                                    <h4 className='text-xs font-bold text-[#3298C8] uppercase tracking-wider mb-2'>
+                                       Contact Information
+                                    </h4>
+                                    <div className='flex items-center gap-2 text-sm text-gray-600'>
+                                       <FontAwesomeIcon
+                                          icon={faPhone}
+                                          className='text-[#3298C8] text-xs'
+                                       />
+                                       <span>{choir.contact.phone}</span>
+                                    </div>
+                                    <div className='flex items-center gap-2 text-sm text-gray-600'>
+                                       <FontAwesomeIcon
+                                          icon={faEnvelope}
+                                          className='text-[#3298C8] text-xs'
+                                       />
+                                       <span>{choir.contact.email}</span>
+                                    </div>
+                                 </div>
+                                 <div className='space-y-2 border-t pt-4 text-xs font-bold text-[#3298C8] uppercase tracking-wider'>
+                                    <p>{choir.members}</p>
+                                    <p>{choir.practiceDay}</p>
+                                 </div>
+                                 {/* Join Button & Form */}
+                                 <button
+                                    onClick={() => setActiveGroupForm(index)}
+                                    className='w-full mt-4 bg-[#3298C8] text-white py-3 rounded-xl font-bold hover:bg-sky-700 transition-all'
+                                 >
+                                    Join {choir.name.split(" ")[0]}{" "}
+                                    {choir.name.split(" ")[1]}
+                                 </button>
+                              </div>
+                           ) : (
+                              <JoinForm
+                                 isOpen={activeGroupForm === index}
+                                 onClose={() => setActiveGroupForm(null)}
+                                 title={`Join ${choir.name}`}
+                                 description='Fill in your details to join'
+                                 buttonText='Submit Application'
+                                 darkMode={false}
+                                 message={`I would like to join the ${choir.name}`}
+                              />
+                           )}
+                        </div>
+                     ))
+                  )}
                </div>
             </section>
          </div>

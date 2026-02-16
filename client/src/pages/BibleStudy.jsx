@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
    faBible,
@@ -9,22 +8,42 @@ import {
    faCirclePlay,
 } from "@fortawesome/free-solid-svg-icons";
 import JoinForm from "../components/ui/JoinForm";
+import NoData from "../components/empty/NoData";
+import userStore from "../hooks/useStore";
+import { useState } from "react";
 
 const BibleStudy = () => {
    const [showJoinForm, setShowJoinForm] = useState(false);
-
+   const siteData = userStore((state) => state.siteData);
+   const bibleStudy = siteData?.bibleStudy || {};
    const currentSeries = {
-      title: "Unlocking Prophecy: The Book of Revelation",
-      speaker: "Pr. John Doe",
-      status: "Active Series",
-      img: "https://images.unsplash.com/photo-1507434965515-61970f2bd7c6?q=80&w=1200&auto=format&fit=crop",
+      title: bibleStudy.Topic || "Bible Study Series",
+      speaker: bibleStudy.speaker || "",
+      status: bibleStudy.status || "Active Series",
+      img:
+         bibleStudy.img ||
+         "https://images.unsplash.com/photo-1507434965515-61970f2bd7c6?q=80&w=1200&auto=format&fit=crop",
    };
-
-   const upcomingTopics = [
-      { title: "The Seven Seals", date: "Next Wednesday", time: "6:00 PM" },
-      { title: "The Three Angels' Messages", date: "Jan 28", time: "6:00 PM" },
-      { title: "The New Earth", date: "Feb 04", time: "6:00 PM" },
-   ];
+   const upcomingTopics =
+      Array.isArray(bibleStudy.schedule) && bibleStudy.schedule.length > 0
+         ? bibleStudy.schedule.map((s) => ({
+              title: s.subtopic || "Bible Study",
+              date: s.day || "",
+              time: s.time || "",
+           }))
+         : [
+              {
+                 title: "The Seven Seals",
+                 date: "Next Wednesday",
+                 time: "6:00 PM",
+              },
+              {
+                 title: "The Three Angels' Messages",
+                 date: "Jan 28",
+                 time: "6:00 PM",
+              },
+              { title: "The New Earth", date: "Feb 04", time: "6:00 PM" },
+           ];
 
    return (
       <div className='bg-[#F6EBEB] min-h-screen'>
@@ -76,38 +95,42 @@ const BibleStudy = () => {
                      Study Schedule
                   </h2>
                   <div className='space-y-4'>
-                     {upcomingTopics.map((topic, i) => (
-                        <div
-                           key={i}
-                           className='bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-[#3298C8] transition-all'
-                        >
-                           <div className='flex items-center gap-6'>
-                              <div className='w-12 h-12 bg-sky-50 rounded-2xl flex items-center justify-center text-[#3298C8] group-hover:bg-[#3298C8] group-hover:text-white transition-all'>
-                                 <FontAwesomeIcon icon={faBible} />
+                     {upcomingTopics.length === 0 ? (
+                        <NoData info='No upcoming Bible study topics.' />
+                     ) : (
+                        upcomingTopics.map((topic, i) => (
+                           <div
+                              key={i}
+                              className='bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-[#3298C8] transition-all'
+                           >
+                              <div className='flex items-center gap-6'>
+                                 <div className='w-12 h-12 bg-sky-50 rounded-2xl flex items-center justify-center text-[#3298C8] group-hover:bg-[#3298C8] group-hover:text-white transition-all'>
+                                    <FontAwesomeIcon icon={faBible} />
+                                 </div>
+                                 <div>
+                                    <h4 className='font-bold text-xl text-gray-800'>
+                                       {topic.title}
+                                    </h4>
+                                    <p className='text-sm text-gray-500 italic'>
+                                       Mid-week Bible Seminar
+                                    </p>
+                                 </div>
                               </div>
-                              <div>
-                                 <h4 className='font-bold text-xl text-gray-800'>
-                                    {topic.title}
-                                 </h4>
-                                 <p className='text-sm text-gray-500 italic'>
-                                    Mid-week Bible Seminar
+                              <div className='text-right'>
+                                 <p className='font-bold text-gray-700'>
+                                    {topic.date}
+                                 </p>
+                                 <p className='text-xs text-[#3298C8] flex items-center justify-end gap-1 font-bold'>
+                                    <FontAwesomeIcon
+                                       icon={faClock}
+                                       className='text-[10px]'
+                                    />{" "}
+                                    {topic.time}
                                  </p>
                               </div>
                            </div>
-                           <div className='text-right'>
-                              <p className='font-bold text-gray-700'>
-                                 {topic.date}
-                              </p>
-                              <p className='text-xs text-[#3298C8] flex items-center justify-end gap-1 font-bold'>
-                                 <FontAwesomeIcon
-                                    icon={faClock}
-                                    className='text-[10px]'
-                                 />{" "}
-                                 {topic.time}
-                              </p>
-                           </div>
-                        </div>
-                     ))}
+                        ))
+                     )}
                   </div>
                </section>
 

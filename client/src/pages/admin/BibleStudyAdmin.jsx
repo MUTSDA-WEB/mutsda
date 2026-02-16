@@ -190,27 +190,44 @@
 
 // export default BibleStudyAdmin;
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useStore from "../../hooks/useStore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faBook } from "@fortawesome/free-solid-svg-icons";
 
 const BibleStudyAdmin = () => {
-   const { user } = useStore();
+   const { user, siteData } = useStore();
 
+   // Use siteData.bibleStudy if available, else fallback to default
    const [form, setForm] = useState({
-      Topic: "The Book of Revelation",
+      Topic: "",
       schedule: [
-         {
-            subtopic: "The Seven Churches",
-            group: "Youth",
-            day: "Tuesday",
-            time: "6:00 PM",
-            coordinator: "John",
-         },
+         { subtopic: "", group: "", day: "", time: "", coordinator: "" },
       ],
-      Resources: "Bible, Spirit of Prophecy",
+      Resources: "",
    });
+
+   useEffect(() => {
+      if (siteData && siteData.bibleStudy) {
+         setForm({
+            Topic: siteData.bibleStudy.Topic || "",
+            schedule:
+               Array.isArray(siteData.bibleStudy.schedule) &&
+               siteData.bibleStudy.schedule.length > 0
+                  ? siteData.bibleStudy.schedule
+                  : [
+                       {
+                          subtopic: "",
+                          group: "",
+                          day: "",
+                          time: "",
+                          coordinator: "",
+                       },
+                    ],
+            Resources: siteData.bibleStudy.Resources || "",
+         });
+      }
+   }, [siteData]);
 
    const [isEditing, setIsEditing] = useState(false);
    const [success, setSuccess] = useState(false);

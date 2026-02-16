@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useStore from "../../hooks/useStore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,18 +7,18 @@ import {
    faSave,
    faTimes,
 } from "@fortawesome/free-solid-svg-icons";
+import { useUpdateSiteData } from "../../services/data.service";
 
 const MerchandiseAdmin = () => {
-   const { user } = useStore();
-   const [products, setProducts] = useState([
-      {
-         name: "T-shirt",
-         description: "Official church T-shirt",
-         price: "10",
-         productImage: "",
-      },
-      { name: "Mug", description: "Branded mug", price: "5", productImage: "" },
-   ]);
+   const { user, siteData } = useStore();
+   const [products, setProducts] = useState([]);
+   // Load products from siteData.merchandise if available
+   useEffect(() => {
+      if (siteData && Array.isArray(siteData.merchandise)) {
+         setProducts(siteData.merchandise);
+      }
+   }, [siteData]);
+   const { mutate: updateSiteData, isPending: isSaving } = useUpdateSiteData();
    const [form, setForm] = useState({
       name: "",
       description: "",
@@ -86,6 +86,15 @@ const MerchandiseAdmin = () => {
    const handleDelete = (idx) => {
       setProducts(products.filter((_, i) => i !== idx));
       setSuccess(true);
+      updateSiteData(["merchandise", products], {
+         onSuccess: () => {
+            setSuccess(true);
+            setTimeout(() => setSuccess(false), 3000);
+         },
+         onError: () => {
+            alert("Failed to update merchandise");
+         },
+      });
       setTimeout(() => setSuccess(false), 2000);
    };
 

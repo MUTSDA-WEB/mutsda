@@ -30,6 +30,8 @@ const Home = () => {
       setAnnouncements,
       setUpcomingEvents,
    } = userStore();
+   // Example: Access siteData from userStore
+   const siteData = userStore((state) => state.siteData);
    const [selectedEvent, setSelectedEvent] = useState(null);
    // form states
    const [messageData, setMessageData] = useState({
@@ -122,6 +124,17 @@ const Home = () => {
 
    return (
       <div className='flex flex-col animate-fadeIn'>
+         {/* Example: Show current Bible Study topic from siteData */}
+         {siteData?.bibleStudy?.Topic && (
+            <div className='bg-sky-50 border-l-4 border-sky-400 p-4 mb-6 rounded-r-xl max-w-2xl mx-auto'>
+               <span className='font-bold text-sky-700'>
+                  Current Bible Study Topic:
+               </span>
+               <span className='ml-2 text-sky-900'>
+                  {siteData.bibleStudy.Topic}
+               </span>
+            </div>
+         )}
          {/* 1. HERO SECTION */}
          <section className='relative min-h-[91vh] flex items-center justify-center text-white overflow-hidden'>
             {/* Background Image with Overlay */}

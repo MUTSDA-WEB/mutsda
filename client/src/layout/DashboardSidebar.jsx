@@ -55,15 +55,6 @@ const DashboardSidebar = ({
       { name: "Settings", icon: faGear, to: "/dashboard/settings" },
    ];
 
-   // If the logged-in user is a music leader, add quick access to Music Admin
-   if (user && user.role === "music") {
-      menuItems.splice(3, 0, {
-         name: "Music Admin",
-         icon: faMusic,
-         to: "/dashboard/music-admin",
-      });
-   }
-
    // If the logged-in user is an admin, elder, or pastor, add quick access to Board Admin
    if (
       user &&
@@ -72,6 +63,11 @@ const DashboardSidebar = ({
          user.role === "pastor")
    ) {
       menuItems.push(
+         {
+            name: "Music Admin",
+            icon: faMusic,
+            to: "/dashboard/music-admin",
+         },
          {
             name: "Bible Study Admin",
             icon: faBook,

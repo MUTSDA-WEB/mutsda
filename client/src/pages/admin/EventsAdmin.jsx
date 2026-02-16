@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useStore from "../../hooks/useStore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,26 +14,27 @@ const handleRemoveEvent = (idx) => {
 };
 
 const EventsAdmin = () => {
-   const { user } = useStore();
+   const { user, siteData } = useStore();
    const [form, setForm] = useState({
       event: [
          {
-            date: "2026-02-20",
-            event: "Church Anniversary",
-            description: "Celebration of the church's founding",
-         },
-         {
-            date: "2026-03-05",
-            event: "Youth Sabbath",
-            description: "Special service led by the youth",
-         },
-         {
-            date: "2026-04-10",
-            event: "Community Outreach",
-            description: "Neighborhood food drive and outreach",
+            date: "",
+            event: "",
+            description: "",
          },
       ],
    });
+
+   useEffect(() => {
+      if (siteData && Array.isArray(siteData.events)) {
+         setForm({
+            event:
+               siteData.events.length > 0
+                  ? siteData.events
+                  : [{ date: "", event: "", description: "" }],
+         });
+      }
+   }, [siteData]);
    const [success, setSuccess] = useState(false);
 
    const allowedRoles = ["elder", "admin", "pastor"];
@@ -208,13 +209,4 @@ const EventsAdmin = () => {
       </div>
    );
 };
-//                <div className='mt-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm'>
-//                   Calendar updated successfully.
-//                </div>
-//             )}
-//          </form>
-//       </div>
-//    );
-// };
-
 export default EventsAdmin;

@@ -36,7 +36,7 @@ export const upsertData = async (c) => {
 };
 
 // get All church data
-export async function getAllChurchData() {
+export async function getAllChurchData(c) {
    try {
       const churchData = await client.churchData.findMany();
       return churchData.length < 1

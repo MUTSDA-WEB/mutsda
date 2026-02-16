@@ -22,9 +22,15 @@ const MusicAdmin = () => {
       setLocalChoirs(data?.groups ?? subChoirs);
    }, [data]);
 
-   // Only users with role 'music' may access
-   if (!user || user.role !== "music") return <Navigate to='/' />;
+   const allowedRoles = ["elder", "admin", "pastor", "music"];
 
+   if (!user || !allowedRoles.some((role) => user.role?.startsWith(role))) {
+      return (
+         <div className='max-w-2xl mx-auto mt-20 p-8 bg-white rounded-xl shadow border text-center text-red-600 text-lg font-semibold'>
+            Access denied
+         </div>
+      );
+   }
    return (
       <div className='max-w-4xl mx-auto py-12 px-6'>
          <h2 className='text-2xl font-bold mb-6'>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useStore from "../../hooks/useStore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,43 +10,17 @@ import {
    faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 
-// Sample initial data (can be replaced with API data)
-const initialBooks = [
-   {
-      id: 1,
-      title: "King James Version",
-      author: "Various",
-      category: "Bible",
-      format: "PDF",
-      size: "2.4 MB",
-      type: "softcopy",
-      downloadUrl: "https://example.com/kjv.pdf",
-   },
-   {
-      id: 2,
-      title: "SDA Hymnal",
-      author: "Various",
-      category: "Music",
-      format: "PDF",
-      size: "5.1 MB",
-      type: "softcopy",
-      downloadUrl: "https://example.com/hymnal.pdf",
-   },
-   {
-      id: 3,
-      title: "Patriarchs and Prophets",
-      author: "E.G. White",
-      category: "SOP",
-      format: "PDF",
-      size: "3.2 MB",
-      type: "hardcopy",
-      downloadUrl: "",
-   },
-];
+const initialBooks = []; // Removed initial data to use siteData
 
 const LibraryAdmin = () => {
-   const { user } = useStore();
-   const [books, setBooks] = useState(initialBooks);
+   const { user, siteData } = useStore();
+   const [books, setBooks] = useState([]);
+   // Load books from siteData.library if available
+   useEffect(() => {
+      if (siteData && Array.isArray(siteData.library)) {
+         setBooks(siteData.library);
+      }
+   }, [siteData]);
    const [editId, setEditId] = useState(null);
    const [form, setForm] = useState({
       title: "",
