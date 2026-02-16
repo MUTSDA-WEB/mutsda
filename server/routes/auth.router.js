@@ -11,7 +11,7 @@ import {
    logout,
    updatePassword,
    updateProfileInfo,
-} from "../controller.controller";
+} from "../controller/auth.controller";
 import verifyToken from "../middleware/verifyToken.middleware";
 
 const AuthRouter = new Hono();

@@ -6,6 +6,7 @@ import {
    getUpcomingEvents,
 } from "../controller/getEvents.controller";
 import createEvent from "../controller/addEvent.controller";
+import verifyToken from "../middleware/verifyToken.middleware";
 
 const EventRouter = new Hono();
 
