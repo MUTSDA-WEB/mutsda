@@ -1,13 +1,32 @@
 import { useState } from "react";
 import useStore from "../../hooks/useStore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStore } from "@fortawesome/free-solid-svg-icons";
+import {
+   faStore,
+   faEdit,
+   faSave,
+   faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 
 const MerchandiseAdmin = () => {
    const { user } = useStore();
+   const [products, setProducts] = useState([
+      {
+         name: "T-shirt",
+         description: "Official church T-shirt",
+         price: "10",
+         productImage: "",
+      },
+      { name: "Mug", description: "Branded mug", price: "5", productImage: "" },
+   ]);
    const [form, setForm] = useState({
-      products: [{ name: "", description: "", price: "", productImage: "" }],
+      name: "",
+      description: "",
+      price: "",
+      productImage: "",
    });
+   const [editIdx, setEditIdx] = useState(null);
+   const [adding, setAdding] = useState(false);
    const [success, setSuccess] = useState(false);
 
    const allowedRoles = ["elder", "admin", "pastor"];
@@ -20,23 +39,54 @@ const MerchandiseAdmin = () => {
       );
    }
 
-   const handleProductChange = (idx, e) => {
-      const { name, value } = e.target;
-      setForm((prev) => {
-         const products = [...prev.products];
-         products[idx][name] = value;
-         return { ...prev, products };
-      });
+   const handleProductChange = (e) => {
+      const { name, value, files } = e.target;
+      if (name === "productImage" && files && files[0]) {
+         const reader = new FileReader();
+         reader.onload = (ev) => {
+            setForm((prev) => ({ ...prev, productImage: ev.target.result }));
+         };
+         reader.readAsDataURL(files[0]);
+      } else {
+         setForm((prev) => ({ ...prev, [name]: value }));
+      }
    };
 
    const addProduct = () => {
-      setForm((prev) => ({
-         ...prev,
-         products: [
-            ...prev.products,
-            { name: "", description: "", price: "", productImage: "" },
-         ],
-      }));
+      setForm({ name: "", description: "", price: "", productImage: "" });
+      setAdding(true);
+      setEditIdx(null);
+   };
+
+   const handleSave = () => {
+      if (editIdx !== null) {
+         setProducts(products.map((p, idx) => (idx === editIdx ? form : p)));
+      } else {
+         setProducts([...products, form]);
+      }
+      setForm({ name: "", description: "", price: "", productImage: "" });
+      setAdding(false);
+      setEditIdx(null);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2000);
+   };
+
+   const handleEdit = (idx) => {
+      setForm(products[idx]);
+      setEditIdx(idx);
+      setAdding(true);
+   };
+
+   const handleCancel = () => {
+      setForm({ name: "", description: "", price: "", productImage: "" });
+      setAdding(false);
+      setEditIdx(null);
+   };
+
+   const handleDelete = (idx) => {
+      setProducts(products.filter((_, i) => i !== idx));
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2000);
    };
 
    const handleSubmit = async (e) => {
@@ -47,99 +97,144 @@ const MerchandiseAdmin = () => {
    };
 
    return (
-      <div className='max-w-3xl mx-auto py-10 px-8 bg-white rounded-2xl shadow-lg border border-gray-200'>
+      <div className='max-w-4xl mx-auto py-10 px-8 bg-white rounded-2xl shadow-lg border border-gray-200'>
          <div className='flex items-center gap-3 mb-8'>
             <div className='bg-green-100 p-3 rounded-full text-green-600'>
                <FontAwesomeIcon icon={faStore} size='lg' />
             </div>
             <div>
                <h2 className='text-2xl font-bold text-green-700'>
-                  Update Merchandise
+                  Manage Merchandise
                </h2>
                <p className='text-xs text-gray-400 mt-1'>
-                  Add, edit, or remove merchandise products for the church
+                  View, edit, or remove merchandise products for the church
                   store.
                </p>
             </div>
          </div>
-         <form onSubmit={handleSubmit} className='space-y-8'>
-            <div>
-               <label className='block text-sm font-medium text-gray-700 mb-3'>
-                  Products
-               </label>
-               <div className='space-y-4'>
-                  {form.products.map((p, idx) => (
-                     <div
-                        key={idx}
-                        className='bg-gray-50 border border-gray-200 rounded-xl p-4'
-                     >
-                        <div className='flex items-center justify-between mb-2'>
-                           <span className='text-xs font-semibold text-gray-600'>
-                              Product {idx + 1}
-                           </span>
-                           {form.products.length > 1 && (
-                              <button
-                                 type='button'
-                                 onClick={() => removeProduct(idx)}
-                                 className='text-red-500 text-xs hover:underline'
-                              >
-                                 Remove
-                              </button>
-                           )}
-                        </div>
-                        <div className='grid grid-cols-1 sm:grid-cols-4 gap-2'>
-                           <input
-                              name='name'
-                              value={p.name}
-                              onChange={(e) => handleProductChange(idx, e)}
-                              placeholder='Name'
-                              className='border border-gray-300 rounded-lg px-3 py-2 text-xs'
-                           />
-                           <input
-                              name='description'
-                              value={p.description}
-                              onChange={(e) => handleProductChange(idx, e)}
-                              placeholder='Description'
-                              className='border border-gray-300 rounded-lg px-3 py-2 text-xs'
-                           />
-                           <input
-                              name='price'
-                              value={p.price}
-                              onChange={(e) => handleProductChange(idx, e)}
-                              placeholder='Price'
-                              className='border border-gray-300 rounded-lg px-3 py-2 text-xs'
-                           />
-                           <input
-                              name='productImage'
-                              value={p.productImage}
-                              onChange={(e) => handleProductChange(idx, e)}
-                              placeholder='Image URL'
-                              className='border border-gray-300 rounded-lg px-3 py-2 text-xs'
-                           />
-                        </div>
-                     </div>
-                  ))}
-               </div>
-               <button
-                  type='button'
-                  onClick={addProduct}
-                  className='mt-2 text-green-600 text-xs hover:underline'
+
+         {/* Merchandise Cards */}
+         <div className='mb-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
+            {products.map((p, idx) => (
+               <div
+                  key={idx}
+                  className='bg-linear-to-br from-green-50 to-white border border-green-200 rounded-2xl p-6 flex flex-col items-center shadow group hover:shadow-lg transition-all duration-200'
                >
-                  + Add Product
-               </button>
-            </div>
-            <button
-               type='submit'
-               className='w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition shadow-sm'
-            >
-               Update
-            </button>
-            {success && (
-               <div className='mt-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm'>
-                  Merchandise updated successfully.
+                  {p.productImage ? (
+                     <img
+                        src={p.productImage}
+                        alt={p.name}
+                        className='w-28 h-28 object-cover rounded-xl mb-4 border-2 border-green-200 shadow-sm'
+                     />
+                  ) : (
+                     <div className='w-28 h-28 flex items-center justify-center bg-gray-200 rounded-xl mb-4 text-gray-400 text-lg font-semibold'>
+                        No Image
+                     </div>
+                  )}
+                  <h4 className='text-lg font-extrabold text-green-800 mb-1 tracking-wide'>
+                     {p.name}
+                  </h4>
+                  <p className='text-sm text-gray-600 mb-2 text-center'>
+                     {p.description}
+                  </p>
+                  <p className='text-base text-green-700 font-bold mb-3'>
+                     ${p.price}
+                  </p>
+                  <div className='flex gap-2'>
+                     <button
+                        className='text-green-700 hover:text-green-900 bg-green-100 p-2 rounded-full shadow-sm transition'
+                        onClick={() => handleEdit(idx)}
+                        title='Edit'
+                     >
+                        <FontAwesomeIcon icon={faEdit} />
+                     </button>
+                     <button
+                        className='text-red-500 hover:text-red-700 bg-red-100 p-2 rounded-full shadow-sm transition'
+                        onClick={() => handleDelete(idx)}
+                        title='Delete'
+                     >
+                        <FontAwesomeIcon icon={faTimes} />
+                     </button>
+                  </div>
                </div>
-            )}
-         </form>
+            ))}
+         </div>
+
+         {/* Add/Edit Product Form */}
+         {adding && (
+            <div className='mb-8 bg-green-50 border border-green-200 rounded-xl p-6'>
+               <h4 className='font-semibold text-green-700 mb-4'>
+                  {editIdx !== null ? "Edit Product" : "Add New Product"}
+               </h4>
+               <div className='grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4'>
+                  <input
+                     name='name'
+                     value={form.name}
+                     onChange={handleProductChange}
+                     placeholder='Name'
+                     className='border border-gray-300 rounded px-2 py-1'
+                  />
+                  <input
+                     name='description'
+                     value={form.description}
+                     onChange={handleProductChange}
+                     placeholder='Description'
+                     className='border border-gray-300 rounded px-2 py-1'
+                  />
+                  <input
+                     name='price'
+                     value={form.price}
+                     onChange={handleProductChange}
+                     placeholder='Price'
+                     className='border border-gray-300 rounded px-2 py-1'
+                  />
+                  <input
+                     name='productImage'
+                     type='file'
+                     accept='image/*'
+                     onChange={handleProductChange}
+                     className='border border-gray-300 rounded px-2 py-1 bg-white'
+                  />
+               </div>
+               {form.productImage && (
+                  <img
+                     src={form.productImage}
+                     alt='Preview'
+                     className='w-20 h-20 object-cover rounded mb-3 border'
+                  />
+               )}
+               <div className='flex gap-3'>
+                  <button
+                     className='px-4 py-2 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700'
+                     onClick={handleSave}
+                     type='button'
+                  >
+                     <FontAwesomeIcon icon={faSave} /> Save
+                  </button>
+                  <button
+                     className='px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-xs hover:bg-gray-300'
+                     onClick={handleCancel}
+                     type='button'
+                  >
+                     Cancel
+                  </button>
+               </div>
+            </div>
+         )}
+
+         <button
+            type='button'
+            onClick={addProduct}
+            className='mb-6 px-4 py-2 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700'
+         >
+            + Add Product
+         </button>
+
+         {success && (
+            <div className='mt-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm'>
+               Merchandise updated successfully.
+            </div>
+         )}
       </div>
    );
    //                <div className='mt-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm'>

@@ -19,6 +19,8 @@ const initialBooks = [
       category: "Bible",
       format: "PDF",
       size: "2.4 MB",
+      type: "softcopy",
+      downloadUrl: "https://example.com/kjv.pdf",
    },
    {
       id: 2,
@@ -27,6 +29,8 @@ const initialBooks = [
       category: "Music",
       format: "PDF",
       size: "5.1 MB",
+      type: "softcopy",
+      downloadUrl: "https://example.com/hymnal.pdf",
    },
    {
       id: 3,
@@ -35,6 +39,8 @@ const initialBooks = [
       category: "SOP",
       format: "PDF",
       size: "3.2 MB",
+      type: "hardcopy",
+      downloadUrl: "",
    },
 ];
 
@@ -48,13 +54,19 @@ const LibraryAdmin = () => {
       category: "",
       format: "PDF",
       size: "",
+      type: "softcopy",
+      downloadUrl: "",
    });
    const [adding, setAdding] = useState(false);
    const [success, setSuccess] = useState(false);
 
    const handleEdit = (book) => {
       setEditId(book.id);
-      setForm({ ...book });
+      setForm({
+         ...book,
+         type: book.type || "softcopy",
+         downloadUrl: book.downloadUrl || "",
+      });
       setAdding(false);
    };
 
@@ -69,7 +81,15 @@ const LibraryAdmin = () => {
          books.map((b) => (b.id === editId ? { ...form, id: editId } : b)),
       );
       setEditId(null);
-      setForm({ title: "", author: "", category: "", format: "PDF", size: "" });
+      setForm({
+         title: "",
+         author: "",
+         category: "",
+         format: "PDF",
+         size: "",
+         type: "softcopy",
+         downloadUrl: "",
+      });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
    };
@@ -80,7 +100,15 @@ const LibraryAdmin = () => {
          id: Date.now(),
       };
       setBooks([...books, newBook]);
-      setForm({ title: "", author: "", category: "", format: "PDF", size: "" });
+      setForm({
+         title: "",
+         author: "",
+         category: "",
+         format: "PDF",
+         size: "",
+         type: "softcopy",
+         downloadUrl: "",
+      });
       setAdding(false);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
@@ -159,6 +187,12 @@ const LibraryAdmin = () => {
                         </th>
                         <th className='py-2 px-3 text-left font-semibold text-gray-600'>
                            Size
+                        </th>
+                        <th className='py-2 px-3 text-left font-semibold text-gray-600'>
+                           Type
+                        </th>
+                        <th className='py-2 px-3 text-left font-semibold text-gray-600'>
+                           Download
                         </th>
                         <th className='py-2 px-3 text-center font-semibold text-gray-600'>
                            Actions
@@ -259,6 +293,24 @@ const LibraryAdmin = () => {
                                  <td className='py-2 px-3'>{book.category}</td>
                                  <td className='py-2 px-3'>{book.format}</td>
                                  <td className='py-2 px-3'>{book.size}</td>
+                                 <td className='py-2 px-3 capitalize'>
+                                    {book.type || "softcopy"}
+                                 </td>
+                                 <td className='py-2 px-3'>
+                                    {book.type === "softcopy" &&
+                                    book.downloadUrl ? (
+                                       <a
+                                          href={book.downloadUrl}
+                                          target='_blank'
+                                          rel='noopener noreferrer'
+                                          className='text-blue-600 underline'
+                                       >
+                                          Download
+                                       </a>
+                                    ) : (
+                                       <span className='text-gray-400'>-</span>
+                                    )}
+                                 </td>
                                  <td className='py-2 px-3 text-center flex gap-2 justify-center'>
                                     <button
                                        className='text-blue-600 hover:text-blue-800'
@@ -290,7 +342,7 @@ const LibraryAdmin = () => {
                <h4 className='font-semibold text-blue-700 mb-4'>
                   Add New Book
                </h4>
-               <div className='grid grid-cols-1 sm:grid-cols-5 gap-3 mb-4'>
+               <div className='grid grid-cols-1 sm:grid-cols-6 gap-3 mb-4'>
                   <input
                      className='border border-gray-300 rounded px-2 py-1'
                      value={form.title}
@@ -331,7 +383,33 @@ const LibraryAdmin = () => {
                      }
                      placeholder='Size'
                   />
+                  <select
+                     className='border border-gray-300 rounded px-2 py-1'
+                     value={form.type}
+                     onChange={(e) =>
+                        setForm({ ...form, type: e.target.value })
+                     }
+                  >
+                     <option value='softcopy'>Softcopy</option>
+                     <option value='hardcopy'>Hardcopy</option>
+                  </select>
                </div>
+               {form.type === "softcopy" && (
+                  <div className='mb-4'>
+                     <label className='block text-xs font-semibold text-blue-700 mb-1'>
+                        Download URL
+                     </label>
+                     <input
+                        className='border border-blue-300 rounded px-2 py-1 w-full text-sm'
+                        value={form.downloadUrl}
+                        onChange={(e) =>
+                           setForm({ ...form, downloadUrl: e.target.value })
+                        }
+                        placeholder='Download URL (for softcopy)'
+                        required
+                     />
+                  </div>
+               )}
                <div className='flex gap-3'>
                   <button
                      className='px-4 py-2 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700'

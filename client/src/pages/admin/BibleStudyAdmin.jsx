@@ -296,39 +296,47 @@ const BibleStudyAdmin = () => {
                </div>
                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                   <div>
-                     <h4 className='text-sm font-semibold text-gray-700 mb-2'>
-                        Schedule
+                     <h4 className='text-base font-bold text-sky-700 mb-3 tracking-wide'>
+                        Current Schedule
                      </h4>
-                     <ul className='space-y-3'>
+                     <ul className='space-y-4'>
                         {form.schedule.map((s, idx) => (
                            <li
                               key={idx}
-                              className='bg-gray-50 border border-gray-200 rounded-xl p-4'
+                              className='bg-linear-to-br from-sky-50 to-white border border-sky-100 rounded-2xl p-5 shadow-sm flex flex-col gap-2'
                            >
-                              <div className='font-medium text-sky-700 mb-1'>
-                                 {s.subtopic}
+                              <div className='flex items-center gap-2 mb-1'>
+                                 <span className='inline-block bg-sky-200 text-sky-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider'>
+                                    {s.day || "Day"}
+                                 </span>
+                                 <span className='text-xs text-gray-400'>
+                                    {s.time}
+                                 </span>
                               </div>
-                              <div className='text-xs text-gray-600'>
-                                 <span className='font-semibold'>Group:</span>{" "}
-                                 {s.group} |{" "}
-                                 <span className='font-semibold'>Day:</span>{" "}
-                                 {s.day} |{" "}
-                                 <span className='font-semibold'>Time:</span>{" "}
-                                 {s.time} |{" "}
-                                 <span className='font-semibold'>
-                                    Coordinator:
-                                 </span>{" "}
-                                 {s.coordinator}
+                              <div className='text-lg font-extrabold text-sky-800 mb-1'>
+                                 {s.subtopic || (
+                                    <span className='italic text-gray-400'>
+                                       No subtopic
+                                    </span>
+                                 )}
+                              </div>
+                              <div className='flex flex-wrap gap-2 text-xs text-gray-600'>
+                                 <span className='bg-gray-100 px-2 py-1 rounded font-semibold'>
+                                    Group: {s.group || "-"}
+                                 </span>
+                                 <span className='bg-gray-100 px-2 py-1 rounded font-semibold'>
+                                    Coordinator: {s.coordinator || "-"}
+                                 </span>
                               </div>
                            </li>
                         ))}
                      </ul>
                   </div>
                   <div>
-                     <h4 className='text-sm font-semibold text-gray-700 mb-2'>
+                     <h4 className='text-base font-bold text-sky-700 mb-3 tracking-wide'>
                         Resources
                      </h4>
-                     <div className='bg-white border border-gray-200 rounded-xl p-4 text-sm text-gray-600'>
+                     <div className='bg-white border border-gray-200 rounded-2xl p-5 text-base text-gray-700 font-medium shadow-sm'>
                         {form.Resources}
                      </div>
                   </div>

@@ -78,7 +78,7 @@ const DashboardSidebar = ({
             to: "/dashboard/bible-study-admin",
          },
          {
-            name: "Events Admin",
+            name: "Events Calendar",
             icon: faCalendar,
             to: "/dashboard/events-admin",
          },

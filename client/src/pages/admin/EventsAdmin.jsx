@@ -1,12 +1,38 @@
 import { useState } from "react";
 import useStore from "../../hooks/useStore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+   faCalendarAlt,
+   faEdit,
+   faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+const handleRemoveEvent = (idx) => {
+   setForm((prev) => ({
+      ...prev,
+      event: prev.event.filter((_, i) => i !== idx),
+   }));
+};
 
 const EventsAdmin = () => {
    const { user } = useStore();
    const [form, setForm] = useState({
-      event: [{ date: "", event: "", description: "" }],
+      event: [
+         {
+            date: "2026-02-20",
+            event: "Church Anniversary",
+            description: "Celebration of the church's founding",
+         },
+         {
+            date: "2026-03-05",
+            event: "Youth Sabbath",
+            description: "Special service led by the youth",
+         },
+         {
+            date: "2026-04-10",
+            event: "Community Outreach",
+            description: "Neighborhood food drive and outreach",
+         },
+      ],
    });
    const [success, setSuccess] = useState(false);
 
@@ -128,6 +154,57 @@ const EventsAdmin = () => {
                </div>
             )}
          </form>
+
+         {/* Events Table */}
+         <div className='mb-10 mt-10'>
+            <h3 className='text-lg font-bold text-rose-700 mb-4'>
+               Current Events
+            </h3>
+            <div className='overflow-x-auto'>
+               <table className='min-w-full text-xs border rounded-xl'>
+                  <thead className='bg-rose-50'>
+                     <tr>
+                        <th className='py-2 px-3 text-left font-semibold text-rose-700'>
+                           Date
+                        </th>
+                        <th className='py-2 px-3 text-left font-semibold text-rose-700'>
+                           Event
+                        </th>
+                        <th className='py-2 px-3 text-left font-semibold text-rose-700'>
+                           Description
+                        </th>
+                        <th className='py-2 px-3 text-center font-semibold text-rose-700'>
+                           Actions
+                        </th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {form.event.map((ev, idx) => (
+                        <tr key={idx} className='border-b last:border-b-0'>
+                           <td className='py-2 px-3'>{ev.date}</td>
+                           <td className='py-2 px-3'>{ev.event}</td>
+                           <td className='py-2 px-3'>{ev.description}</td>
+                           <td className='py-2 px-3 text-center flex gap-2 justify-center'>
+                              <button
+                                 className='text-rose-700 hover:text-rose-900'
+                                 title='Edit'
+                              >
+                                 <FontAwesomeIcon icon={faEdit} />
+                              </button>
+                              <button
+                                 className='text-red-500 hover:text-red-700'
+                                 title='Remove'
+                                 onClick={() => handleRemoveEvent(idx)}
+                              >
+                                 <FontAwesomeIcon icon={faTrash} />
+                              </button>
+                           </td>
+                        </tr>
+                     ))}
+                  </tbody>
+               </table>
+            </div>
+         </div>
       </div>
    );
 };
