@@ -18,6 +18,10 @@ import NoAnnouncement from "../components/empty/NoAnnouncement";
 import AnnouncementLoader from "../components/loaders/announcementLoader";
 import { useSaveVisitorMessage } from "../services/message";
 import { formatEventDate } from "../helpers/dateUtils";
+import BibleStudyAdmin from "./admin/BibleStudyAdmin";
+import LibraryAdmin from "./admin/LibraryAdmin";
+import EventsAdmin from "./admin/EventsAdmin";
+import MerchandiseAdmin from "./admin/MerchandiseAdmin";
 
 const Home = () => {
    const {
@@ -732,6 +736,10 @@ const Home = () => {
                </div>
             </section>
          </div>
+         <BibleStudyAdmin />
+         <LibraryAdmin />
+         <EventsAdmin />
+         <MerchandiseAdmin />
       </div>
    );
 };
