@@ -88,6 +88,20 @@ model GroupMember {
   @@unique([userId, groupId])
 }
 
+// single row table for storing all data of the church in json (for optimal querying)
+model churchData {
+  id String @id @default(cuid())
+  // Data about the church to be stored (1 column per data)
+  libraryBooks Json @map("library_books")
+  singingGroups Json @map("singing_groups")
+  bibleStudy Json @map("bible_study")
+  eventsCalendar Json @map("calendar_of_events")
+  merchandise Json
+  lessonStudy Json @map("lesson_study")
+
+  @@map("church_data")
+}
+
 enum ConvoType {
   community @map("COMMUNITY")
   group @map("GROUP")
