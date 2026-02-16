@@ -1,19 +1,28 @@
 import { Hono } from "hono";
+import {
+   getAllEvents,
+   getAnnouncements,
+   getPastEvents,
+   getUpcomingEvents,
+} from "../controller/getEvents.controller";
+import createEvent from "../controller/addEvent.controller";
 
-const Event = new Hono();
+const EventRouter = new Hono();
 
 // ? EVENT ROUTES
 // fetch upcoming events
-Event.get("/event/upcoming", getUpcomingEvents);
+EventRouter.get("/upcoming", getUpcomingEvents);
 
 // fetch past events
-Event.get("/event/past", getPastEvents);
+EventRouter.get("/past", getPastEvents);
 
 // fetch all events
-Event.get("/event/all", getAllEvents);
+EventRouter.get("/all", getAllEvents);
 
 // fetch all valid announcements
-Event.get("/event/announcement", getAnnouncements);
+EventRouter.get("/announcement", getAnnouncements);
 
 // Create event route
-Event.post("/event/create", verifyToken, createEvent);
+EventRouter.post("/create", verifyToken, createEvent);
+
+export default EventRouter;

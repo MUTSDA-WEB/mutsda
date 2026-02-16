@@ -5,10 +5,12 @@ import {
 } from "../controller/churchData.controller";
 import verifyToken from "../middleware/verifyToken.middleware";
 
-const Data = new Hono();
+const DataRouter = new Hono();
 
 // get all dynamic site data
-Data.get("/data/look", getAllChurchData);
+DataRouter.get("/look", getAllChurchData);
 
 // update site dynamic data
-Data.patch("data/upsert/:field", verifyToken, upsertData);
+DataRouter.patch("/upsert/:field", verifyToken, upsertData);
+
+export default DataRouter;

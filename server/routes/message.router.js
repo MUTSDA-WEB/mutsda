@@ -1,36 +1,53 @@
 import { Hono } from "hono";
+import { messageRateLimit } from "../middleware/rateLimit.middleware";
+import verifyToken from "../middleware/verifyToken.middleware";
+import {
+   saveLeaderMessage,
+   saveVisitorMessage,
+   updateMessageStatus,
+} from "../controller/addMessage.controller";
+import {
+   deleteMessage,
+   deleteMessageForMe,
+   getCommunityMessages,
+   getDirectMessages,
+   getGroupMessages,
+   getVisitorMessages,
+} from "../controller/getMessage";
 
-const Message = new Hono();
+const MessageRouter = new Hono();
 
 // ? MESSAGE ROUTES
 //save Leader Message route
-Message.post(
-   "/message/save/leader",
+MessageRouter.post(
+   "/save/leader",
    messageRateLimit,
    verifyToken,
    saveLeaderMessage,
 );
 
 // save visitor Message route
-Message.post("/message/save/visitor", messageRateLimit, saveVisitorMessage);
+MessageRouter.post("/save/visitor", messageRateLimit, saveVisitorMessage);
 
 // get Leader DMs route
-Message.get("/message/look/DMs", verifyToken, getDirectMessages);
+MessageRouter.get("/look/DMs", verifyToken, getDirectMessages);
 
 // get Leader group messages route
-Message.get("/message/look/group/:id", verifyToken, getGroupMessages);
+MessageRouter.get("/look/group/:id", verifyToken, getGroupMessages);
 
 // get community messages route
-Message.get("/message/look/community", verifyToken, getCommunityMessages);
+MessageRouter.get("/look/community", verifyToken, getCommunityMessages);
 
 // get Visitor messages
-Message.get("/message/look/visitor", verifyToken, getVisitorMessages);
+MessageRouter.get("/look/visitor", verifyToken, getVisitorMessages);
 
 // update message status route
-Message.patch("/message/edit/:id", verifyToken, updateMessageStatus);
+MessageRouter.patch("/edit/:id", verifyToken, updateMessageStatus);
 
 // delete message route (for everyone - sender only)
-Message.delete("/message/delete/:id", verifyToken, deleteMessage);
+MessageRouter.delete("/delete/:id", verifyToken, deleteMessage);
 
 // delete message for me only (soft delete)
-Message.patch("/message/delete-for-me/:id", verifyToken, deleteMessageForMe);
+MessageRouter.patch("/delete-for-me/:id", verifyToken, deleteMessageForMe);
+
+export default MessageRouter;
