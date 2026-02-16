@@ -1,5 +1,7 @@
 import { useState } from "react";
 import useStore from "../../hooks/useStore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 
 const EventsAdmin = () => {
    const { user } = useStore();
@@ -8,8 +10,15 @@ const EventsAdmin = () => {
    });
    const [success, setSuccess] = useState(false);
 
-   //   if (!user || user.role !== "personalMinistry") return <div>Access denied</div>;
+   const allowedRoles = ["elder", "admin", "pastor"];
 
+   if (!user || !allowedRoles.some((role) => user.role?.startsWith(role))) {
+      return (
+         <div className='max-w-2xl mx-auto mt-20 p-8 bg-white rounded-xl shadow border text-center text-red-600 text-lg font-semibold'>
+            Access denied
+         </div>
+      );
+   }
    const handleEventChange = (idx, e) => {
       const { name, value } = e.target;
       setForm((prev) => {
@@ -33,22 +42,22 @@ const EventsAdmin = () => {
       setTimeout(() => setSuccess(false), 3000);
    };
 
-   const removeEvent = (index) => {
-      setForm((prev) => ({
-         ...prev,
-         event: prev.event.filter((_, i) => i !== index),
-      }));
-   };
-
    return (
-      <div className='max-w-2xl mx-auto py-12 px-6 bg-white rounded-2xl shadow-sm border border-gray-100'>
-         <h2 className='text-2xl font-semibold text-rose-700'>
-            Update Calendar of Events
-         </h2>
-         <p className='mt-2 text-sm text-gray-500'>
-            Add, edit, or remove upcoming church events for the calendar.
-         </p>
-         <form onSubmit={handleSubmit} className='space-y-6 mt-8'>
+      <div className='max-w-3xl mx-auto py-10 px-8 bg-white rounded-2xl shadow-lg border border-gray-200'>
+         <div className='flex items-center gap-3 mb-8'>
+            <div className='bg-rose-100 p-3 rounded-full text-rose-600'>
+               <FontAwesomeIcon icon={faCalendarAlt} size='lg' />
+            </div>
+            <div>
+               <h2 className='text-2xl font-bold text-rose-700'>
+                  Update Calendar of Events
+               </h2>
+               <p className='text-xs text-gray-400 mt-1'>
+                  Add, edit, or remove upcoming church events for the calendar.
+               </p>
+            </div>
+         </div>
+         <form onSubmit={handleSubmit} className='space-y-8'>
             <div>
                <label className='block text-sm font-medium text-gray-700 mb-3'>
                   Events
@@ -57,43 +66,43 @@ const EventsAdmin = () => {
                   {form.event.map((ev, idx) => (
                      <div
                         key={idx}
-                        className='bg-gray-50 rounded-xl border border-gray-200 p-4 space-y-4'
+                        className='bg-gray-50 border border-gray-200 rounded-xl p-4'
                      >
-                        <div className='flex items-center justify-between'>
-                           <span className='text-sm font-medium text-gray-600'>
+                        <div className='flex items-center justify-between mb-2'>
+                           <span className='text-xs font-semibold text-gray-600'>
                               Event {idx + 1}
                            </span>
                            {form.event.length > 1 && (
                               <button
                                  type='button'
                                  onClick={() => removeEvent(idx)}
-                                 className='w-7 h-7 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 transition text-lg font-semibold'
+                                 className='text-red-500 text-xs hover:underline'
                               >
-                                 −
+                                 Remove
                               </button>
                            )}
                         </div>
-                        <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
+                        <div className='grid grid-cols-1 sm:grid-cols-3 gap-2'>
                            <input
-                              type='date'
                               name='date'
                               value={ev.date}
                               onChange={(e) => handleEventChange(idx, e)}
-                              className='border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-rose-500 focus:outline-none'
+                              placeholder='Date'
+                              className='border border-gray-300 rounded-lg px-3 py-2 text-xs'
                            />
                            <input
                               name='event'
                               value={ev.event}
                               onChange={(e) => handleEventChange(idx, e)}
-                              placeholder='Event Name'
-                              className='border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-rose-500 focus:outline-none'
+                              placeholder='Event'
+                              className='border border-gray-300 rounded-lg px-3 py-2 text-xs'
                            />
                            <input
                               name='description'
                               value={ev.description}
                               onChange={(e) => handleEventChange(idx, e)}
                               placeholder='Description'
-                              className='border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-rose-500 focus:outline-none'
+                              className='border border-gray-300 rounded-lg px-3 py-2 text-xs'
                            />
                         </div>
                      </div>
@@ -102,25 +111,33 @@ const EventsAdmin = () => {
                <button
                   type='button'
                   onClick={addEvent}
-                  className='mt-4 text-sm font-medium text-rose-600 hover:text-rose-700 transition'
+                  className='mt-2 text-rose-600 text-xs hover:underline'
                >
                   + Add Event
                </button>
             </div>
             <button
                type='submit'
-               className='w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition shadow-sm'
+               className='w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold transition shadow-sm'
             >
                Update
             </button>
             {success && (
                <div className='mt-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm'>
-                  Calendar updated successfully.
+                  Events updated successfully.
                </div>
             )}
          </form>
       </div>
    );
 };
+//                <div className='mt-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm'>
+//                   Calendar updated successfully.
+//                </div>
+//             )}
+//          </form>
+//       </div>
+//    );
+// };
 
 export default EventsAdmin;
