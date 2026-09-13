@@ -1,6 +1,58 @@
-// for the bibleStudy by the SOP leader
+import client from "../helpers/prismaClient.js";
+
+// genericfunction for upSerting data
+export const upsertData = async (c) => {
+   const defaultData = {
+      libraryBooks: {},
+      singingGroups: {},
+      bibleStudy: {},
+      eventsCalendar: {},
+      merchandise: {},
+      lessonStudy: {},
+   };
+
+   const dataField = c.req.param("field");
+   const data = await c.req.json();
+   try {
+      const updatedData = await client.churchData.upsert({
+         where: { id: "DataMain" },
+         update: { [dataField]: data },
+         create: {
+            ...defaultData,
+            [dataField]: data,
+         },
+      });
+      return c.json(
+         {
+            message: `Successfully updated the Site Data -> ${dataField}`,
+            updatedData,
+         },
+         201,
+      );
+   } catch (e) {
+      console.log(e);
+      return c.json({ error: `Failed to updated${dataField}` }, 500);
+   }
+};
+
+// get All church data
+export async function getAllChurchData(c) {
+   try {
+      const churchData = await client.churchData.findMany();
+      return churchData.length < 1
+         ? c.json({ message: "No data found!!" }, 404)
+         : c.json(
+              { message: "Fetch all church data successful", churchData },
+              200,
+           );
+   } catch (e) {
+      console.log(e);
+      return c.json({ message: "Failed to fetch churchData" }, 500);
+   }
+}
 
 /* expected data format 
+// for the bibleStudy by the SOP leader
 {
     Topic: "Overall Bible study topic"
     schedule:

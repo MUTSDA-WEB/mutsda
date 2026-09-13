@@ -13,6 +13,10 @@ import {
    faChevronLeft,
    faChevronRight,
    faUsers,
+   faBook,
+   faList,
+   faStore,
+   faCalendar,
 } from "@fortawesome/free-solid-svg-icons";
 
 import PropTypes from "prop-types";
@@ -51,15 +55,6 @@ const DashboardSidebar = ({
       { name: "Settings", icon: faGear, to: "/dashboard/settings" },
    ];
 
-   // If the logged-in user is a music leader, add quick access to Music Admin
-   if (user && user.role === "music") {
-      menuItems.splice(3, 0, {
-         name: "Music Admin",
-         icon: faMusic,
-         to: "/dashboard/music-admin",
-      });
-   }
-
    // If the logged-in user is an admin, elder, or pastor, add quick access to Board Admin
    if (
       user &&
@@ -67,11 +62,33 @@ const DashboardSidebar = ({
          user.role?.startsWith("elder") ||
          user.role === "pastor")
    ) {
-      menuItems.splice(4, 0, {
-         name: "Board Members",
-         icon: faUsers,
-         to: "/dashboard/board-admin",
-      });
+      menuItems.push(
+         {
+            name: "Music Admin",
+            icon: faMusic,
+            to: "/dashboard/music-admin",
+         },
+         {
+            name: "Bible Study Admin",
+            icon: faBook,
+            to: "/dashboard/bible-study-admin",
+         },
+         {
+            name: "Events Calendar",
+            icon: faCalendar,
+            to: "/dashboard/events-admin",
+         },
+         {
+            name: "Library Admin",
+            icon: faList,
+            to: "/dashboard/library-admin",
+         },
+         {
+            name: "Merchandise Admin",
+            icon: faStore,
+            to: "/dashboard/merchandise-admin",
+         },
+      );
    }
 
    const handleProfileEnter = () => {
@@ -145,7 +162,7 @@ const DashboardSidebar = ({
             </div>
 
             {/* Navigation */}
-            <nav className='flex-1 py-6 px-3 space-y-2 overflow-y-auto'>
+            <nav className='flex-1 py-6  space-y-1 px-3 overflow-y-auto'>
                {menuItems.map((item) => (
                   <NavLink
                      key={item.name}

@@ -144,4 +144,5 @@ enum Role {
   welfare        @map("WELFARE")
   development    @map("DEVELOPMENT")
   communication  @map("COMMUNICATION")
+  personalMinistry @map("personal_ministry")
 }

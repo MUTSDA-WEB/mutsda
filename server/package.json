@@ -9,7 +9,8 @@
    },
    "scripts": {
       "spin": "bun --hot server.js",
-      "chat": "bun --bun run worker.js && bun --bun run realtime.js",
+      "worker": "bun --bun run worker.js",
+      "realtime": "bun --bun run realtime.js",
       "build": "bun run pdeploy && bun spin",
       "pdev": "bun x prisma dev",
       "pmigrate": "bun x prisma migrate dev",

@@ -1,6 +1,6 @@
 import client from "../helpers/prismaClient";
 
-export default async function (c) {
+async function createEvent(c) {
    try {
       const {
          title,
@@ -41,3 +41,5 @@ export default async function (c) {
       return c.json({ error: "Failed to create new event" }, 500);
    }
 }
+
+export default createEvent;

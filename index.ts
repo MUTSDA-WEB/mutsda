@@ -20,14 +20,24 @@ concurrently([
    },
    // Realtime chat start up
    {
-      name: "chat",
-      command: "bun chat",
+      name: "Realtime",
+      command: "bun realtime",
       cwd: "./server",
       prefixColor: "yellow",
       env: {
-         SOCKET: process.env.SOCKET,
+         SOCKET_URL: process.env.SOCKET,
          REDIS_URL: process.env.REDIS_URL,
          CLIENT_URL: process.env.CLIENT_URL,
+      },
+   },
+   // worker js to save the messages
+   {
+      name: "Worker",
+      command: "bun worker",
+      cwd: "./server",
+      prefixColor: "yellowBright",
+      env: {
+         REDIS_URL: process.env.REDIS_URL,
       },
    },
 ]);
