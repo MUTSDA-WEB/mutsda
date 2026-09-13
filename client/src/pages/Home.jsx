@@ -12,7 +12,6 @@ import {
 import EventDetailsModal from "../components/ui/EventDetailsModal";
 import NoEvents from "../components/empty/NoEvents";
 import userStore from "../hooks/useStore";
-import calendarEvents from "../../utilities/calendarEvents";
 import { useGetAnnouncements, useGetUpcomingEvents } from "../services/events";
 import NoAnnouncement from "../components/empty/NoAnnouncement";
 import AnnouncementLoader from "../components/loaders/announcementLoader";
@@ -308,75 +307,66 @@ const Home = () => {
 
             {/* CALENDAR OF EVENTS SECTION */}
             <section className='space-y-10'>
-               <div className='text-center'>
-                  <div className='inline-flex items-center gap-3 mb-4'>
-                     <FontAwesomeIcon
-                        icon={faCalendarAlt}
-                        className='text-3xl text-[#3298C8]'
-                     />
-                     <h2 className='text-4xl font-black text-gray-800 tracking-tight uppercase'>
-                        Calendar of Events
-                     </h2>
+               {upcomingEvents?.length > 0 && (
+                  <div className='text-center'>
+                     <div className='inline-flex items-center gap-3 mb-4'>
+                        <FontAwesomeIcon
+                           icon={faCalendarAlt}
+                           className='text-3xl text-[#3298C8]'
+                        />
+                        <h2 className='text-4xl font-black text-gray-800 tracking-tight uppercase'>
+                           Calendar of Events
+                        </h2>
+                     </div>
+                     <p className='text-gray-500 max-w-2xl mx-auto'>
+                        Plan ahead and mark your calendars for these exciting
+                        upcoming activities and gatherings.
+                     </p>
+                     <div className='w-24 h-1.5 bg-[#3298C8] mx-auto mt-4 rounded-full'></div>
                   </div>
-                  <p className='text-gray-500 max-w-2xl mx-auto'>
-                     Plan ahead and mark your calendars for these exciting
-                     upcoming activities and gatherings.
-                  </p>
-                  <div className='w-24 h-1.5 bg-[#3298C8] mx-auto mt-4 rounded-full'></div>
-               </div>
+               )}
 
-               <div className='grid grid-cols-1 lg:grid-cols-[5fr_3.45fr] gap-8 items-stretch'>
-                  {/* Events Table */}
-                  <div className='bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 flex flex-col h-135'>
-                     <div className='bg-[#3298C8] p-6 text-white shrink-0'>
-                        <h3 className='text-xl font-bold'>Scheduled Events</h3>
-                        <p className='text-sky-100 text-sm mt-1'>
-                           Semester Program Overview
-                        </p>
-                     </div>
-                     <div className='overflow-y-auto flex-1'>
-                        <table className='w-full'>
-                           <thead className='bg-gray-50 sticky top-0'>
-                              <tr>
-                                 <th className='px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider'>
-                                    Date
-                                 </th>
-                                 <th className='px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider'>
-                                    Event
-                                 </th>
-                                 <th className='px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider'>
-                                    Description
-                                 </th>
-                              </tr>
-                           </thead>
-                           <tbody className='divide-y divide-gray-100'>
-                              {calendarEvents.map((item, index) => (
-                                 <tr
-                                    key={index}
-                                    className='hover:bg-gray-50 transition-colors'
+               <div className='flex flex-col gap-8'>
+                  {upcomingEvents?.length > 0 && (
+                     <div className='border-y border-gray-200'>
+                        <div className='bg-[#3298C8] p-6 text-white shrink-0'>
+                           <h3 className='text-xl font-bold'>
+                              Scheduled Events
+                           </h3>
+                           <p className='text-sky-100 text-sm mt-1'>
+                              Semester Program Overview
+                           </p>
+                        </div>
+                        <div className='divide-y divide-gray-200'>
+                           {upcomingEvents.map((event) => {
+                              const { month, day } = formatEventDate(
+                                 event?.startDateTime,
+                              );
+                              return (
+                                 <div
+                                    key={event?.eventID}
+                                    className='flex flex-col gap-2 px-6 py-5 transition-colors hover:bg-gray-50 sm:flex-row sm:items-start sm:gap-8'
                                  >
-                                    <td className='px-6 py-4 whitespace-nowrap'>
-                                       <span
-                                          className={`${item.color} px-3 py-1 rounded-full text-sm font-semibold`}
-                                       >
-                                          {item.date}
-                                       </span>
-                                    </td>
-                                    <td className='px-6 py-4 font-medium text-gray-800'>
-                                       {item.event}
-                                    </td>
-                                    <td className='px-6 py-4 text-gray-500 text-sm'>
-                                       {item.description}
-                                    </td>
-                                 </tr>
-                              ))}
-                           </tbody>
-                        </table>
+                                    <time className='w-24 shrink-0 text-sm font-bold text-[#3298C8]'>
+                                       {month} {day}
+                                    </time>
+                                    <div>
+                                       <h3 className='font-semibold text-gray-800'>
+                                          {event?.title}
+                                       </h3>
+                                       <p className='mt-1 text-sm text-gray-500'>
+                                          {event?.description}
+                                       </p>
+                                    </div>
+                                 </div>
+                              );
+                           })}
+                        </div>
                      </div>
-                  </div>
+                  )}
 
                   {/* Announcements Section */}
-                  <div className='bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 flex flex-col h-135'>
+                  <div className='bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100'>
                      <div className='bg-linear-to-r from-amber-500 to-orange-500 p-6 text-white shrink-0'>
                         <h3 className='text-xl font-bold flex items-center gap-2'>
                            <FontAwesomeIcon icon={faBell} />
@@ -386,7 +376,7 @@ const Home = () => {
                            Stay updated with latest news
                         </p>
                      </div>
-                     <div className='p-6 flex-1 overflow-y-auto space-y-4'>
+                     <div className='p-6 space-y-4'>
                         <div className='space-y-4'>
                            {isLoading ? (
                               <AnnouncementLoader

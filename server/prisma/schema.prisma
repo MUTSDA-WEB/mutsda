@@ -16,6 +16,8 @@ model User {
   phoneNumber Int     @map("phone_number")
   role        Role    @unique
   imageURL    String? @map("image_url") @default("LeaderF.png")
+  resetTokenHash      String?   @unique @map("reset_token_hash")
+  resetTokenExpiresAt DateTime? @map("reset_token_expires_at")
 
   // relations 
   events      Event[] @relation("UserEvents")

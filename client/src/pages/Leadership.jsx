@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
    faEnvelope,
@@ -27,26 +27,36 @@ const Leadership = () => {
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [submitted, setSubmitted] = useState(false);
 
+   // 1. Correct logic to filter out admins from the array
+   const filteredLeaders = useMemo(() => {
+      if (!boardMembers) return [];
+      return boardMembers.filter(
+         (member) => member.role !== "admin1" && member.role !== "admin2",
+      );
+   }, [boardMembers]);
+
+   // hooks
+   const { mutate: saveMessage } = useSaveVisitorMessage();
+   const { data, isSuccess, isLoading } = useGetMembers();
+
+   useEffect(() => {
+      if (data && isSuccess) setMembers(data.leaders);
+   }, [data, isSuccess, setMembers]);
+
    const handleChange = (e) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
    };
 
-   // save visitor message hook
-   const { mutate: saveMessage, isPending: saveLoading } =
-      useSaveVisitorMessage();
-
-   // load real members from the db
-   const { data, isSuccess, isLoading } = useGetMembers();
-   useEffect(() => {
-      if (data && isSuccess) setMembers(data.leaders);
-   }, [data, isSuccess]);
+   const handleOpenForm = (index) => {
+      setSubmitted(false); // Reset success state for new form interaction
+      setActiveMessageForm(index);
+   };
 
    const handleSubmit = async (e, leaderId) => {
       e.preventDefault();
       setIsSubmitting(true);
 
-      // save Visitor message to db
       saveMessage(
          {
             name: formData.name,
@@ -67,11 +77,12 @@ const Leadership = () => {
                   subject: "",
                   message: "",
                });
-               setActiveMessageForm(null);
+               // Auto-close form after a delay to show success
+               setTimeout(() => setActiveMessageForm(null), 3500);
             },
-
-            onError: (e) => {
-               console.log(e.message);
+            onError: (err) => {
+               setIsSubmitting(false);
+               console.error("Submission error:", err.message);
             },
          },
       );
@@ -79,28 +90,23 @@ const Leadership = () => {
 
    return (
       <div className='bg-[#F6EBEB] min-h-screen font-sans'>
-         {/* Hero Section with Glassmorphism */}
+         {/* Hero Section */}
          <section className='relative min-h-[60vh] flex items-center justify-center overflow-hidden'>
-            {/* Background Image */}
             <div className='absolute inset-0 z-0'>
                <img
                   src='https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070&auto=format&fit=crop'
                   alt='Leadership Background'
                   className='w-full h-full object-cover scale-105 animate-slow-zoom'
                />
-               {/* Gradient Overlays */}
-               <div className='absolute inset-0 bg-linear-to-b from-black/50 via-black/30 to-[#F6EBEB]'></div>
-               <div className='absolute inset-0 bg-linear-to-r from-[#3298C8]/30 to-transparent'></div>
+               <div className='absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-[#F6EBEB]'></div>
+               <div className='absolute inset-0 bg-gradient-to-r from-[#3298C8]/30 to-transparent'></div>
             </div>
 
-            {/* Floating Decorative Elements */}
             <div className='absolute top-20 left-10 w-64 h-64 bg-[#3298C8]/20 rounded-full blur-3xl animate-pulse'></div>
             <div className='absolute bottom-20 right-10 w-80 h-80 bg-sky-400/15 rounded-full blur-3xl animate-pulse delay-1000'></div>
 
-            {/* Glassmorphism Card */}
             <div className='relative z-10 text-center px-6 py-12 max-w-3xl mx-auto'>
                <div className='backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-10 md:p-14 shadow-2xl'>
-                  {/* Decorative Line */}
                   <div className='flex items-center justify-center gap-4 mb-6'>
                      <span className='w-12 h-0.5 bg-white/60'></span>
                      <FontAwesomeIcon
@@ -111,7 +117,7 @@ const Leadership = () => {
                   </div>
 
                   <h1 className='text-4xl sm:text-5xl md:text-6xl font-black mb-6 tracking-tight'>
-                     <span className='bg-linear-to-r from-white via-white to-sky-200 bg-clip-text text-transparent drop-shadow-lg'>
+                     <span className='bg-gradient-to-r from-white via-white to-sky-200 bg-clip-text text-transparent drop-shadow-lg'>
                         Meet Our Board
                      </span>
                   </h1>
@@ -120,24 +126,21 @@ const Leadership = () => {
                      The leadership of MUTSDA is committed to the spiritual
                      growth and service of our community.
                   </p>
-
-                  {/* Decorative Bottom Accent */}
-                  <div className='mt-8 flex justify-center'>
-                     <div className='w-24 h-1 bg-linear-to-r from-transparent via-[#3298C8] to-transparent rounded-full'></div>
-                  </div>
                </div>
             </div>
          </section>
 
+         {/* Leadership List */}
          <div className='max-w-6xl mx-auto py-12 px-6'>
-            {boardMembers.length > 0 ? (
-               boardMembers.map((member, index) => (
+            {filteredLeaders.length > 0 ? (
+               filteredLeaders.map((member, index) => (
                   <div
-                     key={index}
+                     key={member.userID || index}
                      className={`flex flex-col md:flex-row items-start gap-12 py-20 border-b border-sky-200/50 last:border-0 ${
                         index % 2 !== 0 ? "md:flex-row-reverse" : ""
                      }`}
                   >
+                     {/* Leader Image */}
                      <div className='w-full md:w-1/2'>
                         <div className='relative group'>
                            <div
@@ -148,14 +151,15 @@ const Leadership = () => {
                            <img
                               src={member?.imageURL}
                               alt={member?.userName}
-                              className='w-full h-112.5 object-cover rounded-xl shadow-xl border-4 border-white'
+                              className='w-full h-[450px] object-cover rounded-xl shadow-xl border-4 border-white'
                            />
                         </div>
                      </div>
 
+                     {/* Info/Form Toggle */}
                      <div className='w-full md:w-1/2 space-y-6'>
                         {activeMessageForm === index ? (
-                           /* Message Form - Replaces Leader Info */
+                           /* Message Form View */
                            <div className='bg-white p-6 rounded-2xl shadow-lg border border-gray-100 animate-scaleIn'>
                               <div className='flex items-center justify-between mb-6'>
                                  <div className='flex items-center gap-4'>
@@ -193,120 +197,118 @@ const Leadership = () => {
                                        Message Sent!
                                     </p>
                                     <p className='text-sm text-green-600'>
-                                       {member?.name.split(" ")[0]} will get
+                                       {member?.userName.split(" ")[0]} will get
                                        back to you soon.
                                     </p>
                                  </div>
                               ) : (
-                                 !isAuthenticated && (
-                                    <form
-                                       onSubmit={(e) =>
-                                          handleSubmit(e, member?.userID)
-                                       }
-                                       className='space-y-4'
+                                 <form
+                                    onSubmit={(e) =>
+                                       handleSubmit(e, member?.userID)
+                                    }
+                                    className='space-y-4'
+                                 >
+                                    <div className='space-y-1'>
+                                       <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
+                                          Your Name
+                                       </label>
+                                       <input
+                                          type='text'
+                                          name='name'
+                                          value={formData.name}
+                                          onChange={handleChange}
+                                          placeholder='e.g. John Doe'
+                                          required
+                                          className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
+                                       />
+                                    </div>
+                                    <div className='grid grid-cols-2 gap-4'>
+                                       <div className='space-y-1'>
+                                          <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
+                                             Phone Number
+                                          </label>
+                                          <input
+                                             type='tel'
+                                             name='phoneNumber'
+                                             value={formData.phoneNumber}
+                                             onChange={handleChange}
+                                             placeholder='+254...'
+                                             required
+                                             className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all'
+                                          />
+                                       </div>
+                                       <div className='space-y-1'>
+                                          <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
+                                             Email
+                                          </label>
+                                          <input
+                                             type='email'
+                                             name='email'
+                                             value={formData.email}
+                                             onChange={handleChange}
+                                             placeholder='email@example.com'
+                                             required
+                                             className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all'
+                                          />
+                                       </div>
+                                    </div>
+                                    <div className='space-y-1'>
+                                       <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
+                                          Subject
+                                       </label>
+                                       <input
+                                          type='text'
+                                          name='subject'
+                                          value={formData.subject}
+                                          onChange={handleChange}
+                                          placeholder='What is this about?'
+                                          required
+                                          className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all'
+                                       />
+                                    </div>
+                                    <div className='space-y-1'>
+                                       <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
+                                          Message
+                                       </label>
+                                       <textarea
+                                          name='message'
+                                          value={formData.message}
+                                          onChange={handleChange}
+                                          rows={4}
+                                          required
+                                          placeholder='Write your message here...'
+                                          className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all resize-none'
+                                       />
+                                    </div>
+                                    <button
+                                       type='submit'
+                                       disabled={isSubmitting}
+                                       className='w-full bg-[#3298C8] hover:bg-sky-700 text-white py-4 rounded-2xl font-bold transition-all disabled:opacity-50'
                                     >
-                                       <div className='space-y-1'>
-                                          <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
-                                             Your Name
-                                          </label>
-                                          <input
-                                             type='text'
-                                             name='name'
-                                             value={formData.name}
-                                             onChange={handleChange}
-                                             placeholder='e.g. John Doe'
-                                             required
-                                             className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
-                                          />
-                                       </div>
-                                       <div className='grid grid-cols-2 gap-4'>
-                                          <div className='space-y-1'>
-                                             <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
-                                                Phone Number
-                                             </label>
-                                             <input
-                                                type='tel'
-                                                name='phoneNumber'
-                                                value={formData.phoneNumber}
-                                                onChange={handleChange}
-                                                placeholder='+254...'
-                                                required
-                                                className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
-                                             />
-                                          </div>
-                                          <div className='space-y-1'>
-                                             <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
-                                                Email
-                                             </label>
-                                             <input
-                                                type='email'
-                                                name='email'
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                placeholder='email@example.com'
-                                                required
-                                                className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
-                                             />
-                                          </div>
-                                       </div>
-                                       <div className='space-y-1'>
-                                          <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
-                                             Subject
-                                          </label>
-                                          <input
-                                             type='text'
-                                             name='subject'
-                                             value={formData.subject}
-                                             onChange={handleChange}
-                                             placeholder='What is this about?'
-                                             required
-                                             className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400'
-                                          />
-                                       </div>
-                                       <div className='space-y-1'>
-                                          <label className='text-xs font-bold text-gray-500 uppercase ml-1'>
-                                             Message
-                                          </label>
-                                          <textarea
-                                             name='message'
-                                             value={formData.message}
-                                             onChange={handleChange}
-                                             placeholder='Write your message here...'
-                                             required
-                                             rows={4}
-                                             className='w-full p-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-[#3298C8] outline-none transition-all placeholder:text-gray-400 resize-none'
-                                          />
-                                       </div>
-                                       <button
-                                          type='submit'
-                                          disabled={isSubmitting}
-                                          className='w-full bg-[#3298C8] hover:bg-sky-700 text-white py-4 rounded-2xl font-bold transition-all disabled:opacity-50'
-                                       >
-                                          {isSubmitting || isLoading ? (
-                                             <span className='flex items-center justify-center gap-2'>
-                                                <FontAwesomeIcon
-                                                   icon={faSpinner}
-                                                   className='animate-spin'
-                                                />
-                                                Sending...
-                                             </span>
-                                          ) : (
-                                             "Send Message"
-                                          )}
-                                       </button>
-                                    </form>
-                                 )
+                                       {isSubmitting ? (
+                                          <span className='flex items-center justify-center gap-2'>
+                                             <FontAwesomeIcon
+                                                icon={faSpinner}
+                                                className='animate-spin'
+                                             />{" "}
+                                             Sending...
+                                          </span>
+                                       ) : (
+                                          "Send Message"
+                                       )}
+                                    </button>
+                                 </form>
                               )}
                            </div>
                         ) : (
-                           /* Leader Info - Default View */
+                           /* Leader Info View */
                            <>
                               <div className='space-y-1'>
                                  <span className='text-[#3298C8] font-bold text-xs uppercase tracking-[0.3em] block mb-2'>
                                     {member?.dept}
                                  </span>
                                  <h2 className='text-4xl font-bold text-gray-900 leading-tight'>
-                                    {member?.name}
+                                    {member?.userName}
                                  </h2>
                                  <p className='text-lg text-gray-500 font-medium tracking-wide'>
                                     {member?.role}
@@ -346,10 +348,8 @@ const Leadership = () => {
                               {!isAuthenticated && (
                                  <div className='pt-4'>
                                     <button
-                                       onClick={() =>
-                                          setActiveMessageForm(index)
-                                       }
-                                       className='inline-flex items-center gap-3 bg-[#3298C8] text-white px-8 py-3.5 rounded-xl font-bold hover:bg-sky-700 transition-all shadow-lg hover:shadow-sky-200/50 active:scale-95'
+                                       onClick={() => handleOpenForm(index)}
+                                       className='inline-flex items-center gap-3 bg-[#3298C8] text-white px-8 py-3.5 rounded-xl font-bold hover:bg-sky-700 transition-all shadow-lg active:scale-95'
                                     >
                                        <FontAwesomeIcon icon={faEnvelope} />
                                        Message {member?.userName.split(" ")[0]}

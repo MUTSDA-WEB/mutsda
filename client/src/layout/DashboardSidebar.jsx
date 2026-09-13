@@ -45,7 +45,7 @@ const DashboardSidebar = ({
          name: "Notifications",
          icon: faBell,
          to: "/dashboard/notifications",
-         badge: 3,
+         // badge: 0,
       },
       {
          name: "Create Event",
