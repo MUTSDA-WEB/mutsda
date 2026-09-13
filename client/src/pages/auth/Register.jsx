@@ -28,18 +28,13 @@ const Register = () => {
    const [showPassword, setShowPassword] = useState(false);
    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
    const [errors, setErrors] = useState({});
-   const [isLoading, setIsLoading] = useState(false);
 
    // Fetch available roles using React Query hook at top level
    const { data, isLoading: rolesLoading } = useRoles();
    const availableRoles = data?.roles || [];
 
    // call the register User hook
-   const {
-      data: newUser,
-      isLoading: loadingReg,
-      mutate: register,
-   } = useRegister();
+   const { isPending: loadingReg, mutate: register } = useRegister();
 
    // Format role name for display (e.g., "churchLeader" -> "Church Leader")
    const formatRoleName = (role) => {
@@ -144,7 +139,9 @@ const Register = () => {
             },
             onError: (error) => {
                console.log(error);
-               setErrors({ general: data.error || "Registration failed" });
+               setErrors({
+                  general: error.response?.data?.error || "Registration failed",
+               });
             },
          },
       );
@@ -493,18 +490,18 @@ const Register = () => {
                      <button
                         type='submit'
                         disabled={
-                           isLoading ||
+                           loadingReg ||
                            rolesLoading ||
                            availableRoles?.length === 0
                         }
                         className={`w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg transition-all duration-300
                   ${
-                     isLoading || rolesLoading || availableRoles?.length === 0
+                     loadingReg || rolesLoading || availableRoles?.length === 0
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-[#3298C8] hover:bg-sky-600 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
                   }`}
                      >
-                        {isLoading ? (
+                        {loadingReg ? (
                            <span className='flex items-center justify-center gap-2'>
                               <svg
                                  className='animate-spin h-5 w-5'

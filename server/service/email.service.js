@@ -172,6 +172,33 @@ export async function sendPasswordChangeEmail(email, name) {
    }
 }
 
+export async function sendPasswordResetEmail(email, name, pin) {
+   const mailOptions = {
+      from: process.env.EMAIL_USER || "noreply@mutsdachurch.org",
+      to: email,
+      subject: "Reset your MUTSDA Church password",
+      html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: #3298C8; padding: 20px; text-align: center; color: white;"><h1>Reset your password</h1></div>
+      <div style="padding: 30px; background: #f9f9f9; color: #333;">
+       <p>Hello ${name},</p>
+       <p>Use this PIN to reset your password. It expires in one hour.</p>
+       <p style="text-align: center; margin: 30px 0; font-size: 32px; letter-spacing: 8px; font-weight: bold; color: #3298C8;">${pin}</p>
+       <p>If you did not request this, you can safely ignore this email.</p>
+      </div>
+    </div>`,
+   };
+
+   try {
+      const info = await transporter.sendMail(mailOptions);
+      console.log("Password reset email sent successfully:", info.messageId);
+      return { success: true };
+   } catch (error) {
+      console.error("Error sending password reset email:", error.message);
+      return { success: false, error: error.message };
+   }
+}
+
 /**
  * Verify transporter connection (useful for testing)
  */

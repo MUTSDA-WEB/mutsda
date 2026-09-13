@@ -4,7 +4,98 @@ import checkPassword from "../helpers/checkPassword";
 import hashP from "../helpers/hashPassword";
 import client from "../helpers/prismaClient";
 import { deleteCookie, setCookie } from "hono/cookie";
-import { sendPasswordChangeEmail } from "../service/email.service";
+import {
+   sendPasswordChangeEmail,
+   sendPasswordResetEmail,
+} from "../service/email.service";
+import { createHash, randomInt } from "node:crypto";
+
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
+
+function hashResetToken(token) {
+   return createHash("sha256").update(token).digest("hex");
+}
+
+export async function requestPasswordReset(c) {
+   const { email } = await c.req.json();
+
+   if (typeof email !== "string" || !email.trim()) {
+      return c.json({ error: "A valid email is required" }, 400);
+   }
+
+   const user = await client.user.findFirst({
+      where: { email: { equals: email.trim(), mode: "insensitive" } },
+      select: { userID: true, email: true, name: true, userName: true },
+   });
+
+   if (user) {
+      const pin = randomInt(100000, 1000000).toString();
+      await client.user.update({
+         where: { userID: user.userID },
+         data: {
+            resetTokenHash: hashResetToken(pin),
+            resetTokenExpiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS),
+         },
+      });
+
+      const emailResult = await sendPasswordResetEmail(
+         user.email,
+         user.name || user.userName,
+         pin,
+      );
+      if (!emailResult.success) {
+         console.error("Password reset email failed:", emailResult.error);
+      }
+   }
+
+   return c.json({
+      message:
+         "If an account exists for that email, a password reset PIN has been sent.",
+   });
+}
+
+export async function resetPassword(c) {
+   const { email, pin, password } = await c.req.json();
+
+   if (
+      typeof email !== "string" ||
+      !/^\d{6}$/.test(pin) ||
+      typeof password !== "string" ||
+      password.length < 8 ||
+      password.length > 16
+   ) {
+      return c.json(
+         { error: "Password must be between 8 and 16 characters" },
+         400,
+      );
+   }
+
+   const user = await client.user.findFirst({
+      where: {
+         email: { equals: email.trim(), mode: "insensitive" },
+         resetTokenHash: hashResetToken(pin),
+         resetTokenExpiresAt: { gt: new Date() },
+      },
+   });
+
+   if (!user) {
+      return c.json(
+         { error: "This password reset link is invalid or has expired" },
+         400,
+      );
+   }
+
+   await client.user.update({
+      where: { userID: user.userID },
+      data: {
+         password: await hashP(password),
+         resetTokenHash: null,
+         resetTokenExpiresAt: null,
+      },
+   });
+
+   return c.json({ message: "Password reset successfully" });
+}
 
 export async function login(c) {
    const token = await sign(c.get("userInfo"), process.env.JWT_SECRET, "HS384");

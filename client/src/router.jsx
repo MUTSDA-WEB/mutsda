@@ -13,6 +13,8 @@ import Donate from "./pages/Donate";
 import Contact from "./pages/ContactUs";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 // Layout imports
@@ -43,6 +45,8 @@ const AppRouter = () => {
             <Route path='/contactUs' element={<Contact />} />
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<Register />} />
+            <Route path='/forgot-password' element={<ForgotPassword />} />
+            <Route path='/reset-password' element={<ResetPassword />} />
             {/* Ministries routes */}
             <Route path='/ministries'>
                <Route path='music' element={<MusicMinistry />} />

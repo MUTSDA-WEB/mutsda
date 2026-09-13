@@ -25,6 +25,8 @@ import {
    logout,
    updatePassword,
    updateProfileInfo,
+   requestPasswordReset,
+   resetPassword,
 } from "./controller/auth.controller";
 import verifyToken from "./middleware/verifyToken.middleware";
 import {
@@ -111,6 +113,9 @@ App.post(
    verifyPasswordMiddleware,
    login,
 );
+
+App.post("/auth/forgot-password", authRateLimit, requestPasswordReset);
+App.post("/auth/reset-password", authRateLimit, resetPassword);
 
 // user logout route
 App.post("/auth/logout", verifyToken, logout);
